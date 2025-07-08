@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: docs
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: pass
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install deps
+        run: poetry install
+      - name: Lint (ruff)
+        run: poetry run ruff app
+      - name: Type check (mypy)
+        run: poetry run mypy app
+      - name: Test (pytest)
+        run: poetry run pytest tests --maxfail=1 --disable-warnings
+      - name: Build docker image
+        run: docker build -f docker/Dockerfile .
+      - name: Scan docker (trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docu-bot-service:latest'
+          format: 'table'
