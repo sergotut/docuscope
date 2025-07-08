@@ -1,0 +1,71 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    env_file: ../.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - minio
+      - redis
+      - qdrant
+      - llama_cpp
+  bot:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: python app/adapters/inbound/tg_bot.py
+    env_file: ../.env
+    depends_on:
+      - backend
+  celery_worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: celery -A app.infrastructure.task_queue worker --concurrency=2
+    env_file: ../.env
+    depends_on:
+      - redis
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: docs
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  minio:
+    image: minio/minio
+    command: server /data
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ROOT_USER: docscan
+      MINIO_ROOT_PASSWORD: docscan123
+    volumes:
+      - miniodata:/data
+  qdrant:
+    image: qdrant/qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrantdata:/qdrant/storage
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+  llama_cpp:
+    image: ghcr.io/ggerganov/llama.cpp:latest
+    volumes:
+      - ./models:/models
+    ports:
+      - "8080:8080"
+volumes:
+  pgdata:
+  miniodata:
+  qdrantdata:

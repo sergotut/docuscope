@@ -1,0 +1,8 @@
+# Авто-детект для текста, line endings
+* text=auto
+
+# Python диффы для *.py
+*.py diff=python
+
+# LF для markdown
+*.md text eol=lf
