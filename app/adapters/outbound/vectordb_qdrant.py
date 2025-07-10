@@ -16,15 +16,19 @@ class QdrantVectorStore:
         self.dim = dim
         self.client = QdrantClient(url=url)
 
-        # Проверяем, есть ли коллекция; если нет — создаём
-        if self.collection not in self.client.get_collections().collections:
-            logger.warning("qdrant_collection_missing", collection=self.collection)
-            self.client.create_collection(
-                collection_name=self.collection,
-                vectors_config=rest.VectorParams(size=self.dim, distance="Cosine"),
-                # можно добавить `optimizers_config` и др. при желании
-            )
-            logger.info("qdrant_collection_created", collection=self.collection)
+        try:
+            collections = self.client.get_collections().collections
+            existing = [c.name for c in collections]
+            if self.collection not in existing:
+                logger.warning("qdrant_collection_missing", collection=self.collection)
+                self.client.create_collection(
+                    collection_name=self.collection,
+                    vectors_config=rest.VectorParams(size=self.dim, distance="Cosine"),
+                )
+                logger.info("qdrant_collection_created", collection=self.collection)
+        except Exception as e:
+            logger.error("qdrant_collection_check_failed", error=str(e))
+            raise
 
         logger.info("qdrant_client_ready", url=url, collection=self.collection)
 
