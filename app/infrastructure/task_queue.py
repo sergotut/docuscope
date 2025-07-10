@@ -1,5 +1,8 @@
 from celery import Celery
+import structlog
 from app.core.settings import settings
+
+logger = structlog.get_logger()
 
 celery_app = Celery(
     "docu_tasks",
@@ -10,3 +13,9 @@ celery_app = Celery(
 celery_app.conf.task_routes = {
     "app.application.report_service.process_document_task": {"queue": "ingest"},
 }
+
+logger.info(
+    "celery_configured",
+    broker=celery_app.conf.broker_url,
+    backend=celery_app.conf.result_backend,
+)

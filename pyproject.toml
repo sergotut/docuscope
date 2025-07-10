@@ -25,6 +25,7 @@ paddleocr = "^2.7"
 python-dotenv = "^1.0"
 opentelemetry-sdk = "^1.25"
 opentelemetry-exporter-otlp = "^1.25"
+structlog = "^24.1.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2"

@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     app_env: str = "prod"
     postgres_dsn: str
@@ -16,8 +17,14 @@ class Settings(BaseSettings):
     telegram_token: str = ""
     webhook_path: str = "/webhook/abcdef"
     redis_host: str = "redis"
+    celery_broker_url: str
+    celery_result_backend: str
+
+    # Настройка логирования
+    log_level: str = "INFO"  # DEBUG / INFO / WARNING / ERROR / CRITICAL
 
     class Config:
         env_file = ".env"
+
 
 settings = Settings()
