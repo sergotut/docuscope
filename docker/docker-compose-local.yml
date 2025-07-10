@@ -18,12 +18,13 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    command: python app/adapters/inbound/tg_bot.py
+    command: python -m app.adapters.inbound.tg_bot
     env_file: ../.env
     volumes:
       - ../app:/app/app
     depends_on:
       - backend
+    working_dir: /app
   celery_worker:
     build:
       context: ..

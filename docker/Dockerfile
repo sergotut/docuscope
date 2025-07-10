@@ -27,8 +27,8 @@ RUN pip install "poetry==$POETRY_VERSION" \
 # Копируем только файлы зависимости для использования слоя-кэша
 COPY pyproject.toml poetry.lock* ./
 
-# Устанавливаем прод-зависимости; --no-root → игнор ошибок README / packages
-RUN poetry install --no-interaction --no-ansi
+# Устанавливаем прод-зависимости;
+RUN poetry install --without dev --no-interaction --no-ansi
 
 # Poetry не ставит бинарники gunicorn/celery, поэтому добавляем их pip’ом
 RUN pip install --no-cache-dir gunicorn celery
