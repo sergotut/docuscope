@@ -28,7 +28,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    command: celery -A app.infrastructure.task_queue worker --concurrency=2
+    command: celery -A app.infrastructure.task_queue worker -Q ingest --concurrency=2 --loglevel=INFO
     env_file: ../.env
     volumes:
       - ../app:/app/app

@@ -1,18 +1,49 @@
-from qdrant_client import QdrantClient
+from typing import List, Dict
+
 import structlog
+from qdrant_client import QdrantClient
+from qdrant_client.http import models as rest
+from qdrant_client.http.exceptions import UnexpectedResponse
 
 logger = structlog.get_logger()
 
+
 class QdrantVectorStore:
-    def __init__(self, url: str):
+    """Векторное хранилище с авто-созданием коллекции."""
+
+    def __init__(self, url: str, collection: str = "documents", dim: int = 768):
+        self.collection = collection
+        self.dim = dim
         self.client = QdrantClient(url=url)
-        self.collection = "documents"
+
+        # Проверяем, есть ли коллекция; если нет — создаём
+        if self.collection not in self.client.get_collections().collections:
+            logger.warning("qdrant_collection_missing", collection=self.collection)
+            self.client.create_collection(
+                collection_name=self.collection,
+                vectors_config=rest.VectorParams(size=self.dim, distance="Cosine"),
+                # можно добавить `optimizers_config` и др. при желании
+            )
+            logger.info("qdrant_collection_created", collection=self.collection)
+
         logger.info("qdrant_client_ready", url=url, collection=self.collection)
 
-    def upsert(self, vectors, payloads):
-        self.client.upsert(
-            collection_name=self.collection,
-            points=vectors,
-            payloads=payloads,
-        )
-        logger.debug("qdrant_upsert", vectors=len(vectors))
+    def upsert(self, vectors: List[List[float]], payloads: List[Dict]):
+        if len(vectors) != len(payloads):
+            raise ValueError("vectors and payloads length must match")
+
+        points = [
+            rest.PointStruct(id=i, vector=v, payload=payloads[i])
+            for i, v in enumerate(vectors)
+        ]
+
+        try:
+            self.client.upload_points(
+                collection_name=self.collection,
+                points=points,
+                wait=True,
+            )
+            logger.debug("qdrant_upsert", count=len(points))
+        except UnexpectedResponse as e:
+            logger.error("qdrant_upsert_failed", error=str(e))
+            raise
