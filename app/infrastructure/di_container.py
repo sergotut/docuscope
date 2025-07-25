@@ -1,12 +1,12 @@
-from dependency_injector import containers, providers
 import structlog
+from dependency_injector import containers, providers
 
-from app.core.settings import settings
 from app.adapters.outbound.embedding_yagpt import YandexGPTEmbedding
-from app.adapters.outbound.vectordb_qdrant import QdrantVectorStore
-from app.adapters.outbound.storage_minio import MinIOStorage
-from app.adapters.outbound.ocr_paddle import PaddleOCRAdapter
 from app.adapters.outbound.llm_yagpt import YaGPTLLM
+from app.adapters.outbound.ocr_paddle import PaddleOCRAdapter
+from app.adapters.outbound.storage_minio import MinIOStorage
+from app.adapters.outbound.vectordb_qdrant import QdrantVectorStore
+from app.core.settings import settings
 
 logger = structlog.get_logger()
 

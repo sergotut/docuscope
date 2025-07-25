@@ -2,6 +2,7 @@ import structlog
 
 logger = structlog.get_logger()
 
+
 class BillingService:
     def __init__(self):
         pass

@@ -2,6 +2,7 @@ import structlog
 
 logger = structlog.get_logger()
 
+
 class ContractExtractor:
     def __init__(self):
         pass

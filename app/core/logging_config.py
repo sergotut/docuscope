@@ -6,8 +6,7 @@ import structlog
 
 
 def init_logging(settings: "Settings") -> None:  # noqa: ANN001
-    """
-    Инициализировать логирование всего приложения.
+    """Инициализировать логирование всего приложения.
 
     • выводит лог-записи в stdout в формате JSON;
     • уровень задаётся через LOG_LEVEL / settings.log_level;

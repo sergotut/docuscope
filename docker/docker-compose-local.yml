@@ -2,40 +2,57 @@ services:
   backend:
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/Dockerfile.dev
     env_file: ../.env
+    restart: unless-stopped
     volumes:
-      - ../app:/app/app
+       - ../:/app
+       - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /app
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      retries: 5
     depends_on:
-      - db
-      - minio
-      - redis
-      - qdrant
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      redis:
+        condition: service_started
+      qdrant:
+        condition: service_started
   bot:
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/Dockerfile.dev
     command: python -m app.adapters.inbound.tg_bot
     env_file: ../.env
+    restart: unless-stopped
     volumes:
-      - ../app:/app/app
+      - ../:/app
+    working_dir: /app
     depends_on:
       - backend
-    working_dir: /app
   celery_worker:
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/Dockerfile.dev
     command: celery -A app.infrastructure.task_queue worker -Q ingest --concurrency=2 --loglevel=INFO
     env_file: ../.env
+    restart: unless-stopped
     volumes:
-      - ../app:/app/app
+      - ../:/app
     depends_on:
-      - redis
+      redis:
+        condition: service_started
+      db:
+        condition: service_healthy
   db:
-    image: postgres:16
+    image: postgres:16.5-alpine3.19
+    restart: unless-stopped
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
@@ -44,27 +61,43 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 5s
+      retries: 5
   minio:
-    image: minio/minio
-    command: server /data
+    image: minio/minio:RELEASE.2025-06-13T11-33-47Z
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
     ports:
       - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: docscan
       MINIO_ROOT_PASSWORD: docscan123
     volumes:
       - miniodata:/data
   qdrant:
-    image: qdrant/qdrant
+    image: qdrant/qdrant:v1.14.1
+    restart: unless-stopped
     ports:
       - "6333:6333"
     volumes:
       - qdrantdata:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:6333/-/ready"]
+      interval: 15s
+      retries: 5
   redis:
-    image: redis:7-alpine
+    image: redis:7.2.9-alpine
+    restart: unless-stopped
     ports:
       - "6379:6379"
+    volumes:
+      - redisdata:/data
+    command: ["redis-server", "--appendonly", "yes"]
 volumes:
   pgdata:
   miniodata:
   qdrantdata:
+  redisdata:

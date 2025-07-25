@@ -1,8 +1,8 @@
-from minio import Minio
 import structlog
-from app.core.settings import settings
+from minio import Minio
 
 logger = structlog.get_logger()
+
 
 class MinIOStorage:
     def __init__(self, endpoint, access_key, secret_key):

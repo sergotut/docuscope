@@ -1,36 +1,41 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.8
+    rev: v0.12.5
     hooks:
       - id: ruff
       - id: ruff-format
   - repo: https://github.com/psf/black
-    rev: 24.3.0
+    rev: 25.1.0
     hooks:
       - id: black
         language_version: python3.11
         args: ["--line-length", "88"]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.0
+    rev: v1.17.0
     hooks:
       - id: mypy
         args: ["--strict"]
+        additional_dependencies:
+          - pydantic>=2.7
+          - pydantic-core>=2.18
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
     hooks:
       - id: detect-secrets
-  - repo: https://github.com/aquasecurity/trivy
-    rev: v0.53.1
+  - repo: https://github.com/mxab/pre-commit-trivy
+    rev: v0.15.0
     hooks:
-      - id: trivy-config
+      - id: trivyconfig-docker
+        args: [--exit-code, "1", "--skip-dirs", ".venv"]
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v3.21.5
+    rev: v4.8.3
     hooks:
       - id: commitizen
-  - repo: https://github.com/CycloneDX/cyclonedx-python
-    rev: v4.4.0
+  - repo: local
     hooks:
       - id: cyclonedx-python
+        name: CycloneDX SBOM (Python)
         entry: cyclonedx-py -o sbom-python.xml --format xml
-        language_version: python3.11
+        language: system
+        types: [python]
         stages: [manual]

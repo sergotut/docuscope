@@ -1,15 +1,16 @@
 import asyncio
-from celery.result import AsyncResult
-from aiogram import Bot
-import structlog
 
-from app.core.settings import settings
+import structlog
+from aiogram import Bot
+from celery.result import AsyncResult
+
 from app.infrastructure.task_queue import celery_app
 
 logger = structlog.get_logger()
 
 # Храним ID задач, которые нужно отслеживать
 task_registry = {}  # task_id -> chat_id
+
 
 async def track_results(bot: Bot):
     while True:
@@ -22,10 +23,14 @@ async def track_results(bot: Bot):
                 try:
                     output = result.get()
                     summary = output["summary"]
-                    await bot.send_message(chat_id, f"📄 Готово! Результат:\n\n{summary}")
+                    await bot.send_message(
+                        chat_id, f"📄 Готово! Результат:\n\n{summary}"
+                    )
                     logger.info("result_sent", user_id=chat_id, task_id=task_id)
                 except Exception as e:
-                    await bot.send_message(chat_id, "⚠️ Произошла ошибка при обработке файла.")
+                    await bot.send_message(
+                        chat_id, "⚠️ Произошла ошибка при обработке файла."
+                    )
                     logger.error("result_error", error=str(e), task_id=task_id)
                 finished.append(task_id)
 
