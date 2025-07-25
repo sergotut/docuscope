@@ -1,0 +1,71 @@
+# ---------- Build stage: готовим виртуальное окружение с прод-зависимостями ----------
+FROM python:3.11-slim AS builder
+
+ARG POETRY_VERSION=1.8.2
+ARG PIP_VERSION=24.0
+ARG BUILD_DATE
+ARG VCS_REF
+ENV PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    POETRY_VERSION=${POETRY_VERSION} \
+    VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:$PATH"
+
+# Системные пакеты, которые реже всего меняются
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        git \
+        curl \
+        libgl1-mesa-glx \
+        libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Создаём изолированную venv — все пакеты внутри /opt/venv
+RUN python -m venv "${VIRTUAL_ENV}"
+
+WORKDIR /build
+
+# Обновляем базовые инструменты Python
+RUN pip install --no-cache-dir "pip==${PIP_VERSION}" setuptools wheel
+
+# Ставим Poetry и настраиваем «без venv» (у нас уже есть /opt/venv)
+RUN pip install --no-cache-dir "poetry==${POETRY_VERSION}" \
+ && poetry config virtualenvs.create false
+
+# Берём только файлы зависимостей — слой хорошо кешируется
+COPY pyproject.toml poetry.lock* ./
+
+# Устанавливаем только прод-зависимости
+RUN poetry install --without dev --no-interaction --no-ansi --no-root
+
+# Poetry не ставит gunicorn/celery → докидываем pip’ом
+RUN pip install --no-cache-dir gunicorn celery
+
+# Чистим кеши, чтобы слой был меньше
+RUN poetry cache clear --all pypi && rm -rf /root/.cache/pip
+
+# ---------- Base image: минимальный слой только с venv ----------
+FROM python:3.11-slim
+
+ARG BUILD_DATE
+ARG VCS_REF
+
+LABEL org.opencontainers.image.created=$BUILD_DATE \
+      org.opencontainers.image.revision=$VCS_REF \
+      org.opencontainers.image.title="docuscope-base"
+
+# Минимальные runtime-библиотеки (нужны OpenCV/Tesseract и т. п.)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libgl1-mesa-glx \
+        libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PYTHONUNBUFFERED=1 \
+    VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:$PATH"
+
+# Переносим готовую виртуалку из builder-слоя
+COPY --from=builder /opt/venv /opt/venv
+
+# По умолчанию ничего не запускаем — это «золотая» база для других Dockerfile’ов
+CMD ["python", "-c", "import platform,os; print('docuscope-base ready → Python', platform.python_version())"]

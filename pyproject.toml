@@ -22,6 +22,7 @@ qdrant-client = "^1.8"
 minio = "^7.2"
 aioboto3 = "^12.0"
 paddleocr = "^2.7"
+scipy = "<1.16"
 python-dotenv = "^1.0"
 opentelemetry-sdk = "^1.25"
 opentelemetry-exporter-otlp = "^1.25"
@@ -33,15 +34,19 @@ pytest-asyncio = "^0.23"
 ruff = "^0.4"
 black = "^24.4"
 mypy = "^1.10"
+docformatter = "^1.7"
+pre-commit = "^3.7"
 
 [tool.black]
-line-length = 100
-target-version = ['py311']
+line-length = 88
+target-version = ["py311"]
+preview = true 
 
 [tool.ruff]
-line-length = 100
-select = ["E", "F", "B", "W", "I"]
-ignore = ["E501"]
+line-length = 88
+fix = true
+unsafe-fixes = false
+
 exclude = [
     ".git",
     ".venv",
@@ -51,3 +56,36 @@ exclude = [
     ".mypy_cache",
     ".ruff_cache",
 ]
+
+[tool.ruff.lint]
+extend-select = [
+  "E", "F", "W",          # pycodestyle / pyflakes
+  "I",                    # isort-style импорты (заменяет isort)
+  "B",                    # bugbear (ошибки/антипаттерны)
+  "C4",                   # flake8-comprehensions
+  "SIM",                  # flake8-simplify
+  "UP",                   # pyupgrade (современный синтаксис)
+  "D",                    # pydocstyle (доки)
+  "S",                    # bandit-like security
+  "PT",                   # flake8-pytest-style
+]
+extend-ignore = [
+  "D203", "D213",         # Google-style docstrings (одно и то же, но без двойного пробела)
+  "E203",                 # конфликт Black↔E203 (slices)
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+plugins = ["pydantic.mypy"]
+show_error_codes = true
+pretty = true
+exclude = ["tests/.*"]
+
+[tool.docformatter]
+wrap-summaries = 72
+black = true
+pre-summary-newline = true

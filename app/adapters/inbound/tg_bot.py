@@ -1,20 +1,21 @@
 import asyncio
+
 import structlog
 from aiogram import Bot, Dispatcher, types
-from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 
-from app.core.settings import settings
-from app.core.logging_config import init_logging
-from app.infrastructure.task_queue import celery_app
 from app.adapters.inbound.task_result_tracker import task_registry, track_results
+from app.core.logging_config import init_logging
+from app.core.settings import settings
+from app.infrastructure.task_queue import celery_app
 
 init_logging(settings)
 logger = structlog.get_logger()
 
 bot = Bot(
     token=settings.telegram_token,
-    default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML),
 )
 dp = Dispatcher()
 
@@ -31,7 +32,11 @@ async def handle_message(message: types.Message):
 
             task = celery_app.send_task(
                 "app.application.report_service.process_document_task",
-                args=[file_bytes.read(), message.document.file_name, message.from_user.id],
+                args=[
+                    file_bytes.read(),
+                    message.document.file_name,
+                    message.from_user.id,
+                ],
             )
             task_registry[task.id] = message.chat.id
 

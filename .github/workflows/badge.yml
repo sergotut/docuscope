@@ -1,0 +1,36 @@
+name: Coverage Badge
+
+on:
+  workflow_dispatch:
+
+jobs:
+  coverage-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: snok/install-poetry@v1
+
+      - name: Configure Poetry
+        run: poetry config virtualenvs.create false
+
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-ansi
+
+      - name: Run tests
+        run: pytest -q --cov=app --cov-report=xml
+
+      - name: Generate badge
+        uses: tj-actions/coverage-badge@v2
+        with:
+          coverage-summary-path: coverage.xml
+
+      - name: Commit badge
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: "*.svg"
+          message: "docs: update coverage badge"

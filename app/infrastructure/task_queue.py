@@ -1,5 +1,6 @@
-from celery import Celery
 import structlog
+from celery import Celery
+
 from app.core.settings import settings
 
 logger = structlog.get_logger()

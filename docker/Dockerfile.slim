@@ -1,15 +1,29 @@
 FROM python:3.11-slim
 
+ARG BUILD_DATE
+ARG VCS_REF
+
+ENV PYTHONUNBUFFERED=1 \
+    BUILD_DATE=${BUILD_DATE} \
+    VCS_REF=${VCS_REF}
+
+# tini сразу в runtime, чтобы не писать собственный entrypoint
+RUN apt-get update && apt-get install -y --no-install-recommends tini \
+ && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
+
+# Копируем зависимости, собранные в базовом CI-образе
+COPY --from=docuscope-builder:latest /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
 COPY pyproject.toml .
 COPY README.md .
-RUN pip install poetry && poetry config virtualenvs.create false && poetry install --only main
-
 COPY app app
 COPY scripts scripts
 COPY .env.sample .env
 
 EXPOSE 8000
+USER nobody
 
+ENTRYPOINT ["tini", "-g", "--"]
 CMD ["uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8000"]

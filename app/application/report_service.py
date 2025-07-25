@@ -1,18 +1,19 @@
 import structlog
 
-from app.infrastructure.task_queue import celery_app
-from app.adapters.outbound.ocr_paddle import PaddleOCRAdapter
 from app.adapters.outbound.embedding_yagpt import YandexGPTEmbedding
-from app.adapters.outbound.vectordb_qdrant import QdrantVectorStore
 from app.adapters.outbound.llm_yagpt import YaGPTLLM
+from app.adapters.outbound.ocr_paddle import PaddleOCRAdapter
+from app.adapters.outbound.vectordb_qdrant import QdrantVectorStore
+from app.infrastructure.task_queue import celery_app
 
 logger = structlog.get_logger()
 
 
 @celery_app.task(name="app.application.report_service.process_document_task")
-def process_document_task(file_bytes: bytes, filename: str, user_id: int):  # noqa: ANN001
-    """
-    Полный пайплайн:
+def process_document_task(
+    file_bytes: bytes, filename: str, user_id: int
+):  # noqa: ANN001
+    """Полный пайплайн:
 
     1. OCR (если требуется);
     2. разбиение текста на чанки;

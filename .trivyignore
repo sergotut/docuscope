@@ -1,0 +1,2 @@
+# Ignore vulnerabilities with CVSS score lower than 5.0
+# This is handled via severity filter in CI Trivy step

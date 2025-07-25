@@ -1,9 +1,12 @@
-from pydantic import BaseModel
 from datetime import datetime
+
+from pydantic import BaseModel
+
 
 class User(BaseModel):
     id: int
     tg_id: int
+
 
 class Document(BaseModel):
     id: int
@@ -12,6 +15,7 @@ class Document(BaseModel):
     filename: str
     status: str
     created_at: datetime
+
 
 class Report(BaseModel):
     id: int

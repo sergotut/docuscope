@@ -2,6 +2,7 @@ import structlog
 
 logger = structlog.get_logger()
 
+
 class YandexGPTEmbedding:
     def __init__(self, key: str):
         self.key = key
