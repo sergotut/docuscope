@@ -1,0 +1,36 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.8
+    hooks:
+      - id: ruff
+      - id: ruff-format
+  - repo: https://github.com/psf/black
+    rev: 24.3.0
+    hooks:
+      - id: black
+        language_version: python3.11
+        args: ["--line-length", "88"]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        args: ["--strict"]
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+  - repo: https://github.com/aquasecurity/trivy
+    rev: v0.53.1
+    hooks:
+      - id: trivy-config
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.21.5
+    hooks:
+      - id: commitizen
+  - repo: https://github.com/CycloneDX/cyclonedx-python
+    rev: v4.4.0
+    hooks:
+      - id: cyclonedx-python
+        entry: cyclonedx-py -o sbom-python.xml --format xml
+        language_version: python3.11
+        stages: [manual]

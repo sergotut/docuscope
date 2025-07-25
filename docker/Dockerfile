@@ -2,6 +2,9 @@
 FROM python:3.11-slim AS builder
 
 ARG POETRY_VERSION=1.8.2
+ARG PIP_VERSION=24.0
+ARG BUILD_DATE
+ARG VCS_REF
 ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     POETRY_VERSION=${POETRY_VERSION}
@@ -18,10 +21,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /build
 
 # Обновляем базовые инструменты Python
-RUN pip install --upgrade pip setuptools wheel
+RUN pip install --no-cache-dir "pip==${PIP_VERSION}" setuptools wheel
 
 # Ставим Poetry и настраиваем на «без venv»
-RUN pip install "poetry==$POETRY_VERSION" \
+RUN pip install --no-cache-dir "poetry==$POETRY_VERSION" \
  && poetry config virtualenvs.create false
 
 # Копируем только файлы зависимости для использования слоя-кэша
@@ -33,16 +36,23 @@ RUN poetry install --without dev --no-interaction --no-ansi
 # Poetry не ставит бинарники gunicorn/celery, поэтому добавляем их pip’ом
 RUN pip install --no-cache-dir gunicorn celery
 
+# Чистим кеши — итоговый слой ощутимо меньше
+RUN poetry cache clear --all pypi && rm -rf /root/.cache/pip
+
 # ---------- Runtime stage: минимальный образ ----------
 FROM python:3.11-slim
 
 # Только необходимые runtime-библиотеки (OpenCV/Torch → libgl, OCR → libglib)
+# tini для корректной обработки сигналов в Docker
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libgl1-mesa-glx \
         libglib2.0-0 \
+        tini \
         && rm -rf /var/lib/apt/lists/*
 
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONUNBUFFERED=1 \
+    BUILD_DATE=${BUILD_DATE} \
+    VCS_REF=${VCS_REF}
 
 WORKDIR /app
 
@@ -56,7 +66,7 @@ COPY --from=builder /usr/local/bin/celery     /usr/local/bin/celery
 COPY . .
 
 # Используем непривилегированного пользователя
-RUN useradd --create-home appuser
+RUN useradd --create-home --uid 1001 appuser
 USER appuser
 
 # Открываем порт, на котором работает FastAPI-приложение
@@ -66,4 +76,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s CMD curl -f http://localhost:8000/healthz || exit 1
 
 # Старт: Gunicorn + UvicornWorker
+ENTRYPOINT ["tini", "-g", "--"]
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "app.adapters.inbound.http_api:app", "--bind", "0.0.0.0:8000", "--timeout", "180"]
