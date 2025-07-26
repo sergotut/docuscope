@@ -52,6 +52,7 @@ jobs:
 
       - name: Mypy
         run: mypy --strict app
+        working-directory: ${{ github.workspace }}
 
       - name: Tests
         run: pytest -q --cov=app --cov-fail-under=90 --cov-report=xml
