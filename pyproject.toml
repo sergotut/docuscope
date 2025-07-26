@@ -78,7 +78,8 @@ convention = "google"
 
 [tool.ruff.per-file-ignores]
 "app/adapters/inbound/http_api.py" = ["B008"]
-"app/adapters/outbound/vectordb_qdrant.py" = ["E501"]
+"app/adapters/outbound/vectordb_qdrant.py" = ["E501"]  # временный костыль
+"tests/**/*.py" = ["S101"]         # разрешаем assert во всех тестах
 
 [tool.mypy]
 packages = ["app"]

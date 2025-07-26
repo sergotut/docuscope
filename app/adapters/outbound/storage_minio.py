@@ -1,5 +1,4 @@
-"""
-Модуль для интеграции с объектным хранилищем MinIO.
+"""Модуль для интеграции с объектным хранилищем MinIO.
 
 Позволяет загружать и скачивать файлы (например, документы пользователей).
 """
@@ -11,11 +10,10 @@ logger = structlog.get_logger()
 
 
 class MinIOStorage:
-    """ Адаптер для работы с хранилищем файлов MinIO. """
-    
+    """Адаптер для работы с хранилищем файлов MinIO."""
+
     def __init__(self, endpoint, access_key, secret_key):
-        """
-        Инициализация клиента MinIO и создание бакета для хранения документов.
+        """Инициализация клиента MinIO и создание бакета для хранения документов.
 
         Args:
             endpoint (str): Адрес MinIO-сервера (URL).
@@ -31,11 +29,10 @@ class MinIOStorage:
         self.bucket = "documents"
         if not self.client.bucket_exists(self.bucket):
             self.client.make_bucket(self.bucket)
-        logger.info("minio_ready", bucket=self.bucket, endpoint=endpoint) #noqa E501:
+        logger.info("minio_ready", bucket=self.bucket, endpoint=endpoint)  # noqa E501:
 
     def upload(self, file_bytes: bytes, filename: str) -> str:
-        """
-        Загружает файл в MinIO.
+        """Загружает файл в MinIO.
 
         Args:
             file_bytes (bytes): Содержимое файла в байтах.
@@ -54,8 +51,7 @@ class MinIOStorage:
         return f"{self.bucket}/{filename}"
 
     def download(self, filename: str) -> bytes:
-        """
-        Скачивает файл из MinIO по имени.
+        """Скачивает файл из MinIO по имени.
 
         Args:
             filename (str): Имя файла для скачивания.
