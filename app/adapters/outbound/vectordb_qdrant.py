@@ -53,11 +53,7 @@ class QdrantVectorStore:
             logger.error("qdrant_collection_check_failed", error=str(e))
             raise
 
-        logger.info(
-            "qdrant_client_ready",
-            url=url,
-            collection=self.collection
-        ) #noqa E501: Ruff почему-то ругается, говорит, что строка длинная
+        logger.info("qdrant_client_ready", url=url, collection=self.collection)
 
     def upsert(self, vectors: List[List[float]], payloads: List[Dict]):
         """
