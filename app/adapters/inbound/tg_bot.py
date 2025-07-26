@@ -1,3 +1,7 @@
+"""
+Telegram-бот для сервиса 'Документоскоп': обработка сообщений, загрузка документов и отправка статусов.
+"""
+
 import asyncio
 
 import structlog
@@ -22,6 +26,16 @@ dp = Dispatcher()
 
 @dp.message()
 async def handle_message(message: types.Message):
+    """
+    Обрабатывает входящие сообщения пользователей Telegram-бота.
+
+    Если пользователь отправляет документ — инициирует его обработку,
+    сохраняет task_id для отслеживания, отправляет ответ пользователю.
+    В случае ошибки отправляет соответствующее уведомление.
+
+    Args:
+        message (types.Message): Объект сообщения Telegram от пользователя.
+    """
     bound = logger.bind(user_id=message.from_user.id)
     if message.document:
         try:
@@ -51,10 +65,20 @@ async def handle_message(message: types.Message):
 
 
 async def main():
+    """
+    Основная точка входа для запуска Telegram-бота.
+
+    Инициализирует задачу отслеживания статусов Celery и запускает polling для обработки сообщений.
+    """
     logger.info("bot_started")
     asyncio.create_task(track_results(bot))
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
+    """
+    Точка входа при запуске файла как скрипта.
+
+    Запускает основной цикл бота через asyncio.
+    """
     asyncio.run(main())
