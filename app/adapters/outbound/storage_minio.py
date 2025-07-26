@@ -31,7 +31,7 @@ class MinIOStorage:
         self.bucket = "documents"
         if not self.client.bucket_exists(self.bucket):
             self.client.make_bucket(self.bucket)
-        logger.info("minio_ready", bucket=self.bucket, endpoint=endpoint)
+        logger.info("minio_ready", bucket=self.bucket, endpoint=endpoint) #noqa E501:
 
     def upload(self, file_bytes: bytes, filename: str) -> str:
         """
