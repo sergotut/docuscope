@@ -1,5 +1,4 @@
-"""
-Модуль для работы с векторной базой данных Qdrant.
+"""Модуль для работы с векторной базой данных Qdrant.
 
 Используется для хранения и поиска эмбеддингов текстовых фрагментов документов.
 """
@@ -15,16 +14,14 @@ logger = structlog.get_logger()
 
 
 class QdrantVectorStore:
-    """
-    Адаптер для взаимодействия с векторным хранилищем Qdrant.
+    """Адаптер для взаимодействия с векторным хранилищем Qdrant.
 
     Автоматически создает коллекцию для хранения векторов, если она отсутствует.
     Позволяет массово добавлять векторы и связанные payload-данные.
     """
 
     def __init__(self, url: str, collection: str = "documents", dim: int = 768):
-        """
-        Инициализация клиента Qdrant и подготовка коллекции.
+        """Инициализация клиента Qdrant и подготовка коллекции.
 
         Args:
             url (str): Адрес Qdrant-сервера.
@@ -52,15 +49,10 @@ class QdrantVectorStore:
         except Exception as e:
             logger.error("qdrant_collection_check_failed", error=str(e))
             raise
-        logger.info(
-            "qdrant_client_ready",
-            url=url,
-            collection=self.collection
-        )
+        logger.info("qdrant_client_ready", url=url, collection=self.collection)
 
     def upsert(self, vectors: List[List[float]], payloads: List[Dict]):
-        """
-        Добавляет/обновляет вектора с привязанными payload-данными в коллекции Qdrant.
+        """Добавляет/обновляет вектора с привязанными payload-данными в коллекции Qdrant.
 
         Args:
             vectors (List[List[float]]): Список векторов (списков float).

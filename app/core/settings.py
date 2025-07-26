@@ -1,5 +1,4 @@
-"""
-Модуль конфигурации приложения «Документоскоп».
+"""Модуль конфигурации приложения «Документоскоп».
 
 Содержит описание класса Settings для централизованного хранения и валидации
 конфигурационных параметров, необходимых для работы сервиса. Использует
@@ -11,8 +10,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    """
-    Класс конфигурации приложения.
+    """Класс конфигурации приложения.
 
     Описывает все параметры, которые должны быть заданы через переменные окружения
     или в файле .env. Используется для инициализации настроек всех ключевых сервисов.
@@ -37,7 +35,7 @@ class Settings(BaseSettings):
         celery_result_backend (str): Бэкенд хранения результатов Celery.
         log_level (str): Уровень логирования приложения.
     """
-    
+
     app_env: str = "prod"
     postgres_dsn: str
     minio_endpoint: str
@@ -60,11 +58,11 @@ class Settings(BaseSettings):
     log_level: str = "INFO"  # DEBUG / INFO / WARNING / ERROR / CRITICAL
 
     class Config:
-        """
-        Конфигурация Pydantic BaseSettings.
+        """Конфигурация Pydantic BaseSettings.
 
         Указывает, что переменные окружения могут браться из файла .env.
         """
+
         env_file = ".env"
 
 

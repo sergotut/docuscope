@@ -1,5 +1,4 @@
-"""
-DI-контейнер для внедрения зависимостей в сервисе Документоскоп.
+"""DI-контейнер для внедрения зависимостей в сервисе Документоскоп.
 
 Модуль инициализирует контейнер зависимостей (Dependency Injection),
 предоставляющий фабрики и синглтоны для основных компонентов приложения:
@@ -25,8 +24,7 @@ logger = structlog.get_logger()
 
 
 class Container(containers.DeclarativeContainer):
-    """
-    DI-контейнер для регистрации всех сервисов Документоскоп.
+    """DI-контейнер для регистрации всех сервисов Документоскоп.
 
     Позволяет централизованно инициализировать зависимости:
     - logger: структурированный логгер structlog
@@ -36,6 +34,7 @@ class Container(containers.DeclarativeContainer):
     - ocr: сервис OCR (PaddleOCR)
     - llm: Large Language Model (YaGPT)
     """
+
     config = providers.Configuration()
 
     logger = providers.Singleton(lambda: logger)

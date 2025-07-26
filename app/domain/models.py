@@ -1,5 +1,4 @@
-"""
-Модели доменного слоя для сервиса Документоскоп.
+"""Модели доменного слоя для сервиса Документоскоп.
 
 Здесь определяются основные бизнес-сущности:
 User, Document, Report — используются для представления и
@@ -12,20 +11,19 @@ from pydantic import BaseModel
 
 
 class User(BaseModel):
-    """
-    Модель пользователя системы.
+    """Модель пользователя системы.
 
     Attributes:
         id (int): Уникальный идентификатор пользователя.
         tg_id (int): Telegram ID пользователя.
     """
+
     id: int
     tg_id: int
 
 
 class Document(BaseModel):
-    """
-    Модель документа (договора), загруженного пользователем.
+    """Модель документа (договора), загруженного пользователем.
 
     Attributes:
         id (int): Уникальный идентификатор документа.
@@ -35,6 +33,7 @@ class Document(BaseModel):
         status (str): Текущий статус обработки документа.
         created_at (datetime): Дата и время загрузки документа.
     """
+
     id: int
     user_id: int
     file_hash: str
@@ -44,8 +43,7 @@ class Document(BaseModel):
 
 
 class Report(BaseModel):
-    """
-    Модель отчёта по документу.
+    """Модель отчёта по документу.
 
     Attributes:
         id (int): Уникальный идентификатор отчёта.
@@ -53,6 +51,7 @@ class Report(BaseModel):
         jsonb_report (dict): Структурированный отчёт по документу (JSONB).
         created_at (datetime): Дата и время создания отчёта.
     """
+
     id: int
     document_id: int
     jsonb_report: dict
