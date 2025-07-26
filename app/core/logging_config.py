@@ -1,17 +1,39 @@
+"""
+Конфигурация логирования для сервиса «Документоскоп».
+
+Данный модуль отвечает за настройку форматирования и уровней логирования
+для всего приложения. Логирование включает вывод в stdout с уровнем логов,
+форматированием времени и поддержкой цветного вывода для удобства при
+отладке и мониторинге. Настройки зависят от конфигурации среды.
+"""
+
 import logging
 import sys
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 import structlog
 
+if TYPE_CHECKING:
+    from app.core.settings import Settings
+
 
 def init_logging(settings: "Settings") -> None:  # noqa: ANN001
-    """Инициализировать логирование всего приложения.
+    """
+    Инициализирует логирование для всего приложения.
 
-    • выводит лог-записи в stdout в формате JSON;
-    • уровень задаётся через LOG_LEVEL / settings.log_level;
-    • добавляет контекст, уровень и таймстамп;
-    • скрывает лишний шум сторонних библиотек.
+    Настраивает базовый логгер, подавляет лишний шум от сторонних библиотек
+    и подключает structlog для вывода логов в формате JSON.
+
+    Args:
+        settings (Settings): Экземпляр класса Settings с конфигурацией уровня логирования.
+    
+    Returns:
+        None: Функция не возвращает значения.
+
+    Пример:
+        >>> from app.core.settings import Settings
+        >>> settings = Settings()
+        >>> init_logging(settings)
     """
     log_level = settings.log_level.upper()
 
