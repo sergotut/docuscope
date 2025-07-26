@@ -1,3 +1,18 @@
+"""
+Модуль сервиса генерации отчётов по загруженным документам для проекта.
+
+Реализует асинхронный пайплайн Celery для анализа документов:
+- OCR (при необходимости),
+- разбиение на чанки,
+- генерация эмбеддингов,
+- сохранение в Qdrant,
+- вызов LLM для анализа содержания,
+- возврат или сохранение отчёта.
+
+Используется как основной обработчик документов при загрузке через Telegram-бота
+или API.
+"""
+
 import structlog
 
 from app.adapters.outbound.embedding_yagpt import YandexGPTEmbedding
@@ -10,17 +25,27 @@ logger = structlog.get_logger()
 
 
 @celery_app.task(name="app.application.report_service.process_document_task")
-def process_document_task(
-    file_bytes: bytes, filename: str, user_id: int
-):  # noqa: ANN001
-    """Полный пайплайн:
+def process_document_task(file_bytes: bytes, filename: str, user_id: int):
+    """
+    Полный пайплайн обработки документа для анализа.
 
     1. OCR (если требуется);
-    2. разбиение текста на чанки;
-    3. генерация эмбеддингов;
-    4. сохранение в Qdrant;
-    5. анализ LLM;
-    6. возврат структуры отчёта (демо-режим).
+    2. Разбиение текста на чанки;
+    3. Генерация эмбеддингов;
+    4. Сохранение в Qdrant;
+    5. Анализ с помощью LLM;
+    6. Возврат структуры отчёта (демо-режим).
+
+    Args:
+        file_bytes (bytes): Сырые байты загруженного файла (PDF, DOCX, фото).
+        filename (str): Имя файла документа.
+        user_id (int): Идентификатор пользователя, загрузившего файл.
+
+    Returns:
+        dict: Словарь с краткой сводкой по документу (в продуктиве — запись в БД).
+
+    Raises:
+        Exception: Любая ошибка в процессе обработки будет залогирована и проброшена.
     """
     task_logger = logger.bind(
         celery_task="process_document",
