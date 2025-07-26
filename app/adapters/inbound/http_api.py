@@ -6,7 +6,7 @@ HTTP API-адаптер для загрузки документов.
 """
 
 import structlog
-from fastapi import FastAPI, File, UploadFile, Depends
+from fastapi import FastAPI, File, UploadFile
 
 from app.infrastructure.task_queue import celery_app
 
@@ -14,16 +14,8 @@ app = FastAPI()
 logger = structlog.get_logger()
 
 
-def upload_file_dep():
-    """Dependency для загрузки файла.
-
-    Returns:
-        UploadFile: Загружаемый пользователем файл.
-    """
-    return File(...)
-
 @app.post("/api/upload/")
-async def upload_doc(file: UploadFile = Depends(upload_file_dep)):
+async def upload_doc(file: UploadFile = File(...)):
     """
     Обрабатывает загрузку документа через API и отправляет задачу на анализ.
 

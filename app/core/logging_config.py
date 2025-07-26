@@ -25,7 +25,7 @@ def init_logging(settings: "Settings") -> None:  # noqa: ANN001
     и подключает structlog для вывода логов в формате JSON.
 
     Args:
-        settings (Settings): Экземпляр класса Settings с конфигурацией уровня 
+        settings (Settings): Экземпляр класса Settings с конфигурацией уровня
             логирования.
 
     Returns:

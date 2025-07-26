@@ -71,7 +71,7 @@ async def main():
     """
     Основная точка входа для запуска Telegram-бота.
 
-    Запускает задачу трекинга Celery и polling dispatcher для обработки 
+    Запускает задачу трекинга Celery и polling dispatcher для обработки
     входящих сообщений.
 
     Returns:

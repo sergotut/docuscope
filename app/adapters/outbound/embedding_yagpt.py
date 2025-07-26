@@ -10,9 +10,7 @@ logger = structlog.get_logger()
 
 
 class YandexGPTEmbedding:
-    """
-    Адаптер для генерации эмбеддингов текстов с помощью YandexGPT Embeddings API.
-    """
+    """ Адаптер для генерации эмбеддингов с помощью YandexGPT Embeddings API. """
     
     def __init__(self, key: str):
         """

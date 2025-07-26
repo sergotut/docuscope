@@ -15,8 +15,7 @@ class MinIOStorage:
     
     def __init__(self, endpoint, access_key, secret_key):
         """
-        Инициализация клиента MinIO и создание бакета для хранения документов
-        (если не существует).
+        Инициализация клиента MinIO и создание бакета для хранения документов.
 
         Args:
             endpoint (str): Адрес MinIO-сервера (URL).

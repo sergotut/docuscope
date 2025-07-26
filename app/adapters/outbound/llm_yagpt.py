@@ -10,9 +10,7 @@ logger = structlog.get_logger()
 
 
 class YaGPTLLM:
-    """
-    Адаптер для генерации ответов с помощью языковой модели YandexGPT.
-    """
+    """ Адаптер для генерации ответов с помощью языковой модели YandexGPT. """
     
     def __init__(self, key: str):
         """

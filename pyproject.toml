@@ -46,7 +46,6 @@ preview = true
 line-length = 88
 fix = true
 unsafe-fixes = false
-
 exclude = [
     ".git",
     ".venv",
@@ -76,6 +75,9 @@ extend-ignore = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ruff.per-file-ignores]
+"app/adapters/inbound/http_api.py" = ["B008"]
 
 [tool.mypy]
 python_version = "3.11"

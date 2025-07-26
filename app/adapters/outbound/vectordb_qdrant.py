@@ -28,7 +28,7 @@ class QdrantVectorStore:
 
         Args:
             url (str): Адрес Qdrant-сервера.
-            collection (str, optional): Имя коллекции для хранения векторов 
+            collection (str, optional): Имя коллекции для хранения векторов
                 (по умолчанию "documents").
             dim (int, optional): Размерность вектора (по умолчанию 768).
 
@@ -54,8 +54,10 @@ class QdrantVectorStore:
             raise
 
         logger.info(
-            "qdrant_client_ready", url=url, collection=self.collection
-        )
+            "qdrant_client_ready",
+            url=url,
+            collection=self.collection
+        ) #noqa E501: Ruff почему-то ругается, говорит, что строка длинная
 
     def upsert(self, vectors: List[List[float]], payloads: List[Dict]):
         """

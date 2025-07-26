@@ -27,7 +27,7 @@ logger = structlog.get_logger()
 @celery_app.task(name="app.application.report_service.process_document_task")
 def process_document_task(file_bytes: bytes, filename: str, user_id: int):
     """
-    Полный пайплайн обработки документа для анализа:
+    Полный пайплайн обработки документа для анализа.
 
     1. OCR (если требуется);
     2. Разбиение текста на чанки;

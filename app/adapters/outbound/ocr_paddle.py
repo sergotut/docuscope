@@ -13,9 +13,7 @@ class PaddleOCRAdapter:
     """ Адаптер для распознавания текста на изображениях с помощью PaddleOCR. """
     
     def __init__(self):
-        """
-        Инициализация адаптера PaddleOCR.
-        """
+        """ Инициализация адаптера PaddleOCR. """
         pass
 
     def ocr(self, image_bytes) -> str:
@@ -23,7 +21,7 @@ class PaddleOCRAdapter:
         Выполняет OCR-распознавание изображения.
 
         Args:
-            image_bytes (bytes): Массив байт изображения 
+            image_bytes (bytes): Массив байт изображения
                 (например, содержимое файла JPEG/PNG).
 
         Returns:
