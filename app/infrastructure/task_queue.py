@@ -1,3 +1,15 @@
+"""
+Инициализация Celery-очереди задач для асинхронной обработки документов.
+
+Модуль настраивает Celery-приложение с использованием Redis в качестве брокера
+и backend'а. Используется для вынесения тяжелых операций (OCR, LLM)
+в отдельные воркеры и повышения производительности сервиса.
+
+Импортирует задачи из report_service для их автоматической регистрации в Celery.
+
+Конфигурирует маршрутизацию задач по очередям.
+"""
+
 import structlog
 from celery import Celery
 
@@ -14,7 +26,7 @@ celery_app = Celery(
 
 # 2. регистрируем свои задачи
 #    (импорт → декоратор .task сработает → задача попадёт в celery_app)
-from app.application.report_service import process_document_task  # noqa: F401
+from app.application.report_service import process_document_task  # noqa: F401, E402
 
 # 3. опциональный роут / очередь
 celery_app.conf.task_routes = {

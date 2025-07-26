@@ -1,3 +1,16 @@
+"""
+DI-контейнер для внедрения зависимостей в сервисе Документоскоп.
+
+Модуль инициализирует контейнер зависимостей (Dependency Injection),
+предоставляющий фабрики и синглтоны для основных компонентов приложения:
+логгер, эмбеддинги, хранилище файлов, векторное хранилище, OCR и LLM.
+
+Все зависимости настраиваются централизованно, что позволяет легко менять
+реализации через ENV-переменные без правок бизнес-логики.
+
+Используется в слоях Application и Outbound (интерфейсные и технические адаптеры).
+"""
+
 import structlog
 from dependency_injector import containers, providers
 
@@ -12,6 +25,17 @@ logger = structlog.get_logger()
 
 
 class Container(containers.DeclarativeContainer):
+    """
+    DI-контейнер для регистрации всех сервисов Документоскоп.
+
+    Позволяет централизованно инициализировать зависимости:
+    - logger: структурированный логгер structlog
+    - embedding: компонент эмбеддинга текста
+    - vectordb: векторное хранилище (Qdrant)
+    - storage: объектное хранилище (MinIO)
+    - ocr: сервис OCR (PaddleOCR)
+    - llm: Large Language Model (YaGPT)
+    """
     config = providers.Configuration()
 
     logger = providers.Singleton(lambda: logger)
