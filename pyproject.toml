@@ -81,6 +81,7 @@ convention = "google"
 "app/adapters/outbound/vectordb_qdrant.py" = ["E501"]
 
 [tool.mypy]
+packages = ["app"]
 python_version = "3.11"
 strict = true
 plugins = ["pydantic.mypy"]
