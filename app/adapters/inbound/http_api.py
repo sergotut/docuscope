@@ -6,7 +6,7 @@ HTTP API-адаптер для загрузки документов.
 """
 
 import structlog
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Depends
 
 from app.infrastructure.task_queue import celery_app
 

@@ -1,6 +1,5 @@
 """
-Модуль сервиса генерации отчётов по загруженным документам для проекта
-"Документоскоп".
+Модуль сервиса генерации отчётов по загруженным документам для проекта.
 
 Реализует асинхронный пайплайн Celery для анализа документов:
 - OCR (при необходимости),
@@ -26,9 +25,7 @@ logger = structlog.get_logger()
 
 
 @celery_app.task(name="app.application.report_service.process_document_task")
-def process_document_task(
-    file_bytes: bytes, filename: str, user_id: int
-):  # noqa: ANN001
+def process_document_task(file_bytes: bytes, filename: str, user_id: int):
     """
     Полный пайплайн обработки документа для анализа:
 

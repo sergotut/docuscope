@@ -10,7 +10,7 @@ import structlog
 logger = structlog.get_logger()
 
 
-class BillingService
+class BillingService:
     """
     Сервис управления биллингом пользователей.
 
@@ -19,9 +19,7 @@ class BillingService
     """
     
     def __init__(self):
-        """
-        Инициализация сервиса биллинга.
-        """
+        """ Инициализация сервиса биллинга. """
         pass
 
     def check_limits(self, user_id: int) -> bool:
@@ -32,7 +30,7 @@ class BillingService
             user_id (int): Уникальный идентификатор пользователя.
 
         Returns:
-            bool: 
+            bool:
                 True — если лимиты не превышены и операции разрешены,
                 False — если превышен лимит или есть блокировка.
         """

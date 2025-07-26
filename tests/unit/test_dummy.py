@@ -16,4 +16,4 @@ def test_dummy_unit():
         В unit-тестах использование assert допустимо, так как pytest корректно
         обрабатывает AssertionError.
     """
-    assert 1 + 1 == 2  # nosec S101: допустимо в тестах pytest
+    assert 1 + 1 == 2  #noqa S101: допустимо в тестах pytest

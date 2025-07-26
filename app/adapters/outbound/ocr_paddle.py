@@ -10,9 +10,7 @@ logger = structlog.get_logger()
 
 
 class PaddleOCRAdapter:
-    """
-    Адаптер для распознавания текста на изображениях с помощью PaddleOCR.
-    """
+    """ Адаптер для распознавания текста на изображениях с помощью PaddleOCR. """
     
     def __init__(self):
         """
@@ -25,7 +23,8 @@ class PaddleOCRAdapter:
         Выполняет OCR-распознавание изображения.
 
         Args:
-            image_bytes (bytes): Массив байт изображения (например, содержимое файла JPEG/PNG).
+            image_bytes (bytes): Массив байт изображения 
+                (например, содержимое файла JPEG/PNG).
 
         Returns:
             str: Распознанный текст.

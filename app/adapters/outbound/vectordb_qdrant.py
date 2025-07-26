@@ -28,7 +28,8 @@ class QdrantVectorStore:
 
         Args:
             url (str): Адрес Qdrant-сервера.
-            collection (str, optional): Имя коллекции для хранения векторов (по умолчанию "documents").
+            collection (str, optional): Имя коллекции для хранения векторов 
+                (по умолчанию "documents").
             dim (int, optional): Размерность вектора (по умолчанию 768).
 
         Raises:
@@ -52,7 +53,9 @@ class QdrantVectorStore:
             logger.error("qdrant_collection_check_failed", error=str(e))
             raise
 
-        logger.info("qdrant_client_ready", url=url, collection=self.collection)
+        logger.info(
+            "qdrant_client_ready", url=url, collection=self.collection
+        )
 
     def upsert(self, vectors: List[List[float]], payloads: List[Dict]):
         """

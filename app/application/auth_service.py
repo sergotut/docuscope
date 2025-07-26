@@ -19,9 +19,7 @@ class AuthService:
     """
     
     def __init__(self):
-        """
-        Инициализация сервиса аутентификации.
-        """
+        """ Инициализация сервиса аутентификации. """
         pass
 
     def get_user(self, tg_id: int):

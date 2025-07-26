@@ -16,4 +16,4 @@ def test_dummy_e2e():
         В e2e-тестах использование assert допустимо, так как pytest корректно
         обрабатывает AssertionError.
     """
-    assert "e2e" in "e2e test"  # nosec S101: допустимо в тестах pytest
+    assert "e2e" in "e2e test"  #noqa S101: допустимо в тестах pytest

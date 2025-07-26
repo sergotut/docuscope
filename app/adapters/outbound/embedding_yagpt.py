@@ -9,7 +9,7 @@ import structlog
 logger = structlog.get_logger()
 
 
-class YandexGPTEmbedding
+class YandexGPTEmbedding:
     """
     Адаптер для генерации эмбеддингов текстов с помощью YandexGPT Embeddings API.
     """

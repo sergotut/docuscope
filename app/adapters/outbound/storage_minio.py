@@ -11,9 +11,7 @@ logger = structlog.get_logger()
 
 
 class MinIOStorage:
-    """
-    Адаптер для работы с хранилищем файлов MinIO.
-    """
+    """ Адаптер для работы с хранилищем файлов MinIO. """
     
     def __init__(self, endpoint, access_key, secret_key):
         """

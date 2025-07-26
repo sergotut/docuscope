@@ -10,7 +10,7 @@ import structlog
 logger = structlog.get_logger()
 
 
-def seed
+def seed():
     """
     Создаёт и загружает тестовые (демонстрационные) контракты.
 
