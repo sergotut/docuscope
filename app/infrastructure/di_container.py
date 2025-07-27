@@ -1,20 +1,23 @@
-"""
-Главный DI-контейнер приложения.
+"""Главный DI-контейнер приложения.
 
 Работает с новой структурой settings и structlog.
 """
 
-import structlog
-import logging
 import time
+
+import structlog
 from dependency_injector import containers, providers
 
 from app.core.settings import settings
-from .di_mappings import EMBEDDERS, LLMS, VSTORES, OCRS, STORAGES
+
+from .di_mappings import EMBEDDERS, LLMS, OCRS, STORAGES, VSTORES
 
 logger = structlog.get_logger(__name__)
 
-def _selector(attr_name: str, mapping: dict[str, type], category: str) -> providers.Provider:
+
+def _selector(
+    attr_name: str, mapping: dict[str, type], category: str
+) -> providers.Provider:
     def get_key():
         # ai секция: embedder, llm_provider, vector_backend
         # storage секция: storage_backend
@@ -26,7 +29,9 @@ def _selector(attr_name: str, mapping: dict[str, type], category: str) -> provid
         )
         if val not in mapping:
             logger.warning(
-                "DI: Неизвестный ключ для %s, используется NullObject", category, key=val
+                "DI: Неизвестный ключ для %s, используется NullObject",
+                category,
+                key=val,
             )
             return "null"
         return val
@@ -38,12 +43,15 @@ def _selector(attr_name: str, mapping: dict[str, type], category: str) -> provid
                 obj = super().__call__(*args, **kwargs)
                 logger.info(
                     "DI: %s(%s) создан",
-                    category, key=get_key(),
-                    time_ms=(time.monotonic()-start)*1000
+                    category,
+                    key=get_key(),
+                    time_ms=(time.monotonic() - start) * 1000,
                 )
                 return obj
             except Exception as ex:
-                logger.exception("DI: Ошибка создания %s(%s): %s", category, get_key(), ex)
+                logger.exception(
+                    "DI: Ошибка создания %s(%s): %s", category, get_key(), ex
+                )
                 raise
 
     return providers.Selector(
@@ -51,9 +59,9 @@ def _selector(attr_name: str, mapping: dict[str, type], category: str) -> provid
         **{key: LoggingProvider(cls) for key, cls in mapping.items()},
     )
 
+
 class Container(containers.DeclarativeContainer):
-    """
-    Главный DI-контейнер приложения.
+    """Главный DI-контейнер приложения.
 
     Использует DI-обёртки и новую структуру настроек.
     """

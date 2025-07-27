@@ -1,11 +1,11 @@
-"""
-Telegram-бот для сервиса 'Документоскоп'.
+"""Telegram-бот для сервиса 'Документоскоп'.
 
 Реализует прием документов от пользователя, запуск анализа через Celery,
 и отправку статуса/результата пользователю в Telegram. Поддерживает трекинг задач.
 """
 
 import asyncio
+
 import structlog
 from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties
@@ -28,8 +28,7 @@ dp = Dispatcher()
 
 @dp.message()
 async def handle_message(message: types.Message):
-    """
-    Обрабатывает входящее сообщение пользователя Telegram-бота.
+    """Обрабатывает входящее сообщение пользователя Telegram-бота.
 
     Если сообщение содержит документ, инициирует его обработку через Celery и
     регистрирует задачу для последующего отслеживания статуса.
@@ -67,8 +66,7 @@ async def handle_message(message: types.Message):
 
 
 async def main():
-    """
-    Основная точка входа для запуска Telegram-бота.
+    """Основная точка входа для запуска Telegram-бота.
 
     Запускает задачу трекинга Celery и polling dispatcher для обработки
     входящих сообщений.

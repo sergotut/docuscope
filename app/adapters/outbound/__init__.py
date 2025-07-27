@@ -1,3 +1,1 @@
-"""
-Пакет outbound-адаптеров: embedding, llm, ocr, storage, vector.
-"""
+"""Пакет outbound-адаптеров: embedding, llm, ocr, storage, vector."""

@@ -1,5 +1,4 @@
-"""
-Конфигуратор логирования для «Документоскопа».
+"""Конфигуратор логирования для «Документоскопа».
 
 Работает с AppSettings (где секции: LoggingSettings, etc).
 Автоматически подхватывает service_name, env, file/pretty-режим и уровни.
@@ -15,17 +14,20 @@ import structlog
 if TYPE_CHECKING:
     from app.core.settings import AppSettings
 
+
 def service_metadata(settings):
     """Processor для добавления service и env в каждый лог."""
+
     def _processor(logger, method_name, event_dict):
         event_dict["service"] = getattr(settings, "service_name", "docuscope")
         event_dict["env"] = getattr(settings, "app_env", "prod")
         return event_dict
+
     return _processor
 
+
 def init_logging(settings: "AppSettings") -> None:
-    """
-    Инициализирует логирование согласно settings.logging.
+    """Инициализирует логирование согласно settings.logging.
 
     Args:
         settings (AppSettings): Конфигурация приложения (с секцией logging).
@@ -72,6 +74,7 @@ def init_logging(settings: "AppSettings") -> None:
     # OpenTelemetry trace_id (если есть)
     try:
         from structlog_opentelemetry.processors import add_trace_context
+
         processors.append(add_trace_context)
     except ImportError:
         pass
@@ -95,4 +98,5 @@ def init_logging(settings: "AppSettings") -> None:
             "Uncaught exception",
             exc_info=(exc_type, exc_value, exc_traceback),
         )
+
     sys.excepthook = global_excepthook

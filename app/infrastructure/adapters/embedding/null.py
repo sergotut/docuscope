@@ -1,11 +1,11 @@
-"""
-Null-обёртка для эмбеддера.
-"""
+"""Null-обёртка для эмбеддера."""
 
 import structlog
+
 from app.infrastructure.protocols import EmbeddingPort
 
 logger = structlog.get_logger(__name__)
+
 
 class NullEmbedder(EmbeddingPort):
     """Заглушка для эмбеддера."""

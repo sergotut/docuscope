@@ -1,27 +1,28 @@
-"""
-DI-обёртка для эмбеддера Sentence Transformers.
+"""DI-обёртка для эмбеддера Sentence Transformers.
 
 Использует settings.ai.st_model и structlog.
 """
 
 import structlog
-from app.adapters.outbound.embedding.sentence_transformers import SentenceTransformersEmbedding
+
+from app.adapters.outbound.embedding.sentence_transformers import (
+    SentenceTransformersEmbedding,
+)
 from app.core.settings import settings
 from app.infrastructure.protocols import EmbeddingPort
 
 logger = structlog.get_logger(__name__)
 
+
 class SentenceTransformersEmbeddingAdapter(
-    SentenceTransformersEmbedding,
-    EmbeddingPort
+    SentenceTransformersEmbedding, EmbeddingPort
 ):
     """DI-адаптер для Sentence Transformers Embedding."""
 
     def __init__(self) -> None:
         super().__init__(model_name=settings.ai.st_model)
         logger.info(
-            "Создан SentenceTransformersEmbeddingAdapter",
-            model=settings.ai.st_model
+            "Создан SentenceTransformersEmbeddingAdapter", model=settings.ai.st_model
         )
 
     def is_healthy(self) -> bool:

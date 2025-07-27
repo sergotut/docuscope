@@ -1,9 +1,9 @@
-"""
-Секция настроек Telegram-бота.
-"""
+"""Секция настроек Telegram-бота."""
+
+from pydantic import Field
 
 from .base import SettingsBase
-from pydantic import Field
+
 
 class TelegramSettings(SettingsBase):
     """Настройки Telegram-бота."""

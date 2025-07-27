@@ -1,9 +1,7 @@
-"""
-DI-адаптеры OCR.
-"""
+"""DI-адаптеры OCR."""
 
-from .paddle import PaddleOCRAdapterPort
 from .null import NullOCR
+from .paddle import PaddleOCRAdapterPort
 
 __all__ = [
     "PaddleOCRAdapterPort",

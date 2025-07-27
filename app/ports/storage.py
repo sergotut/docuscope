@@ -1,4 +1,4 @@
-""" Порт для внешнего хранения файлов. """
+"""Порт для внешнего хранения файлов."""
 
 from __future__ import annotations
 
@@ -7,8 +7,7 @@ from pathlib import Path
 
 
 class StoragePort(ABC):
-    """
-    Абстракция хранилища документов.
+    """Абстракция хранилища документов.
 
     Methods:
         save: Сохраняет файл и возвращает его ID.
@@ -18,8 +17,7 @@ class StoragePort(ABC):
 
     @abstractmethod
     async def save(self, file_path: Path, content: bytes) -> str:
-        """
-        Сохраняет файл.
+        """Сохраняет файл.
 
         Args:
             file_path (Path): Местоположение оригинального файла.
@@ -32,8 +30,7 @@ class StoragePort(ABC):
 
     @abstractmethod
     async def load(self, file_id: str) -> bytes:
-        """
-        Возвращает содержимое файла по ID.
+        """Возвращает содержимое файла по ID.
 
         Args:
             file_id (str): Уникальный идентификатор файла.
@@ -45,8 +42,7 @@ class StoragePort(ABC):
 
     @abstractmethod
     async def delete(self, file_id: str) -> None:
-        """
-        Удаляет файл.
+        """Удаляет файл.
 
         Args:
             file_id (str): Уникальный идентификатор файла.

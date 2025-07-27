@@ -1,4 +1,4 @@
-""" Порт для работы с моделями эмбеддингов. """
+"""Порт для работы с моделями эмбеддингов."""
 
 from __future__ import annotations
 
@@ -6,8 +6,7 @@ from abc import ABC, abstractmethod
 
 
 class EmbeddingPort(ABC):
-    """
-    Абстракция генерации эмбеддингов.
+    """Абстракция генерации эмбеддингов.
 
     Methods:
         embed: Асинхронно генерирует векторные представления для списка текстов.
@@ -15,8 +14,7 @@ class EmbeddingPort(ABC):
 
     @abstractmethod
     async def embed(self, texts: list[str]) -> list[list[float]]:
-        """
-        Генерирует эмбеддинги для списка строк.
+        """Генерирует эмбеддинги для списка строк.
 
         Args:
             texts (list[str]): Список входных строк.

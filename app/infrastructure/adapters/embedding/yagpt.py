@@ -1,15 +1,16 @@
-"""
-DI-обёртка для эмбеддера YandexGPT.
+"""DI-обёртка для эмбеддера YandexGPT.
 
 Использует settings (settings.ai.ygpt_key) и structlog.
 """
 
 import structlog
+
 from app.adapters.outbound.embedding.yagpt import YandexGPTEmbedding
 from app.core.settings import settings
 from app.infrastructure.protocols import EmbeddingPort
 
 logger = structlog.get_logger(__name__)
+
 
 class YAGPTEmbeddingAdapter(YandexGPTEmbedding, EmbeddingPort):
     """DI-адаптер для YandexGPT Embedding."""

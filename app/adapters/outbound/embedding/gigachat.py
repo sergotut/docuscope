@@ -1,6 +1,5 @@
-"""
-Адаптер эмбеддера Sber GigaChat.
-"""
+"""Адаптер эмбеддера Sber GigaChat."""
+
 
 class SberGigaChatEmbedding:
     """Класс для эмбеддинга через Sber GigaChat.
@@ -13,8 +12,7 @@ class SberGigaChatEmbedding:
         self.api_key = api_key
 
     def embed(self, texts):
-        """
-        Получает эмбеддинги с помощью GigaChat.
+        """Получает эмбеддинги с помощью GigaChat.
 
         Args:
             texts (list[str]): Список текстов.

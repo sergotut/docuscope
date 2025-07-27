@@ -1,6 +1,4 @@
-"""
-DI-адаптеры хранилищ файлов.
-"""
+"""DI-адаптеры хранилищ файлов."""
 
 from .minio import MinIOStorageAdapter
 from .null import NullStorage

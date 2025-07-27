@@ -1,9 +1,9 @@
-"""
-Секция настроек PostgreSQL.
-"""
+"""Секция настроек PostgreSQL."""
+
+from pydantic import Field
 
 from .base import SettingsBase
-from pydantic import Field
+
 
 class PostgresSettings(SettingsBase):
     """Настройки подключения к PostgreSQL."""

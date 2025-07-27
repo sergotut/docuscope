@@ -1,11 +1,11 @@
-"""
-Null-обёртка для векторного хранилища.
-"""
+"""Null-обёртка для векторного хранилища."""
 
 import structlog
+
 from app.infrastructure.protocols import VectorStorePort
 
 logger = structlog.get_logger(__name__)
+
 
 class NullVectorStore(VectorStorePort):
     """Заглушка для векторного хранилища."""

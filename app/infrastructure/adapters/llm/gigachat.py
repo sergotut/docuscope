@@ -1,13 +1,13 @@
-"""
-DI-обёртка для LLM Sber GigaChat.
-"""
+"""DI-обёртка для LLM Sber GigaChat."""
 
 import structlog
+
 from app.adapters.outbound.llm.gigachat import SberGigaChatLLM
 from app.core.settings import settings
 from app.infrastructure.protocols import LLMPort
 
 logger = structlog.get_logger(__name__)
+
 
 class SberGigaChatLLMAdapter(SberGigaChatLLM, LLMPort):
     """DI-адаптер для Sber GigaChat LLM."""

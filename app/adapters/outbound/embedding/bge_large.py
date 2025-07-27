@@ -1,6 +1,5 @@
-"""
-Адаптер эмбеддера BGE Large.
-"""
+"""Адаптер эмбеддера BGE Large."""
+
 
 class BGELargeEmbedding:
     """Класс для эмбеддинга через BGE Large.
@@ -13,8 +12,7 @@ class BGELargeEmbedding:
         self.model_name = model_name
 
     def embed(self, texts):
-        """
-        Получает эмбеддинги с помощью BGE Large.
+        """Получает эмбеддинги с помощью BGE Large.
 
         Args:
             texts (list[str]): Список текстов.

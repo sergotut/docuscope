@@ -1,12 +1,13 @@
-"""
-Null-обёртка для OCR.
-"""
+"""Null-обёртка для OCR."""
 
-import structlog
-from app.infrastructure.protocols import OCRPort
 from pathlib import Path
 
+import structlog
+
+from app.infrastructure.protocols import OCRPort
+
 logger = structlog.get_logger(__name__)
+
 
 class NullOCR(OCRPort):
     """Заглушка для OCR."""

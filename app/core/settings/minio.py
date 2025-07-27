@@ -1,9 +1,9 @@
-"""
-Секция настроек MinIO.
-"""
+"""Секция настроек MinIO."""
+
+from pydantic import Field
 
 from .base import SettingsBase
-from pydantic import Field
+
 
 class MinioSettings(SettingsBase):
     """Настройки подключения к MinIO."""

@@ -1,14 +1,15 @@
-"""
-DI-обёртка для PaddleOCR.
-"""
+"""DI-обёртка для PaddleOCR."""
 
-import structlog
-from app.adapters.outbound.ocr.paddle import PaddleOCRAdapter
-from app.infrastructure.protocols import OCRPort
 from pathlib import Path
 from typing import cast
 
+import structlog
+
+from app.adapters.outbound.ocr.paddle import PaddleOCRAdapter
+from app.infrastructure.protocols import OCRPort
+
 logger = structlog.get_logger(__name__)
+
 
 class PaddleOCRAdapterPort(PaddleOCRAdapter, OCRPort):
     """DI-адаптер для PaddleOCR."""

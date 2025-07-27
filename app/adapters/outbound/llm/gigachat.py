@@ -1,6 +1,5 @@
-"""
-Адаптер LLM Sber GigaChat.
-"""
+"""Адаптер LLM Sber GigaChat."""
+
 
 class SberGigaChatLLM:
     """Класс для LLM через Sber GigaChat.
@@ -13,8 +12,7 @@ class SberGigaChatLLM:
         self.api_key = api_key
 
     def generate(self, prompt: str):
-        """
-        Генерирует ответ с помощью GigaChat.
+        """Генерирует ответ с помощью GigaChat.
 
         Args:
             prompt (str): Входной текст.

@@ -1,14 +1,15 @@
-"""
-DI-обёртка для MinIO Storage.
-"""
+"""DI-обёртка для MinIO Storage."""
+
+from typing import cast
 
 import structlog
+
 from app.adapters.outbound.storage.minio import MinIOStorage
 from app.core.settings import settings
 from app.infrastructure.protocols import StoragePort
-from typing import cast
 
 logger = structlog.get_logger(__name__)
+
 
 class MinIOStorageAdapter(MinIOStorage, StoragePort):
     """DI-адаптер для MinIO Storage."""
@@ -20,8 +21,7 @@ class MinIOStorageAdapter(MinIOStorage, StoragePort):
             secret_key=settings.minio.minio_secret_key,
         )
         logger.info(
-            "Создан MinIOStorageAdapter",
-            endpoint=settings.minio.minio_endpoint
+            "Создан MinIOStorageAdapter", endpoint=settings.minio.minio_endpoint
         )
 
     async def save(self, content: bytes, filename: str) -> str:

@@ -1,12 +1,10 @@
-"""
-DI-адаптеры эмбеддеров.
-"""
+"""DI-адаптеры эмбеддеров."""
 
-from .yagpt import YAGPTEmbeddingAdapter
-from .gigachat import SberGigaChatEmbeddingAdapter
 from .bge_large import BGELargeEmbeddingAdapter
-from .sentence_transformers import SentenceTransformersEmbeddingAdapter
+from .gigachat import SberGigaChatEmbeddingAdapter
 from .null import NullEmbedder
+from .sentence_transformers import SentenceTransformersEmbeddingAdapter
+from .yagpt import YAGPTEmbeddingAdapter
 
 __all__ = [
     "YAGPTEmbeddingAdapter",

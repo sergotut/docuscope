@@ -1,11 +1,11 @@
-"""
-Null-обёртка для LLM.
-"""
+"""Null-обёртка для LLM."""
 
 import structlog
+
 from app.infrastructure.protocols import LLMPort
 
 logger = structlog.get_logger(__name__)
+
 
 class NullLLM(LLMPort):
     """Заглушка для LLM."""

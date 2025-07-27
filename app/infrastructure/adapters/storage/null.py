@@ -1,11 +1,11 @@
-"""
-Null-обёртка для хранилища файлов.
-"""
+"""Null-обёртка для хранилища файлов."""
 
 import structlog
+
 from app.infrastructure.protocols import StoragePort
 
 logger = structlog.get_logger(__name__)
+
 
 class NullStorage(StoragePort):
     """Заглушка для хранилища."""

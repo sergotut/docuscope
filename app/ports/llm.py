@@ -1,4 +1,4 @@
-""" Порт для LLM-провайдеров. """
+"""Порт для LLM-провайдеров."""
 
 from __future__ import annotations
 
@@ -6,8 +6,7 @@ from abc import ABC, abstractmethod
 
 
 class LLMPort(ABC):
-    """
-    Абстракция генеративной модели.
+    """Абстракция генеративной модели.
 
     Methods:
         generate: Генерирует ответ на заданный prompt.
@@ -15,8 +14,7 @@ class LLMPort(ABC):
 
     @abstractmethod
     async def generate(self, prompt: str, temperature: float = 0.2) -> str:
-        """
-        Генерирует ответ на указанный prompt.
+        """Генерирует ответ на указанный prompt.
 
         Args:
             prompt (str): Текст запроса к модели.

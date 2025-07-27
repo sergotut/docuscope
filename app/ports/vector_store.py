@@ -1,4 +1,4 @@
-""" Порт для векторных БД / поисковых движков. """
+"""Порт для векторных БД / поисковых движков."""
 
 from __future__ import annotations
 
@@ -7,8 +7,7 @@ from typing import Any
 
 
 class VectorStorePort(ABC):
-    """
-    Абстракция для upsert-операций и гибридного поиска.
+    """Абстракция для upsert-операций и гибридного поиска.
 
     Methods:
         upsert: Сохраняет эмбеддинги вместе с метаданными.
@@ -21,8 +20,7 @@ class VectorStorePort(ABC):
         vectors: list[list[float]],
         metadatas: list[dict[str, Any]],
     ) -> None:
-        """
-        Сохраняет эмбеддинги вместе с метаданными.
+        """Сохраняет эмбеддинги вместе с метаданными.
 
         Args:
             vectors (list[list[float]]): Векторы документов.
@@ -32,8 +30,7 @@ class VectorStorePort(ABC):
 
     @abstractmethod
     async def hybrid_search(self, query: str, top_k: int) -> list[dict[str, Any]]:
-        """
-        Возвращает топ-k релевантных документов.
+        """Возвращает топ-k релевантных документов.
 
         Args:
             query (str): Текстовый поисковый запрос.

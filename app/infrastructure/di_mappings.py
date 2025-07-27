@@ -1,22 +1,20 @@
-"""
-Маппинг ключей настроек на DI-обёртки для DI-контейнера.
-"""
+"""Маппинг ключей настроек на DI-обёртки для DI-контейнера."""
 
 from app.infrastructure.adapters.embedding import (
-    YAGPTEmbeddingAdapter,
-    SberGigaChatEmbeddingAdapter,
     BGELargeEmbeddingAdapter,
-    SentenceTransformersEmbeddingAdapter,
     NullEmbedder,
+    SberGigaChatEmbeddingAdapter,
+    SentenceTransformersEmbeddingAdapter,
+    YAGPTEmbeddingAdapter,
 )
 from app.infrastructure.adapters.llm import (
-    YaGPTLLMAdapter,
-    SberGigaChatLLMAdapter,
     NullLLM,
+    SberGigaChatLLMAdapter,
+    YaGPTLLMAdapter,
 )
-from app.infrastructure.adapters.vector import QdrantVectorStoreAdapter, NullVectorStore
-from app.infrastructure.adapters.ocr import PaddleOCRAdapterPort, NullOCR
+from app.infrastructure.adapters.ocr import NullOCR, PaddleOCRAdapterPort
 from app.infrastructure.adapters.storage import MinIOStorageAdapter, NullStorage
+from app.infrastructure.adapters.vector import NullVectorStore, QdrantVectorStoreAdapter
 
 EMBEDDERS = {
     "yagpt": YAGPTEmbeddingAdapter,

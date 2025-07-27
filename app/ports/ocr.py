@@ -1,4 +1,4 @@
-""" Порт для OCR-сервисов. """
+"""Порт для OCR-сервисов."""
 
 from __future__ import annotations
 
@@ -7,8 +7,7 @@ from pathlib import Path
 
 
 class OCRPort(ABC):
-    """
-    Абстракция извлечения текста из файлов.
+    """Абстракция извлечения текста из файлов.
 
     Methods:
         extract_text: Асинхронно извлекает текст из файла.
@@ -16,8 +15,7 @@ class OCRPort(ABC):
 
     @abstractmethod
     async def extract_text(self, file_path: Path) -> str:
-        """
-        Извлекает текст из файла.
+        """Извлекает текст из файла.
 
         Args:
             file_path (Path): Путь к файлу (PDF, DOCX, изображение).

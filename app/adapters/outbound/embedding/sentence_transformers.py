@@ -1,6 +1,5 @@
-"""
-Адаптер эмбеддера Sentence Transformers.
-"""
+"""Адаптер эмбеддера Sentence Transformers."""
+
 
 class SentenceTransformersEmbedding:
     """Класс для эмбеддинга через Sentence Transformers.
@@ -13,8 +12,7 @@ class SentenceTransformersEmbedding:
         self.model_name = model_name
 
     def embed(self, texts):
-        """
-        Получает эмбеддинги с помощью Sentence Transformers.
+        """Получает эмбеддинги с помощью Sentence Transformers.
 
         Args:
             texts (list[str]): Список текстов.

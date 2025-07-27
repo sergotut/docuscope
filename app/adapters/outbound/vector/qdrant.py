@@ -1,6 +1,5 @@
-"""
-Адаптер для Qdrant Vector Store.
-"""
+"""Адаптер для Qdrant Vector Store."""
+
 
 class QdrantVectorStore:
     """Класс для работы с Qdrant.
@@ -13,8 +12,7 @@ class QdrantVectorStore:
         self.url = url
 
     def upsert(self, vectors, payloads):
-        """
-        Загружает векторы в Qdrant.
+        """Загружает векторы в Qdrant.
 
         Args:
             vectors (list[list[float]]): Векторы.
@@ -24,8 +22,7 @@ class QdrantVectorStore:
         pass
 
     def hybrid_search(self, query: str, top_k: int):
-        """
-        Выполняет гибридный поиск по Qdrant.
+        """Выполняет гибридный поиск по Qdrant.
 
         Args:
             query (str): Поисковый запрос.

@@ -1,9 +1,7 @@
-"""
-DI-адаптеры векторных хранилищ.
-"""
+"""DI-адаптеры векторных хранилищ."""
 
-from .qdrant import QdrantVectorStoreAdapter
 from .null import NullVectorStore
+from .qdrant import QdrantVectorStoreAdapter
 
 __all__ = [
     "QdrantVectorStoreAdapter",

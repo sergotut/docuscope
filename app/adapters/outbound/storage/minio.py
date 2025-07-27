@@ -1,6 +1,5 @@
-"""
-Адаптер для MinIO-хранилища.
-"""
+"""Адаптер для MinIO-хранилища."""
+
 
 class MinIOStorage:
     """Класс для работы с MinIO-хранилищем.
@@ -17,8 +16,7 @@ class MinIOStorage:
         self.secret_key = secret_key
 
     def upload(self, content: bytes, filename: str):
-        """
-        Загружает файл в MinIO.
+        """Загружает файл в MinIO.
 
         Args:
             content (bytes): Содержимое файла.
@@ -31,8 +29,7 @@ class MinIOStorage:
         pass
 
     def download(self, file_id: str):
-        """
-        Загружает файл из MinIO.
+        """Загружает файл из MinIO.
 
         Args:
             file_id (str): Идентификатор файла.
@@ -44,8 +41,7 @@ class MinIOStorage:
         pass
 
     def remove(self, file_id: str):
-        """
-        Удаляет файл из MinIO.
+        """Удаляет файл из MinIO.
 
         Args:
             file_id (str): Идентификатор файла.

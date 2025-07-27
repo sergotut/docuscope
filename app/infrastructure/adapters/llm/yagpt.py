@@ -1,13 +1,13 @@
-"""
-DI-обёртка для LLM YandexGPT.
-"""
+"""DI-обёртка для LLM YandexGPT."""
 
 import structlog
+
 from app.adapters.outbound.llm.yagpt import YaGPTLLM
 from app.core.settings import settings
 from app.infrastructure.protocols import LLMPort
 
 logger = structlog.get_logger(__name__)
+
 
 class YaGPTLLMAdapter(YaGPTLLM, LLMPort):
     """DI-адаптер для LLM YandexGPT."""

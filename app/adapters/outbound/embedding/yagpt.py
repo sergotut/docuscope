@@ -1,5 +1,4 @@
-"""
-Модуль для работы с эмбеддингами через YandexGPT.
+"""Модуль для работы с эмбеддингами через YandexGPT.
 
 Реализует адаптер для получения векторных представлений текста.
 """
@@ -13,8 +12,7 @@ class YandexGPTEmbedding:
     """Адаптер для генерации эмбеддингов с помощью YandexGPT Embeddings API."""
 
     def __init__(self, key: str):
-        """
-        Инициализация адаптера эмбеддингов YandexGPT.
+        """Инициализация адаптера эмбеддингов YandexGPT.
 
         Args:
             key (str): API-ключ для доступа к сервису YandexGPT.
@@ -22,8 +20,7 @@ class YandexGPTEmbedding:
         self.key = key
 
     def embed(self, texts: list[str]) -> list[list[float]]:
-        """
-        Получает эмбеддинги для списка текстов.
+        """Получает эмбеддинги для списка текстов.
 
         Args:
             texts (list[str]): Список строк для преобразования в эмбеддинги.
