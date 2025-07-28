@@ -12,7 +12,7 @@ class SentenceTransformersEmbedding:
         """Инициализация адаптера эмбеддингов.
 
         Args:
-            model_path (str): Путь к локальной модели.
+            model_name (str): Имя модели эмбеддинга.
         """
         self.model_name = model_name
 

@@ -30,7 +30,7 @@ def _selector(
     """
     def get_key():
         """Извлекает ключ из соответствующего namespace в settings.
-        
+
         ai секция: embedder, llm_provider, vector_backend
         storage секция: storage_backend
         ocr секция: ocr_provider

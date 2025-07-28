@@ -12,8 +12,7 @@ class QdrantVectorStore:
         """Создаёт подключение к Qdrant.
 
         Args:
-            host (str): Хост сервиса Qdrant.
-            port (int): Порт подключения.
+            url (str): url путь до сервиса Qdrant.
         """
         self.url = url
 
