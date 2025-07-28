@@ -15,11 +15,24 @@ class PaddleOCRAdapterPort(PaddleOCRAdapter, OCRPort):
     """DI-адаптер для PaddleOCR."""
 
     def extract_text(self, file_path: Path) -> str:
+        """Извлекает текст из файла с помощью PaddleOCR.
+
+        Args:
+            file_path (Path): Путь к файлу.
+
+        Returns:
+            str: Распознанный текст.
+        """
         logger.debug("OCR: extract_text", file=str(file_path))
         with Path(file_path).open("rb") as fh:
             return cast(str, self.ocr(fh.read()))
 
     def is_healthy(self) -> bool:
+        """Проверяет доступность PaddleOCR.
+
+        Returns:
+            bool: True, если ошибок не возникло.
+        """
         try:
             logger.debug("Проверка is_healthy для PaddleOCRAdapterPort")
             return True

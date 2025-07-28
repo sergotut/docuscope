@@ -9,6 +9,11 @@ class SberGigaChatEmbedding:
     """
 
     def __init__(self, api_key: str):
+        """Инициализация адаптера эмбеддингов GigaChat.
+
+        Args:
+            api_key (str): API-ключ для доступа к GigaChat.
+        """
         self.api_key = api_key
 
     def embed(self, texts):

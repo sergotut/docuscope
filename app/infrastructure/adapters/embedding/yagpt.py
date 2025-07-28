@@ -16,11 +16,16 @@ class YAGPTEmbeddingAdapter(YandexGPTEmbedding, EmbeddingPort):
     """DI-адаптер для YandexGPT Embedding."""
 
     def __init__(self) -> None:
+        """Создаёт и логгирует адаптер YAGPT Embedding с конфигурацией из settings."""
         super().__init__(key=settings.ai.ygpt_key)
         logger.info("Создан YAGPTEmbeddingAdapter", key=settings.ai.ygpt_key)
 
     def is_healthy(self) -> bool:
-        """Проверяет доступность сервиса."""
+        """Проверяет доступность адаптера.
+
+        Returns:
+            bool: True, если ошибок не возникло.
+        """
         try:
             logger.debug("Проверка is_healthy для YAGPTEmbedding")
             return True

@@ -1,1 +1,4 @@
-"""Пакет эмбеддинг-адаптеров (YandexGPT, Sber GigaChat, BGE Large, Sentence Transformers)."""
+"""Пакет эмбеддинг-адаптеров.
+
+Все адаптеры реализуют интерфейс EmbeddingPort.
+"""

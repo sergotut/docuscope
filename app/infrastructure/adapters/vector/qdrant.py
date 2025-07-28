@@ -13,6 +13,7 @@ class QdrantVectorStoreAdapter(QdrantVectorStore, VectorStorePort):
     """DI-адаптер для Qdrant Vector Store."""
 
     def __init__(self) -> None:
+        """Создаёт адаптер с URL из ENV и логирует его."""
         super().__init__(
             url=getattr(settings.ai, "qdrant_url", "http://localhost:6333")
         )
@@ -22,6 +23,11 @@ class QdrantVectorStoreAdapter(QdrantVectorStore, VectorStorePort):
         )
 
     def is_healthy(self) -> bool:
+        """Проверка доступности Qdrant.
+
+        Returns:
+            bool: True, если нет исключений.
+        """
         try:
             logger.debug("Проверка is_healthy для QdrantVectorStoreAdapter")
             return True

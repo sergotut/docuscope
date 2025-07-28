@@ -54,9 +54,9 @@ services:
     image: postgres:16.5-alpine3.19
     restart: unless-stopped
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: docs
+      POSTGRES_USER: docu
+      POSTGRES_PASSWORD: pass123
+      POSTGRES_DB: docuscope
     ports:
       - "5432:5432"
     volumes:

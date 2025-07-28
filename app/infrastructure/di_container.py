@@ -18,10 +18,23 @@ logger = structlog.get_logger(__name__)
 def _selector(
     attr_name: str, mapping: dict[str, type], category: str
 ) -> providers.Provider:
+    """Создаёт DI Selector с логгированием и защитой от ошибок.
+
+    Args:
+        attr_name (str): Имя параметра в конфиге (например, "embedder").
+        mapping (dict[str, type]): Сопоставление ключа и класса.
+        category (str): Название категории (для логов).
+
+    Returns:
+        providers.Provider: Selector-провайдер с логированием.
+    """
     def get_key():
-        # ai секция: embedder, llm_provider, vector_backend
-        # storage секция: storage_backend
-        # ocr секция: ocr_provider
+        """Извлекает ключ из соответствующего namespace в settings.
+        
+        ai секция: embedder, llm_provider, vector_backend
+        storage секция: storage_backend
+        ocr секция: ocr_provider
+        """
         val = (
             getattr(settings.ai, attr_name, None)
             or getattr(settings.minio, attr_name, None)
@@ -37,7 +50,17 @@ def _selector(
         return val
 
     class LoggingProvider(providers.Singleton):
+        """Провайдер, логирующий время создания объекта."""
+        
         def __call__(self, *args, **kwargs):
+            """Создаёт и возвращает экземпляр провайдера с логированием.
+
+            Args:
+                *args: Позиционные аргументы, переданные в класс.
+                **kwargs: Именованные аргументы, переданные в класс.
+            Returns:
+                Any: Экземпляр класса, обёрнутый в логирование.
+            """
             start = time.monotonic()
             try:
                 obj = super().__call__(*args, **kwargs)
@@ -75,6 +98,11 @@ class Container(containers.DeclarativeContainer):
     storage = _selector("storage_backend", STORAGES, "storage")
 
     def health(self) -> dict:
+        """Проверяет здоровье всех зарегистрированных компонентов.
+
+        Returns:
+            dict: Статус по каждому компоненту (True/False).
+        """
         result = {}
         for name, prov in [
             ("embedding", self.embedding),

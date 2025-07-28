@@ -9,6 +9,11 @@ class BGELargeEmbedding:
     """
 
     def __init__(self, model_name: str):
+        """Инициализация адаптера эмбеддингов bge_large.
+
+        Args:
+            model_name (str): Название модели из Hugging Face.
+        """
         self.model_name = model_name
 
     def embed(self, texts):

@@ -9,6 +9,12 @@ class QdrantVectorStore:
     """
 
     def __init__(self, url: str):
+        """Создаёт подключение к Qdrant.
+
+        Args:
+            host (str): Хост сервиса Qdrant.
+            port (int): Порт подключения.
+        """
         self.url = url
 
     def upsert(self, vectors, payloads):

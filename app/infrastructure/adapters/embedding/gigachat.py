@@ -16,12 +16,18 @@ class SberGigaChatEmbeddingAdapter(SberGigaChatEmbedding, EmbeddingPort):
     """DI-адаптер для Sber GigaChat Embedding."""
 
     def __init__(self) -> None:
+        """Создаёт и логгирует адаптер Sber GigaChat с API-ключом из settings."""
         super().__init__(api_key=settings.ai.gigachat_key)
         logger.info(
             "Создан SberGigaChatEmbeddingAdapter", api_key=settings.ai.gigachat_key
         )
 
     def is_healthy(self) -> bool:
+        """Проверяет доступность адаптера.
+
+        Returns:
+            bool: True, если ошибок не возникло.
+        """
         try:
             logger.debug("Проверка is_healthy для SberGigaChatEmbedding")
             return True

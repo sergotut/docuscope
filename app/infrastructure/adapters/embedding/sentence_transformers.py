@@ -20,12 +20,18 @@ class SentenceTransformersEmbeddingAdapter(
     """DI-адаптер для Sentence Transformers Embedding."""
 
     def __init__(self) -> None:
+        """Создаёт адаптер с моделью из настроек и логгирует запуск."""
         super().__init__(model_name=settings.ai.st_model)
         logger.info(
             "Создан SentenceTransformersEmbeddingAdapter", model=settings.ai.st_model
         )
 
     def is_healthy(self) -> bool:
+        """Проверка готовности эмбеддера.
+
+        Returns:
+            bool: True, если нет ошибок.
+        """
         try:
             logger.debug("Проверка is_healthy для SentenceTransformersEmbedding")
             return True

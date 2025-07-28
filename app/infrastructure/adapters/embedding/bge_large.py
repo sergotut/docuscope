@@ -16,12 +16,18 @@ class BGELargeEmbeddingAdapter(BGELargeEmbedding, EmbeddingPort):
     """DI-адаптер для BGE Large Embedding."""
 
     def __init__(self) -> None:
+        """Создаёт и логгирует адаптер BGE Large с конфигурацией из settings."""
         super().__init__(model_name=settings.ai.bge_large_model)
         logger.info(
             "Создан BGELargeEmbeddingAdapter", model=settings.ai.bge_large_model
         )
 
     def is_healthy(self) -> bool:
+        """Проверяет доступность адаптера.
+
+        Returns:
+            bool: True, если ошибок не возникло.
+        """
         try:
             logger.debug("Проверка is_healthy для BGELargeEmbedding")
             return True
