@@ -17,7 +17,7 @@ from app.core.settings import settings
 from app.infrastructure.task_queue import celery_app
 
 init_logging(settings)
-logger = structlog.get_logger()
+logger = structlog.get_logger(__name__)
 
 bot = Bot(
     token=settings.telegram_token,

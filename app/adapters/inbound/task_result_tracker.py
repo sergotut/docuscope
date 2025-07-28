@@ -12,7 +12,7 @@ from celery.result import AsyncResult
 
 from app.infrastructure.task_queue import celery_app
 
-logger = structlog.get_logger()
+logger = structlog.get_logger(__name__)
 
 # Храним ID задач, которые нужно отслеживать
 task_registry = {}  # task_id -> chat_id

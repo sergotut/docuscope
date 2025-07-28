@@ -14,13 +14,13 @@
 
 import structlog
 
-from app.adapters.outbound.embedding_yagpt import YandexGPTEmbedding
-from app.adapters.outbound.llm_yagpt import YaGPTLLM
-from app.adapters.outbound.ocr_paddle import PaddleOCRAdapter
-from app.adapters.outbound.vectordb_qdrant import QdrantVectorStore
+from app.adapters.outbound.embedding.yagpt import YandexGPTEmbedding
+from app.adapters.outbound.llm.yagpt import YaGPTLLM
+from app.adapters.outbound.ocr.paddle import PaddleOCRAdapter
+from app.adapters.outbound.vector.qdrant import QdrantVectorStore
 from app.infrastructure.task_queue import celery_app
 
-logger = structlog.get_logger()
+logger = structlog.get_logger(__name__)
 
 
 @celery_app.task(name="app.application.report_service.process_document_task")
@@ -58,7 +58,6 @@ def process_document_task(file_bytes: bytes, filename: str, user_id: int):
         text = PaddleOCRAdapter().ocr(file_bytes)
         task_logger.debug("ocr_complete", text_len=len(text))
 
-        # 2. Разбиваем на чанки длиной 500 символов
         chunks = [text[i : i + 500] for i in range(0, len(text), 500)]
         task_logger.debug("split_into_chunks", chunks=len(chunks))
 

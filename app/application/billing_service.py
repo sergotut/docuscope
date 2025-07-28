@@ -6,7 +6,7 @@
 
 import structlog
 
-logger = structlog.get_logger()
+logger = structlog.get_logger(__name__)
 
 
 class BillingService:

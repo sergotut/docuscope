@@ -1,54 +1,121 @@
-"""DI-контейнер для внедрения зависимостей в сервисе Документоскоп.
+"""Главный DI-контейнер приложения.
 
-Модуль инициализирует контейнер зависимостей (Dependency Injection),
-предоставляющий фабрики и синглтоны для основных компонентов приложения:
-логгер, эмбеддинги, хранилище файлов, векторное хранилище, OCR и LLM.
-
-Все зависимости настраиваются централизованно, что позволяет легко менять
-реализации через ENV-переменные без правок бизнес-логики.
-
-Используется в слоях Application и Outbound (интерфейсные и технические адаптеры).
+Работает с новой структурой settings и structlog.
 """
+
+import time
 
 import structlog
 from dependency_injector import containers, providers
 
-from app.adapters.outbound.embedding_yagpt import YandexGPTEmbedding
-from app.adapters.outbound.llm_yagpt import YaGPTLLM
-from app.adapters.outbound.ocr_paddle import PaddleOCRAdapter
-from app.adapters.outbound.storage_minio import MinIOStorage
-from app.adapters.outbound.vectordb_qdrant import QdrantVectorStore
 from app.core.settings import settings
 
-logger = structlog.get_logger()
+from .di_mappings import EMBEDDERS, LLMS, OCRS, STORAGES, VSTORES
+
+logger = structlog.get_logger(__name__)
+
+
+def _selector(
+    attr_name: str, mapping: dict[str, type], category: str
+) -> providers.Provider:
+    """Создаёт DI Selector с логгированием и защитой от ошибок.
+
+    Args:
+        attr_name (str): Имя параметра в конфиге (например, "embedder").
+        mapping (dict[str, type]): Сопоставление ключа и класса.
+        category (str): Название категории (для логов).
+
+    Returns:
+        providers.Provider: Selector-провайдер с логированием.
+    """
+    def get_key():
+        """Извлекает ключ из соответствующего namespace в settings.
+
+        ai секция: embedder, llm_provider, vector_backend
+        storage секция: storage_backend
+        ocr секция: ocr_provider
+        """
+        val = (
+            getattr(settings.ai, attr_name, None)
+            or getattr(settings.minio, attr_name, None)
+            or getattr(settings, attr_name, "null")
+        )
+        if val not in mapping:
+            logger.warning(
+                "DI: Неизвестный ключ для %s, используется NullObject",
+                category,
+                key=val,
+            )
+            return "null"
+        return val
+
+    class LoggingProvider(providers.Singleton):
+        """Провайдер, логирующий время создания объекта."""
+        
+        def __call__(self, *args, **kwargs):
+            """Создаёт и возвращает экземпляр провайдера с логированием.
+
+            Args:
+                *args: Позиционные аргументы, переданные в класс.
+                **kwargs: Именованные аргументы, переданные в класс.
+            Returns:
+                Any: Экземпляр класса, обёрнутый в логирование.
+            """
+            start = time.monotonic()
+            try:
+                obj = super().__call__(*args, **kwargs)
+                logger.info(
+                    "DI: %s(%s) создан",
+                    category,
+                    key=get_key(),
+                    time_ms=(time.monotonic() - start) * 1000,
+                )
+                return obj
+            except Exception as ex:
+                logger.exception(
+                    "DI: Ошибка создания %s(%s): %s", category, get_key(), ex
+                )
+                raise
+
+    return providers.Selector(
+        providers.Callable(get_key),
+        **{key: LoggingProvider(cls) for key, cls in mapping.items()},
+    )
 
 
 class Container(containers.DeclarativeContainer):
-    """DI-контейнер для регистрации всех сервисов Документоскоп.
+    """Главный DI-контейнер приложения.
 
-    Позволяет централизованно инициализировать зависимости:
-    - logger: структурированный логгер structlog
-    - embedding: компонент эмбеддинга текста
-    - vectordb: векторное хранилище (Qdrant)
-    - storage: объектное хранилище (MinIO)
-    - ocr: сервис OCR (PaddleOCR)
-    - llm: Large Language Model (YaGPT)
+    Использует DI-обёртки и новую структуру настроек.
     """
 
-    config = providers.Configuration()
+    wiring_config = containers.WiringConfiguration(packages=["app"])
 
-    logger = providers.Singleton(lambda: logger)
+    embedding = _selector("embedder", EMBEDDERS, "embedder")
+    llm = _selector("llm_provider", LLMS, "llm")
+    vector_store = _selector("vector_backend", VSTORES, "vector_store")
+    ocr = _selector("ocr_provider", OCRS, "ocr")
+    storage = _selector("storage_backend", STORAGES, "storage")
 
-    embedding = providers.Singleton(YandexGPTEmbedding, key=settings.ygpt_key)
-    vectordb = providers.Singleton(QdrantVectorStore, url=settings.vector_backend)
-    storage = providers.Singleton(
-        MinIOStorage,
-        endpoint=settings.minio_endpoint,
-        access_key=settings.minio_access_key,
-        secret_key=settings.minio_secret_key,
-    )
-    ocr = providers.Singleton(PaddleOCRAdapter)
-    llm = providers.Singleton(YaGPTLLM, key=settings.ygpt_key)
+    def health(self) -> dict:
+        """Проверяет здоровье всех зарегистрированных компонентов.
 
-
-container = Container()
+        Returns:
+            dict: Статус по каждому компоненту (True/False).
+        """
+        result = {}
+        for name, prov in [
+            ("embedding", self.embedding),
+            ("llm", self.llm),
+            ("vector_store", self.vector_store),
+            ("ocr", self.ocr),
+            ("storage", self.storage),
+        ]:
+            try:
+                obj = prov()
+                healthy = getattr(obj, "is_healthy", lambda: False)()
+            except Exception as ex:
+                logger.exception("DI: Ошибка health для %s: %s", name, ex)
+                healthy = False
+            result[name] = healthy
+        return result

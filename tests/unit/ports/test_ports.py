@@ -1,11 +1,11 @@
-""" Базовые unit-тесты для проверки структуры портов. """
+"""Базовые unit-тесты для проверки структуры портов."""
 
 from app.ports import (
     EmbeddingPort,
-    OCRPort,
-    VectorStorePort,
     LLMPort,
+    OCRPort,
     StoragePort,
+    VectorStorePort,
 )
 
 
