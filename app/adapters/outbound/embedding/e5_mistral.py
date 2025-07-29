@@ -52,7 +52,7 @@ class E5MistralEmbedding(EmbeddingPort):
         logger.debug("E5 request", url=url, cnt=len(texts))
         
         resp = self._client.post(url, json=payload)
-        resp.raise_for_status())
+        resp.raise_for_status()
 
         embeds = [d["embedding"] for d in resp.json().get("data", [])]
         logger.debug("E5 response", embeddings=len(embeds))

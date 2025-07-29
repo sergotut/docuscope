@@ -125,7 +125,7 @@ class SberGigaChatEmbedding(EmbeddingPort):
             _ = self.embed(["ping"])
             latency = (time.perf_counter() - start) * 1000
             status = "ok"
-        except Exception:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
             logger.warning("GigaChat health error", error=str(exc))
             latency = -1.0
             status = "fail"
