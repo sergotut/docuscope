@@ -3,6 +3,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.dev
+      target: build-runtime
     env_file: ../.env
     restart: unless-stopped
     volumes:

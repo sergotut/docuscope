@@ -14,7 +14,7 @@
 
 import structlog
 
-from app.adapters.outbound.embedding.yagpt import YandexGPTEmbedding
+from app.adapters.outbound.embedding.yagpt import YAGPTEmbedding
 from app.adapters.outbound.llm.yagpt import YaGPTLLM
 from app.adapters.outbound.ocr.paddle import PaddleOCRAdapter
 from app.adapters.outbound.vector.qdrant import QdrantVectorStore
@@ -62,7 +62,7 @@ def process_document_task(file_bytes: bytes, filename: str, user_id: int):
         task_logger.debug("split_into_chunks", chunks=len(chunks))
 
         # 3. Эмбеддинги
-        vectors = YandexGPTEmbedding(key="demo").embed(chunks)
+        vectors = YAGPTEmbedding(key="demo").embed(chunks)
         task_logger.debug("embedding_generated", vectors=len(vectors))
 
         # 4. Сохраняем в Qdrant
