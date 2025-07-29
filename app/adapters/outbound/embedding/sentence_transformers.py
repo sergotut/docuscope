@@ -11,7 +11,6 @@ import asyncio
 import os
 import time
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import structlog
 import torch
@@ -25,7 +24,7 @@ logger = structlog.get_logger(__name__)
 class SentenceTransformersEmbedding(EmbeddingPort):
     """Адаптер Sentence Transformers."""
 
-    _dim: Optional[int] = None
+    _dim: int | None = None
 
     def __init__(
         self,
@@ -55,7 +54,7 @@ class SentenceTransformersEmbedding(EmbeddingPort):
         self._model_mtime = 0.0
         self._load_model()
 
-    def embed(self, texts: list[str], space: str = "semantic") -> List[List[float]]:
+    def embed(self, texts: list[str], space: str = "semantic") -> list[list[float]]:
         """Синхронный подсчёт эмбеддингов.
 
         Args:
@@ -63,11 +62,11 @@ class SentenceTransformersEmbedding(EmbeddingPort):
             space (str): Тип пространства (semantic, retrieval и пр.).
 
         Returns:
-            List[List[float]]: Вектора-эмбеддинги.
+            list[list[float]]: Вектора-эмбеддинги.
         """
         self._reload_if_changed()
         logger.debug("ST embed", cnt=len(texts), space=space)
-        embeddings: List[List[float]] = []
+        embeddings: list[list[float]] = []
 
         for i in range(0, len(texts), self.batch_size):
             batch = texts[i : i + self.batch_size]
@@ -85,7 +84,7 @@ class SentenceTransformersEmbedding(EmbeddingPort):
 
     async def embed_async(
         self, texts: list[str], space: str = "semantic"
-    ) -> List[List[float]]:
+    ) -> list[list[float]]:
         """Асинхронная версия embed с run_in_executor.
 
         Args:
@@ -93,7 +92,7 @@ class SentenceTransformersEmbedding(EmbeddingPort):
             space (str): Тип пространства (по умолчанию semantic).
 
         Returns:
-            List[List[float]]: Эмбеддинги.
+            list[list[float]]: Эмбеддинги.
         """
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, self.embed, texts, space)
@@ -106,7 +105,7 @@ class SentenceTransformersEmbedding(EmbeddingPort):
         """
         return self.health().get("status") == "ok"
 
-    def health(self) -> Dict[str, str | int | float]:
+    def health(self) -> dict[str, str | int | float]:
         """Расширенный health-репорт со статистикой.
 
         Returns:

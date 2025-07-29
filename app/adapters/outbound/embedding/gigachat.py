@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import Dict, List
 
 import httpx
 
@@ -45,7 +44,7 @@ class SberGigaChatEmbedding(EmbeddingPort):
         self._client = httpx.Client(timeout=timeout)
         self._dim: int | None = None
 
-    def embed(self, texts: list[str], space: str = "semantic") -> List[List[float]]:
+    def embed(self, texts: list[str], space: str = "semantic") -> list[list[float]]:
         """Синхронный вызов эмбеддингов через GigaChat API.
 
         Args:
@@ -53,7 +52,7 @@ class SberGigaChatEmbedding(EmbeddingPort):
             space (str): Тип пространства (semantic и т.д.).
 
         Returns:
-            List[List[float]]: Список эмбеддингов.
+            list[list[float]]: Список эмбеддингов.
         """
         hdr = {
             "Authorization": f"Bearer {self.api_key}",
@@ -80,7 +79,7 @@ class SberGigaChatEmbedding(EmbeddingPort):
 
     async def embed_async(
         self, texts: list[str], space: str = "semantic"
-    ) -> List[List[float]]:
+    ) -> list[list[float]]:
         """Асинхронный вызов эмбеддингов.
 
         Args:
@@ -88,7 +87,7 @@ class SberGigaChatEmbedding(EmbeddingPort):
             space (str): Тип пространства (semantic и пр.).
 
         Returns:
-            List[List[float]]: Эмбеддинги.
+            list[list[float]]: Эмбеддинги.
         """
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, self.embed, texts, space)
@@ -101,7 +100,7 @@ class SberGigaChatEmbedding(EmbeddingPort):
         """
         return self.health().get("status") == "ok"
 
-    def health(self) -> Dict[str, str | int | float]:
+    def health(self) -> dict[str, str | int | float]:
         """Подробный отчёт о доступности GigaChat.
 
         Returns:

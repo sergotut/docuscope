@@ -7,7 +7,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Dict, List, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 
 @runtime_checkable
@@ -17,7 +17,7 @@ class EmbeddingPort(Protocol):
     Определяет sync/async интерфейсы и метрики доступности.
     """
 
-    def embed(self, texts: list[str], space: str = "semantic") -> List[List[float]]:
+    def embed(self, texts: list[str], space: str = "semantic") -> list[list[float]]:
         """Синхронный расчёт эмбеддингов.
 
         Args:
@@ -25,13 +25,13 @@ class EmbeddingPort(Protocol):
             space (str): Тип пространства (semantic/retrieval и т.д.).
 
         Returns:
-            List[List[float]]: Вектора-эмбеддинги.
+            list[list[float]]: Вектора-эмбеддинги.
         """
         ...
 
     async def embed_async(
         self, texts: list[str], space: str = "semantic"
-    ) -> List[List[float]]:
+    ) -> list[list[float]]:
         """Асинхронный расчёт эмбеддингов (например, через httpx).
 
         Args:
@@ -39,7 +39,7 @@ class EmbeddingPort(Protocol):
             space (str): Тип embedding-пространства.
 
         Returns:
-            List[List[float]]: Вектора-эмбеддинги.
+            list[list[float]]: Вектора-эмбеддинги.
         """
         ...
 
@@ -51,7 +51,7 @@ class EmbeddingPort(Protocol):
         """
         ...
 
-    def health(self) -> Dict[str, str | int | float]:
+    def health(self) -> dict[str, str | int | float]:
         """Подробный health-репорт.
 
         Стандартные ключи:

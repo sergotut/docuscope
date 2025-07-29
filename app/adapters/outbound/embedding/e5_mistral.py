@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import Dict, List
 
 import httpx
 import structlog
@@ -36,7 +35,7 @@ class E5MistralEmbedding(EmbeddingPort):
         self.model_name = model_name
         self._client = httpx.Client(timeout=timeout)
 
-    def embed(self, texts: list[str], space: str = "semantic") -> List[List[float]]:
+    def embed(self, texts: list[str], space: str = "semantic") -> list[list[float]]:
         """Выполняет sync-запрос на расчёт эмбеддингов.
 
         Args:
@@ -44,7 +43,7 @@ class E5MistralEmbedding(EmbeddingPort):
             space (str): Тип пространства (semantic и пр., игнорируется).
 
         Returns:
-            List[List[float]]: Список эмбеддингов.
+            list[list[float]]: Список эмбеддингов.
         """
         payload = {"model": self.model_name, "input": texts}
         resp = self._client.post(f"{self.host}/embeddings", json=payload)
@@ -53,7 +52,7 @@ class E5MistralEmbedding(EmbeddingPort):
 
     async def embed_async(
         self, texts: list[str], space: str = "semantic"
-    ) -> List[List[float]]:
+    ) -> list[list[float]]:
         """Асинхронный вызов через run_in_executor.
 
         Args:
@@ -61,7 +60,7 @@ class E5MistralEmbedding(EmbeddingPort):
             space (str): Тип пространства (игнорируется).
 
         Returns:
-            List[List[float]]: Эмбеддинги.
+            list[list[float]]: Эмбеддинги.
         """
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, self.embed, texts, space)
@@ -74,7 +73,7 @@ class E5MistralEmbedding(EmbeddingPort):
         """
         return self.health().get("status") == "ok"
 
-    def health(self) -> Dict[str, str | int | float]:
+    def health(self) -> dict[str, str | int | float]:
         """Расширенный health-репорт со статистикой.
 
         Returns:

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import Dict, List
 
 import httpx
 
@@ -51,7 +50,7 @@ class YAGPTEmbedding(EmbeddingPort):
         self._client = httpx.Client(timeout=timeout)
         self._dim: int | None = None
 
-    def embed(self, texts: list[str], space: str = "semantic") -> List[List[float]]:
+    def embed(self, texts: list[str], space: str = "semantic") -> list[list[float]]:
         """Синхронный вызов эмбеддингов через REST.
 
         Args:
@@ -59,7 +58,7 @@ class YAGPTEmbedding(EmbeddingPort):
             space (str): Тип пространства (semantic, retrieval и т.д.).
 
         Returns:
-            List[List[float]]: Список эмбеддингов.
+            list[list[float]]: Список эмбеддингов.
         """
         hdr = {
             "Authorization": f"Api-Key {self.api_key}",
@@ -89,7 +88,7 @@ class YAGPTEmbedding(EmbeddingPort):
 
     async def embed_async(
         self, texts: list[str], space: str = "semantic"
-    ) -> List[List[float]]:
+    ) -> list[list[float]]:
         """Асинхронный вызов эмбеддингов.
 
         Args:
@@ -97,7 +96,7 @@ class YAGPTEmbedding(EmbeddingPort):
             space (str): Тип пространства (semantic и др.).
 
         Returns:
-            List[List[float]]: Список эмбеддингов.
+            list[list[float]]: Список эмбеддингов.
         """
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, self.embed, texts, space)
@@ -110,7 +109,7 @@ class YAGPTEmbedding(EmbeddingPort):
         """
         return self.health().get("status") == "ok"
 
-    def health(self) -> Dict[str, str | int | float]:
+    def health(self) -> dict[str, str | int | float]:
         """Подробный health-репорт по доступности API.
 
         Returns:

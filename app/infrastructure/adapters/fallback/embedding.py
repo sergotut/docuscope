@@ -7,8 +7,6 @@
 
 from __future__ import annotations
 
-from typing import List
-
 import structlog
 
 from app.core.ports import EmbeddingPort
@@ -30,13 +28,17 @@ class FallbackEmbeddingAdapter(EmbeddingPort):
         """
         if not embedders:
             raise ValueError("Нужен хотя бы один embedder")
-        self.embedders: List[EmbeddingPort] = list(embedders)
+        self.embedders: list[EmbeddingPort] = list(embedders)
         logger.info(
             "Создан FallbackEmbeddingAdapter",
             chain=[e.__class__.__name__ for e in self.embedders],
         )
 
-    def embed(self, texts: list[str], space: str = "semantic"):
+    def embed(
+        self,
+        texts: list[str],
+        space: str = "semantic"
+    ) -> list[list[float]]:
         """Пытается вызвать 'embed' по цепочке адаптеров.
 
         Args:
@@ -62,7 +64,11 @@ class FallbackEmbeddingAdapter(EmbeddingPort):
                 last_exc = exc
         raise RuntimeError("Все эмбеддеры упали") from last_exc
 
-    async def embed_async(self, texts: list[str], space: str = "semantic"):
+    async def embed_async(
+        self,
+        texts: list[str],
+        space: str = "semantic"
+    ) -> list[list[float]]:
         """Асинхронный fallback по списку адаптеров.
 
         Args:
