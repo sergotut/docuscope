@@ -39,7 +39,7 @@ class SentenceTransformersEmbedding(EmbeddingPort):
 
         Args:
             model_name (str): Название модели или путь к локальной директории.
-            device (str | None): Устройство инференса (cpu/cuda). По умолчанию автодетект.
+            device (str | None): Устройство инференса (cpu/cuda).
             batch_size (int): Размер батча для инференса.
             dtype (str): Тип тензора ('float32', 'float16', 'bfloat16').
             quantized (bool): Загружать модель в 8-битном режиме (через bitsandbytes).

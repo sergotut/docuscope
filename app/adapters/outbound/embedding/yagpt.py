@@ -8,11 +8,15 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import time
 
 import httpx
+import structlog
 
 from app.core.ports import EmbeddingPort
+
+logger = structlog.get_logger(__name__)
 
 _ENDPOINT = (
     "https://llm.api.cloud.yandex.net/foundationModels/v1/embeddings:embedText"
@@ -49,6 +53,12 @@ class YAGPTEmbedding(EmbeddingPort):
         self.endpoint = endpoint
         self._client = httpx.Client(timeout=timeout)
         self._dim: int | None = None
+        logger.info(
+            "YAGPTEmbedding init",
+            model=model_name,
+            endpoint=self.endpoint,
+            folder_id=folder_id,
+        )
 
     def embed(self, texts: list[str], space: str = "semantic") -> list[list[float]]:
         """Синхронный вызов эмбеддингов через REST.
@@ -68,6 +78,8 @@ class YAGPTEmbedding(EmbeddingPort):
         if self.folder_id:
             hdr["X-Folder-Id"] = self.folder_id
 
+        logger.debug("YaGPT request", cnt=len(texts), space=space)
+        
         resp = self._client.post(
             self.endpoint,
             json={
@@ -83,6 +95,9 @@ class YAGPTEmbedding(EmbeddingPort):
 
         if embeds and self._dim is None:
             self._dim = len(embeds[0])
+            logger.info("YaGPT dim detected", dim=self._dim)
+
+        logger.debug("YaGPT response", embeddings=len(embeds))
 
         return embeds
 
@@ -121,13 +136,17 @@ class YAGPTEmbedding(EmbeddingPort):
             latency = (time.perf_counter() - start) * 1000
             status = "ok"
         except Exception:  # noqa: BLE001
+            logger.warning("YaGPT health error", error=str(exc))
             latency = -1.0
             status = "fail"
-        return {"status": status, "latency_ms": round(latency, 2), "model": self.model_name, "dim": self._dim or -1}
+        return {
+            "status": status,
+            "latency_ms": round(latency, 2),
+            "model": self.model_name,
+            "dim": self._dim or -1
+        }
 
     def __del__(self) -> None:
         """Закрывает http-клиент при удалении экземпляра."""
-        try:
+        with contextlib.suppress(Exception):
             self._client.close()
-        except Exception:  # noqa: BLE001
-            pass

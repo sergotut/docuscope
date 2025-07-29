@@ -7,11 +7,15 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import time
 
 import httpx
+import structlog
 
 from app.core.ports import EmbeddingPort
+
+logger = structlog.get_logger(__name__)
 
 _ENDPOINT = "https://api.gigachat.ru/embeddings/v1"
 
@@ -44,6 +48,12 @@ class SberGigaChatEmbedding(EmbeddingPort):
         self._client = httpx.Client(timeout=timeout)
         self._dim: int | None = None
 
+        logger.info(
+            "GigaChat client init",
+            model=model_name,
+            endpoint=self.endpoint,
+        )
+
     def embed(self, texts: list[str], space: str = "semantic") -> list[list[float]]:
         """Синхронный вызов эмбеддингов через GigaChat API.
 
@@ -59,6 +69,8 @@ class SberGigaChatEmbedding(EmbeddingPort):
             "Content-Type": "application/json"
         }
 
+        logger.debug("GigaChat request", cnt=len(texts), space=space)
+        
         resp = self._client.post(
             self.endpoint,
             json={
@@ -74,7 +86,9 @@ class SberGigaChatEmbedding(EmbeddingPort):
 
         if embeds and self._dim is None:
             self._dim = len(embeds[0])
+            logger.info("GigaChat dim detected", dim=self._dim)
 
+        logger.debug("GigaChat response", embeddings=len(embeds))
         return embeds
 
     async def embed_async(
@@ -112,6 +126,7 @@ class SberGigaChatEmbedding(EmbeddingPort):
             latency = (time.perf_counter() - start) * 1000
             status = "ok"
         except Exception:  # noqa: BLE001
+            logger.warning("GigaChat health error", error=str(exc))
             latency = -1.0
             status = "fail"
         return {
@@ -123,7 +138,5 @@ class SberGigaChatEmbedding(EmbeddingPort):
 
     def __del__(self) -> None:
         """Закрывает HTTP-клиент при удалении экземпляра."""
-        try:
+        with contextlib.suppress(Exception):
             self._client.close()
-        except Exception:  # noqa: BLE001
-            pass

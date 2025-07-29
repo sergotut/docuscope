@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import time
 
 import httpx
@@ -34,6 +35,7 @@ class E5MistralEmbedding(EmbeddingPort):
         self.host = host.rstrip("/")
         self.model_name = model_name
         self._client = httpx.Client(timeout=timeout)
+        logger.info("E5 client init", host=self.host, model=model_name)
 
     def embed(self, texts: list[str], space: str = "semantic") -> list[list[float]]:
         """Выполняет sync-запрос на расчёт эмбеддингов.
@@ -46,9 +48,15 @@ class E5MistralEmbedding(EmbeddingPort):
             list[list[float]]: Список эмбеддингов.
         """
         payload = {"model": self.model_name, "input": texts}
-        resp = self._client.post(f"{self.host}/embeddings", json=payload)
-        resp.raise_for_status()
-        return [d["embedding"] for d in resp.json().get("data", [])]
+        url = f"{self.host}/embeddings"
+        logger.debug("E5 request", url=url, cnt=len(texts))
+        
+        resp = self._client.post(url, json=payload)
+        resp.raise_for_status())
+
+        embeds = [d["embedding"] for d in resp.json().get("data", [])]
+        logger.debug("E5 response", embeddings=len(embeds))
+        return embeds
 
     async def embed_async(
         self, texts: list[str], space: str = "semantic"
@@ -85,6 +93,7 @@ class E5MistralEmbedding(EmbeddingPort):
             latency = (time.perf_counter() - start) * 1000
             status = "ok"
         except Exception:  # noqa: BLE001
+            logger.warning("E5 health error", error=str(exc))
             latency = -1.0
             status = "fail"
         return {
@@ -96,7 +105,5 @@ class E5MistralEmbedding(EmbeddingPort):
 
     def __del__(self) -> None:
         """Закрывает httpx-клиент при удалении."""
-        try:
+        with contextlib.suppress(Exception):
             self._client.close()
-        except Exception:  # noqa: BLE001
-            pass
