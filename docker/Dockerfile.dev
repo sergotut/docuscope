@@ -1,5 +1,5 @@
 # ---------- Build stage: ставим ВСЁ, включая dev ----------
-FROM python:3.11-slim AS builder
+FROM python:3.11-slim AS build-runtime
 
 ARG POETRY_VERSION=1.8.2
 ARG PIP_VERSION=24.0
@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         netcat-openbsd \
         libgl1-mesa-glx \
         libglib2.0-0 \
-        && rm -rf /var/lib/apt/lists/*
+        tini \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
 
@@ -27,6 +28,9 @@ RUN pip install --no-cache-dir "pip==${PIP_VERSION}" setuptools wheel \
 # Кэш: сначала только файлы зависимостей
 COPY pyproject.toml poetry.lock* ./
 
+# Генерируем (или обновляем) lock-файл под новый pyproject.toml
+RUN poetry lock --no-update --no-ansi
+
 # DEV-режим: ставим все группы (+ dev)
 RUN poetry install --with dev --no-interaction --no-ansi
 
@@ -35,30 +39,6 @@ RUN poetry install --with dev --no-interaction --no-ansi
 COPY . .
 RUN pre-commit run --all-files --color=always || true
 
-# ---------- Runtime stage: «толстый» dev-образ ----------
-FROM python:3.11-slim
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        git \
-        docker.io \
-        libgl1-mesa-glx \
-        libglib2.0-0 \
-        tini \
-        && rm -rf /var/lib/apt/lists/*
-
-RUN git config --system --add safe.directory /app
-
-ENV PYTHONUNBUFFERED=1
-
-WORKDIR /app
-
-# Библиотеки и инструменты разработки
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin/* /usr/local/bin/
-
-# Исходники поверх (обновляются при docker volume mount)
-COPY . .
-
 # Непривилегированный пользователь, как в прод-образе
 RUN useradd --create-home --uid 1001 appuser
 USER appuser
@@ -66,7 +46,8 @@ USER appuser
 EXPOSE 8000
 
 # Health-probe указывает на тот же энд-поинт
-HEALTHCHECK --interval=15s --timeout=5s CMD curl -f http://localhost:8000/health || exit 1
+HEALTHCHECK --interval=15s --timeout=5s \
+    CMD curl -f http://localhost:8000/health || exit 1
 
 # ----- ENTRYPOINT для разработки -----
 # Tini → Uvicorn с auto-reload, лог-уровень debug

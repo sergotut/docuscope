@@ -1,7 +1,10 @@
-"""DI-обёртка для эмбеддера Sentence Transformers.
+"""DI-адаптер произвольной ST-модели из настроек.
 
-Использует settings.ai.st_model и structlog.
+Загружает модель из settings.ai.st_model через SentenceTransformersEmbedding.
+Подходит для универсальных целей.
 """
+
+from __future__ import annotations
 
 import structlog
 
@@ -9,32 +12,17 @@ from app.adapters.outbound.embedding.sentence_transformers import (
     SentenceTransformersEmbedding,
 )
 from app.core.settings import settings
-from app.infrastructure.protocols import EmbeddingPort
 
 logger = structlog.get_logger(__name__)
 
 
-class SentenceTransformersEmbeddingAdapter(
-    SentenceTransformersEmbedding, EmbeddingPort
-):
-    """DI-адаптер для Sentence Transformers Embedding."""
+class SentenceTransformersEmbeddingAdapter(SentenceTransformersEmbedding):
+    """Использует модель из settings.ai.st_model."""
 
     def __init__(self) -> None:
-        """Создаёт адаптер с моделью из настроек и логгирует запуск."""
+        """Создаёт адаптер ST-модели, указанной в settings.ai.st_model."""
         super().__init__(model_name=settings.ai.st_model)
         logger.info(
-            "Создан SentenceTransformersEmbeddingAdapter", model=settings.ai.st_model
+            "Создан SentenceTransformersEmbeddingAdapter",
+            model=settings.ai.st_model,
         )
-
-    def is_healthy(self) -> bool:
-        """Проверка готовности эмбеддера.
-
-        Returns:
-            bool: True, если нет ошибок.
-        """
-        try:
-            logger.debug("Проверка is_healthy для SentenceTransformersEmbedding")
-            return True
-        except Exception as e:
-            logger.warning("Ошибка проверки is_healthy", error=str(e))
-            return False
