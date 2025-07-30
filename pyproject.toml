@@ -33,7 +33,7 @@ torch = "^2.2.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2"
-pytest-asyncio = "^0.23"
+pytest-asyncio = "^1.1"
 ruff = "^0.4"
 black = "^24.4"
 mypy = "^1.10"
