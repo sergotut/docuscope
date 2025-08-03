@@ -26,6 +26,7 @@ RUN pip install --no-cache-dir "pip==${PIP_VERSION}" setuptools wheel \
  && poetry config virtualenvs.create false
 
 # Кэш: сначала только файлы зависимостей
+WORKDIR /app
 COPY pyproject.toml poetry.lock* ./
 
 # Генерируем (или обновляем) lock-файл под новый pyproject.toml

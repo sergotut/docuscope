@@ -9,6 +9,7 @@ services:
     volumes:
        - ../:/app
        - /var/run/docker.sock:/var/run/docker.sock
+       - ./.git:/app/.git
     working_dir: /app
     ports:
       - "8000:8000"
