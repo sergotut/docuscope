@@ -124,7 +124,12 @@ class ContractSplitter:
         text = re.sub(r"(\w+)-\n(\w+)", r"\1\2", text)
         text = re.sub(r"\u00AD", "", text)
         text = re.sub(r"([^\n])\n(?!\n)", r"\1 ", text)
-        text = re.sub(r"\b(?:стр\.?|страница)\s*\d+\s*(?:из|/)\s*\d+\b", " ", text, flags=re.I)
+        text = re.sub(
+            r"\b(?:стр\.?|страница)\s*\d+\s*(?:из|/)\s*\d+\b",
+            " ",
+            text,
+            flags=re.I
+        )
         text = text.replace("–", "—").replace("-", "-")
         text = re.sub(r"[ \t]{2,}", " ", text)
         return text.strip()
