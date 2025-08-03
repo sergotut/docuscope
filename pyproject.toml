@@ -7,7 +7,7 @@ packages = [{ include = "app" }]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 fastapi = "^0.111"
 uvicorn = {extras = ["standard"], version = "^0.29"}
 aiogram = "^3.6"
@@ -30,6 +30,10 @@ structlog = "^24.1.0"
 dependency-injector = "^4.41.0"
 sentence-transformers = "^2.7"
 torch = "^2.2.1"
+tiktoken   = "^0.6"
+datasketch = "^1.5"
+hypothesis = "^6.100"
+razdel     = "^0.5"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2"
