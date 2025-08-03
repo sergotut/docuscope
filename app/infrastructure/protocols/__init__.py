@@ -4,14 +4,12 @@
 Все протоколы доступны для импорта напрямую из app.infrastructure.protocols.
 """
 
-from .embedding import EmbeddingPort
 from .llm import LLMPort
 from .ocr import OCRPort
 from .storage import StoragePort
 from .vector_store import VectorStorePort
 
 __all__ = [
-    "EmbeddingPort",
     "LLMPort",
     "OCRPort",
     "StoragePort",
