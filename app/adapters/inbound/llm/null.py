@@ -2,7 +2,7 @@
 
 import structlog
 
-from app.infrastructure.protocols import LLMPort
+from app.core.ports import LLMPort
 
 logger = structlog.get_logger(__name__)
 

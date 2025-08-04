@@ -4,7 +4,7 @@ from pathlib import Path
 
 import structlog
 
-from app.infrastructure.protocols import OCRPort
+from app.core.ports import OCRPort
 
 logger = structlog.get_logger(__name__)
 

@@ -6,7 +6,7 @@ import structlog
 
 from app.adapters.outbound.storage.minio import MinIOStorage
 from app.core.settings import settings
-from app.infrastructure.protocols import StoragePort
+from app.core.ports import StoragePort
 
 logger = structlog.get_logger(__name__)
 

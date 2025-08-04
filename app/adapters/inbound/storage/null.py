@@ -2,7 +2,7 @@
 
 import structlog
 
-from app.infrastructure.protocols import StoragePort
+from app.core.ports import StoragePort
 
 logger = structlog.get_logger(__name__)
 

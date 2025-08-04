@@ -4,7 +4,7 @@ import structlog
 
 from app.adapters.outbound.llm.yagpt import YaGPTLLM
 from app.core.settings import settings
-from app.infrastructure.protocols import LLMPort
+from app.core.ports import LLMPort
 
 logger = structlog.get_logger(__name__)
 

@@ -1,10 +1,13 @@
 """DI-обёртка для Qdrant Vector Store."""
 
+from __future__ import annotations
+
 import structlog
+import uuid
 
 from app.adapters.outbound.vector.qdrant import QdrantVectorStore
 from app.core.settings import settings
-from app.infrastructure.protocols import VectorStorePort
+from app.core.ports import VectorStorePort
 
 logger = structlog.get_logger(__name__)
 

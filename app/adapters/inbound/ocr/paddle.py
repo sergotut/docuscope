@@ -6,7 +6,7 @@ from typing import cast
 import structlog
 
 from app.adapters.outbound.ocr.paddle import PaddleOCRAdapter
-from app.infrastructure.protocols import OCRPort
+from app.core.ports import OCRPort
 
 logger = structlog.get_logger(__name__)
 

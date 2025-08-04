@@ -2,7 +2,7 @@
 
 import structlog
 
-from app.infrastructure.protocols import VectorStorePort
+from app.core.ports import VectorStorePort
 
 logger = structlog.get_logger(__name__)
 
