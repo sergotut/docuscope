@@ -53,6 +53,6 @@ HEALTHCHECK --interval=15s --timeout=5s \
 # ----- ENTRYPOINT для разработки -----
 # Tini → Uvicorn с auto-reload, лог-уровень debug
 ENTRYPOINT ["tini", "-g", "--"]
-CMD ["uvicorn", "app.adapters.inbound.http_api:app", \
+CMD ["uvicorn", "app.adapters.inbound.http.api:app", \
      "--host", "0.0.0.0", "--port", "8000", \
      "--reload", "--log-level", "debug"]

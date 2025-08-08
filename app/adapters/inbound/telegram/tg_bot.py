@@ -13,8 +13,8 @@ from aiogram.enums import ParseMode
 
 from app.adapters.inbound.task_result_tracker import task_registry, track_results
 from app.core.logging_config import init_logging
-from app.core.settings import settings
-from app.infrastructure.task_queue import celery_app
+from app.infrastructure.config.settings import settings
+#from app.infrastructure.task_queue import celery_app
 
 init_logging(settings)
 logger = structlog.get_logger(__name__)
@@ -44,7 +44,7 @@ async def handle_message(message: types.Message):
             file_bytes = await bot.download_file(file.file_path)
 
             bound.info("doc_received", filename=message.document.file_name)
-
+"""
             task = celery_app.send_task(
                 "app.application.report_service.process_document_task",
                 args=[
@@ -52,7 +52,7 @@ async def handle_message(message: types.Message):
                     message.document.file_name,
                     message.from_user.id,
                 ],
-            )
+            )"""
             task_registry[task.id] = message.chat.id
 
             bound.info("task_submitted", task_id=task.id)

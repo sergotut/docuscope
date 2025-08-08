@@ -8,9 +8,9 @@
 
 import uvicorn
 
-from app.adapters.inbound.http_api import app
+from app.adapters.inbound.http.api import app
 from app.core.logging_config import init_logging
-from app.core.settings import settings
+from app.infrastructure.config import settings
 
 # Инициализируем логирование до старта приложения,
 # чтобы все ранние сообщения были структурированными.
