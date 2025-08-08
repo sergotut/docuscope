@@ -12,7 +12,7 @@ from typing import Protocol, runtime_checkable
 
 @runtime_checkable
 class EmbeddingPort(Protocol):
-    """Абстрактный контракт эмбеддера.
+    """Абстрактный порт эмбеддера.
 
     Определяет sync/async интерфейсы и метрики доступности.
     """
@@ -62,5 +62,32 @@ class EmbeddingPort(Protocol):
 
         Returns:
             dict: Отчёт о состоянии эмбеддера.
+        """
+        ...
+
+    @property
+    def preferred_batch_size(self) -> int:
+        """Предпочтительный размер батча.
+
+        Returns:
+            int: Количество строк для одного вызова метода embed.
+        """
+        ...
+
+    @property
+    def embedding_dim(self) -> int:
+        """Размерность выходного эмбеддинга.
+
+        Returns:
+            int: Количество флоатов в одном векторе.
+        """
+        ...
+
+    @property
+    def max_tokens(self) -> int:
+        """Максимальное количество токенов на вход.
+
+        Returns:
+            int: Ограничение входной строки.
         """
         ...

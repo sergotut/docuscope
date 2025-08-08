@@ -24,6 +24,7 @@ pip-delete-this-directory.txt
 # Env files & secrets
 .env
 .env.*
+!.env.example
 !.env.sample
 secrets/
 *.key
