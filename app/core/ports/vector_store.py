@@ -1,42 +1,70 @@
-"""Интерфейс (порт) для векторного хранилища.
+"""Порт векторного хранилища."""
 
-Реализуется через адаптеры Qdrant и заглушки. Используется в RAG-пайплайне.
-"""
+from __future__ import annotations
 
-from typing import Any, Protocol
+from typing import Any, runtime_checkable, Protocol
 
 
+@runtime_checkable
 class VectorStorePort(Protocol):
-    """Абстрактный порт для работы с векторным хранилищем.
+    """Абстрактный порт векторного хранилища.
 
-    Определяет интерфейс сохранения и поиска по векторным представлениям.
+    Коллекция создаётся на каждый документ.
     """
 
-    def upsert(self, vectors: list[list[float]], metadatas: list[dict]) -> None:
-        """Сохраняет векторы и их метаданные в хранилище.
+    def upsert(
+        self,
+        doc_id: str,
+        vectors: list[list[float]],
+        metadatas: list[dict],
+    ) -> None:
+        """Добавляет или заменяет векторы в коллекции doc_{doc_id}.
 
         Args:
-            vectors (list[list[float]]): Список векторов (обычно эмбеддингов).
-            metadatas (list[dict]): Метаданные, соответствующие каждому вектору.
+            doc_id (str): Идентификатор документа.
+            vectors (list[list[float]]): Векторы эмбеддингов.
+            metadatas (list[dict]): Метаданные для каждой точки.
         """
         ...
 
-    def hybrid_search(self, query: str, top_k: int) -> list[Any]:
-        """Гибридный поиск по векторной базе.
+    def hybrid_search(
+        self,
+        doc_id: str,
+        query: str,
+        top_k: int
+    ) -> list[Any]:
+        """Гибридный поиск по коллекции doc_{doc_id}.
 
         Args:
-            query (str): Запрос пользователя.
-            top_k (int): Количество топ-N результатов.
+            doc_id (str): ID документа.
+            query (str): Поисковый запрос.
+            top_k (int): Количество результатов.
 
         Returns:
-            list[Any]: Список найденных элементов (обычно словари с payload).
+            list[dict]: Результаты поиска.
+        """
+        ...
+
+    def drop(self, doc_id: str) -> None:
+        """Удаляет коллекцию, связанную с документом.
+
+        Args:
+            doc_id (str): ID документа.
+        """
+        ...
+
+    def cleanup_expired(self, ttl_hours: int) -> None:
+        """Удаляет коллекции, старше указанного TTL.
+
+        Args:
+            ttl_hours (int): Сколько часов считаются допустимыми.
         """
         ...
 
     def is_healthy(self) -> bool:
-        """Проверяет доступность хранилища.
+        """Быстрый health-check.
 
         Returns:
-            bool: True, если доступно.
+            bool: True, если хранилище доступно.
         """
         ...

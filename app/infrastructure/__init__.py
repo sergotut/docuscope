@@ -3,8 +3,4 @@
 Экспортируется только DI-контейнер.
 """
 
-from .di_container import Container
-
-__all__ = [
-    "Container",
-]
+__all__ = []

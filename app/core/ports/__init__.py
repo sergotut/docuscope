@@ -4,6 +4,7 @@ from .embedding import EmbeddingPort
 from .llm import LLMPort
 from .ocr import OCRPort
 from .storage import StoragePort
+from .tokenizer import TokenizerPort
 from .vector_store import VectorStorePort
 
 __all__ = [
@@ -12,4 +13,5 @@ __all__ = [
     "OCRPort",
     "StoragePort",
     "VectorStorePort",
+    "TokenizerPort",
 ]
