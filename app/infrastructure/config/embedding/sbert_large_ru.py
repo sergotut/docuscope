@@ -53,7 +53,7 @@ class SBERTLargeRuEmbeddingSettings(SettingsBase):
 
     @validator("device", pre=True, always=True)
     def _auto_device(cls, v: str | None) -> str:
-        """Автоопределение устройства инференса (cpu/cuda)
+        """Автоопределение устройства инференса (cpu/cuda).
 
         Args:
             v (str): Значение из конфига.

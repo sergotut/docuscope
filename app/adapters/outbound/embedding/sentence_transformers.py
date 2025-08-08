@@ -85,7 +85,7 @@ class SentenceTransformersEmbedding(EmbeddingPort):
 
         embeds: list[list[float]] = []
 
-        for i in _chunks(texts):
+        for batch in self._chunks(texts):
             batch_emb = self._model.encode(
                 batch,
                 convert_to_numpy=True,

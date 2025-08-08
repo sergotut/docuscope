@@ -5,7 +5,7 @@ from .postgres_settings import PostgresSettings
 
 
 class DBSettings(SettingsBase):
-    """Настройки базы данных"""
+    """Настройки базы данных."""
 
     postgres: PostgresSettings = PostgresSettings()
     

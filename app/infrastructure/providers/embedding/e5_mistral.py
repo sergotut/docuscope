@@ -17,7 +17,7 @@ class E5MistralEmbeddingAdapter(E5MistralEmbedding):
     """Использует локальный llama.cpp-эндпоинт."""
 
     def __init__(self) -> None:
-        """Создаёт экземпляр с настройками"""
+        """Создаёт экземпляр с настройками."""
 
         config = settings.embed.e5_mistral
 

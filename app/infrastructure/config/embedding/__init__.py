@@ -12,7 +12,7 @@ from .e5_mistral import E5MistralEmbeddingSettings
 
 
 class EmbeddingsSettings(SettingsBase):
-    """Настройки эмбеддеров"""
+    """Настройки эмбеддеров."""
 
     base: EmbeddingBaseSettings = EmbeddingBaseSettings()
     yagpt: YaGPTEmbeddingSettings = YaGPTEmbeddingSettings()
