@@ -8,9 +8,7 @@ from __future__ import annotations
 
 import structlog
 
-from app.adapters.outbound.embedding.sentence_transformers import (
-    SentenceTransformersEmbedding,
-)
+from app.adapters.outbound import SentenceTransformersEmbedding
 from ..config import settings
 
 logger = structlog.get_logger(__name__)

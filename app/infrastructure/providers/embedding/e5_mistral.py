@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import structlog
 
-from app.adapters.outbound.embedding.e5_mistral import E5MistralEmbedding
+from app.adapters.outbound import E5MistralEmbedding
 from app.infrastructure.config import settings
 
 logger = structlog.get_logger(__name__)

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import structlog
 
-from app.adapters.outbound.embedding.gigachat import SberGigaChatEmbedding
+from app.adapters.outbound import SberGigaChatEmbedding
 from app.infrastructure.config import settings
 
 logger = structlog.get_logger(__name__)

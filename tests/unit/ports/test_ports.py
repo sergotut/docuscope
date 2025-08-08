@@ -1,6 +1,6 @@
 """Базовые unit-тесты для проверки структуры портов."""
 
-from app.ports import (
+from app.core.ports import (
     EmbeddingPort,
     LLMPort,
     OCRPort,

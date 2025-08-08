@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import structlog
 
-from app.adapters.outbound.embedding.yagpt import YAGPTEmbedding
+from app.adapters.outbound import YAGPTEmbedding
 from app.infrastructure.config import settings
 
 logger = structlog.get_logger(__name__)
