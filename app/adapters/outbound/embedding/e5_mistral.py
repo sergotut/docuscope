@@ -108,7 +108,8 @@ class E5MistralEmbedding(EmbeddingPort):
         """Подробный health-репорт со статистикой.
 
         Returns:
-            dict[str, str | int | float]: Метрики — статус, latency, модель, размерность.
+            dict[str, str | int | float]: Метрики — статус, latency, модель,
+                размерность.
         """
         start = time.perf_counter()
         
@@ -169,7 +170,7 @@ class E5MistralEmbedding(EmbeddingPort):
         for i in range(0, len(seq), self.batch_size):
             yield seq[i : i + self.batch_size]
 
-    def embed(
+    def _embed_once(
         self,
         texts: list[str]
     ) -> list[list[float]]:
@@ -203,7 +204,7 @@ class E5MistralEmbedding(EmbeddingPort):
         cli: httpx.AsyncClient,
         texts: list[str]
     ) -> list[list[float]]:
-        """Асинхронный REST-запрос к API YaGPT.
+        """Асинхронный запрос на расчёт эмбеддингов.
 
         Args:
             cli (httpx.AsyncClient): Клиент HTTPX.

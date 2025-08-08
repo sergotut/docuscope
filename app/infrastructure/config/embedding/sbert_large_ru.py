@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Literal
 import torch
 
-from pydantic import Field, validator
+from pydantic import Field, Optional, validator
 
 from ..base import SettingsBase
 
@@ -19,8 +19,8 @@ class SBERTLargeRuEmbeddingSettings(SettingsBase):
         description="Модель эмбеддера SBERT Large RU."
     )
     
-    device: Optional[str] = Field(
-        default=None,
+    device: Optional[str | None] = Field(
+        None,
         env="EMBED_SBERT_LARGE_RU_DEVICE",
         description="Устройство инференса (cpu/cuda) … "
                     "(если None — определяется автоматически).",

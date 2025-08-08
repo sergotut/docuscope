@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Literal
 import torch
 
-from pydantic import Field, validator
+from pydantic import Field, Optional, validator
 
 from ..base import SettingsBase
 
@@ -19,7 +19,7 @@ class BGELargeRuEmbeddingSettings(SettingsBase):
         description="Модель эмбеддера BGE Large."
     )
     
-    device: Optional[str] = Field(
+    device: Optional[str | None] = Field(
         None,
         env="EMBED_BGE_LARGE_RU_DEVICE",
         description="Устройство инференса (cpu/cuda) … "
@@ -53,7 +53,7 @@ class BGELargeRuEmbeddingSettings(SettingsBase):
 
     @validator("device", pre=True, always=True)
     def _auto_device(cls, v: str | None) -> str:
-        """Автоопределение устройства инференса (cpu/cuda)
+        """Автоопределение устройства инференса (cpu/cuda).
 
         Args:
             v (str): Значение из конфига.

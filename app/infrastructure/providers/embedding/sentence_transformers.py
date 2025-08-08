@@ -22,6 +22,8 @@ class SentenceTransformersEmbeddingAdapter(SentenceTransformersEmbedding):
     def __init__(self) -> None:
         """Создаёт адаптер ST-модели, указанной в конфиге."""
 
+        config = settings.embed.st
+
         super().__init__(
             model_name=config.model_name,
             device=config.device,

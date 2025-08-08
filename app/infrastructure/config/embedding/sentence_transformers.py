@@ -14,14 +14,14 @@ from ..base import SettingsBase
 class STEmbeddingSettings(SettingsBase):
     """Настройки эмбеддеров Sentence-Transformers."""
 
-    model_name: Optional[str] = Field(
-        default=None,
+    model_name: Optional[str | None] = Field(
+        None,
         env="EMBED_ST_MODEL_NAME",
         description="Модель эмбеддеров Sentence-Transformers."
     )
     
-    device: Optional[str] = Field(
-        default=None,
+    device: Optional[str | None] = Field(
+        None,
         env="EMBED_ST_DEVICE",
         description="Устройство инференса (cpu/cuda)."
     )

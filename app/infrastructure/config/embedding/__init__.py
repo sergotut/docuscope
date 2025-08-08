@@ -1,4 +1,4 @@
-"""Секция настроек эмбеддеров"""
+"""Секция настроек эмбеддеров."""
 
 from ..base import SettingsBase
 from .base import EmbeddingBaseSettings

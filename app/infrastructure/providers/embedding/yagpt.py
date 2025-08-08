@@ -25,7 +25,7 @@ class YAGPTEmbeddingAdapter(YAGPTEmbedding):
             api_key=config.api_key,
             model_name=config.model_name,
             endpoint=config.endpoint,
-            timeout=settings.embed.base.timeout,,
+            timeout=settings.embed.base.timeout,
             batch_size=config.batch_size,
             space=settings.embed.base.space,
         )

@@ -63,8 +63,8 @@ class SentenceTransformersEmbedding(EmbeddingPort):
         logger.info(
             "ST Embedding client init",
             model=self.model_name,
-            device=self.device
-            dtype=self.dtype
+            device=self.device,
+            dtype=self.dtype,
             quantized=self.quantized
         )
 

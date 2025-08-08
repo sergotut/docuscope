@@ -1,4 +1,4 @@
-"""Секция настроек базы данных"""
+"""Секция настроек базы данных."""
 
 from ..base import SettingsBase
 from .postgres_settings import PostgresSettings

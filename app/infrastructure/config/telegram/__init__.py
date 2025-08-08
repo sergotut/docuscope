@@ -1,10 +1,10 @@
-"""Секция настроек Телеграм"""
+"""Секция настроек Телеграм."""
 
 from ..base import SettingsBase
-from .postgres_settings import PostgresSettings
+from .telegram_settings import TelegramSettings
 
 
 class TelegramSettings(SettingsBase):
-    """Настройки Телеграм"""
+    """Настройки Телеграм."""
 
     base: TelegramSettings = TelegramSettings()
