@@ -29,11 +29,11 @@ from app.core.ports.storage import StoragePort
 logger = structlog.get_logger(__name__)
 
 _META_TTL_KEY = "expires_at"
-_RETRY: Final = dict(
-    retry=retry_if_exception_type(S3Error),
-    wait=wait_exponential(multiplier=0.1, max=2.0),
-    stop=stop_after_attempt(3),
-)
+_RETRY: Final = {
+    "retry": retry_if_exception_type(S3Error),
+    "wait": wait_exponential(multiplier=0.1, max=2.0),
+    "stop": stop_after_attempt(3),
+}
 
 
 class MinioStorage(StoragePort):
@@ -259,7 +259,9 @@ class MinioStorage(StoragePort):
         """
         if not ttl_minutes:
             return None
-        expires = (_dt.datetime.utcnow() + _dt.timedelta(minutes=ttl_minutes)).isoformat()
+        expires = (
+            _dt.datetime.utcnow() + _dt.timedelta(minutes=ttl_minutes)
+        ).isoformat()
         return {_META_TTL_KEY: expires}
 
     @contextmanager

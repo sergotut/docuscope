@@ -15,7 +15,7 @@ logger = structlog.get_logger(__name__)
 
 
 class MinioStorageAdapter(MinioStorage):
-    """Использует MinioStorage"""
+    """Использует MinioStorage."""
 
     def __init__(self) -> None:
         """Создаёт экземпляр с настройками."""
