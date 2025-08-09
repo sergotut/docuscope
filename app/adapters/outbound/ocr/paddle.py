@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 import structlog
-from paddleocr import PaddleOCR  # type: ignore[import]
+from paddleocr import PaddleOCR as _PaddleOCR  # type: ignore[import]
 
 from app.core.ports.ocr import OCRPort
 
@@ -37,7 +37,7 @@ class PaddleOCR(OCRPort):
             det (bool): Включение детекции текстовых областей.
             cls (bool): Включение классификации ориентации.
         """
-        self._engine = PaddleOCR(
+        self._engine = _PaddleOCR(
             lang=lang,
             use_gpu=use_gpu,
             show_log=False,
@@ -100,10 +100,8 @@ class PaddleOCR(OCRPort):
         """
         try:
             return bool(self._engine and hasattr(self._engine, "ocr"))
-        except Exception:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
             return False
-
-    # ─────────────────────────── helpers ─────────────────────────────── #
 
     @staticmethod
     def _parse_lines(ocr_result: list[Any]) -> list[str]:
@@ -130,6 +128,10 @@ class PaddleOCR(OCRPort):
             try:
                 text = item[1][0]  # item = [bbox, (text, conf)]
             except Exception:  # noqa: BLE001
+                logger.warning(
+                    "Error in parse line by Paddle OCR",
+                    error=str(exc)
+                )
                 continue
             if isinstance(text, str) and text.strip():
                 lines.append(text.strip())

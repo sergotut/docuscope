@@ -1,5 +1,6 @@
 """Секция настроек OCR-движков."""
 
+from ..base import SettingsBase
 from .paddle_ru import PaddleRuOCRSettings
 from .paddle_en import PaddleEnOCRSettings
 

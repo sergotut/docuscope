@@ -10,6 +10,7 @@ from .telegram import TelegramSettings
 from .tokenizer import TokenizerSettings
 from .embedding import EmbeddingsSettings
 from .storage import StorageSettings
+from .ocr import OCRSettings
 
 
 class AppSettings():
