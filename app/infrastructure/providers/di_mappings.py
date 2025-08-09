@@ -11,6 +11,10 @@ from .embedding import (
     NullEmbedder,
 )
 from .storage import MinioStorageAdapter
+from .ocr import (
+    PaddleRuOCRAdapter,
+    PaddleEnOCRAdapter,
+)
 
 EMBEDDERS = {
     "yagpt": YAGPTEmbeddingAdapter,
@@ -25,4 +29,9 @@ EMBEDDERS = {
 
 STORAGE = {
     "minio": MinioStorageAdapter,
+}
+
+OCR = {
+    "paddle_ru": PaddleRuOCRAdapter,
+    "paddle_en": PaddleEnOCRAdapter,
 }

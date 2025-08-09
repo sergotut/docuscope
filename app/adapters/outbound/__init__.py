@@ -9,6 +9,7 @@ from .embedding import (
 from .tokenizer import TiktokenTokenizer
 from .vector import QdrantVectorStore
 from .storage import MinioStorage
+from .ocr import PaddleOCR
 
 __all__ = [
     "SentenceTransformersEmbedding",
@@ -18,4 +19,5 @@ __all__ = [
     "TiktokenTokenizer",
     "QdrantVectorStore",
     "MinioStorage",
+    "PaddleOCR",
 ]
