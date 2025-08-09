@@ -21,5 +21,6 @@ class AppSettings():
     tokenizer: TokenizerSettings = TokenizerSettings()
     embed: EmbeddingsSettings = EmbeddingsSettings()
     storage: StorageSettings = StorageSettings()
+    ocr: OCRSettings = OCRSettings()
 
 settings = AppSettings()
