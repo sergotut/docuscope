@@ -9,6 +9,7 @@ from .db import DBSettings
 from .telegram import TelegramSettings
 from .tokenizer import TokenizerSettings
 from .embedding import EmbeddingsSettings
+from .storage import StorageSettings
 
 
 class AppSettings():
@@ -19,7 +20,6 @@ class AppSettings():
     telegram: TelegramSettings = TelegramSettings()
     tokenizer: TokenizerSettings = TokenizerSettings()
     embed: EmbeddingsSettings = EmbeddingsSettings()
-        
-
+    storage: StorageSettings = StorageSettings()
 
 settings = AppSettings()

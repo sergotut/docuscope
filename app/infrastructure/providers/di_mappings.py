@@ -10,6 +10,7 @@ from .embedding import (
     SentenceTransformersEmbeddingAdapter,
     NullEmbedder,
 )
+from .storage import MinioStorageAdapter
 
 EMBEDDERS = {
     "yagpt": YAGPTEmbeddingAdapter,
@@ -20,4 +21,8 @@ EMBEDDERS = {
     "bge_large_ru": BGELargeRuEmbeddingAdapter,
     "st_all": SentenceTransformersEmbeddingAdapter,
     "null": NullEmbedder,
+}
+
+STORAGE = {
+    "minio": MinioStorageAdapter,
 }

@@ -1,52 +1,64 @@
-"""Интерфейс (порт) для хранилища файлов.
+"""Порт (интерфейс) для файлового хранилища."""
 
-Реализуется через MinIO, заглушки.
-"""
+from __future__ import annotations
 
-from typing import Protocol
+from pathlib import Path
+from collections.abc import IO
+from typing import Protocol, runtime_checkable
 
 
+@runtime_checkable
 class StoragePort(Protocol):
-    """Абстрактный порт хранилища файлов.
+    """Абстрактный порт файлового хранилища.
 
-    Определяет асинхронный интерфейс для операций над файлами и проверки состояния.
+    Поддерживает загрузку, скачивание, удаление,
+    автоматическую очистку по TTL и проверку доступности.
     """
 
-    async def save(self, content: bytes, filename: str) -> str:
-        """Сохраняет файл в хранилище.
+    async def upload(
+        self,
+        files: list[Path | IO[bytes]],
+        *,
+        ttl_minutes: int | None = None,
+    ) -> list[str]:
+        """Загружает файлы в хранилище.
 
         Args:
-            content (bytes): Содержимое файла.
-            filename (str): Имя файла.
+            files (list[Path | IO[bytes]]): Пути к файлам или байтовые потоки.
+            ttl_minutes (int | None): Время жизни в минутах (опц.).
 
         Returns:
-            str: Идентификатор сохранённого файла.
+            list[str]: Список object_name для каждого загруженного файла.
         """
         ...
 
-    async def load(self, file_id: str) -> bytes:
-        """Загружает файл по идентификатору.
+    async def download(self, object_name: str) -> bytes:
+        """Скачивает объект из хранилища.
 
         Args:
-            file_id (str): Идентификатор (ключ) файла.
+            object_name (str): Уникальное имя объекта.
 
         Returns:
             bytes: Содержимое файла.
         """
         ...
 
-    async def delete(self, file_id: str) -> None:
-        """Удаляет файл из хранилища.
+    async def delete(self, object_name: str) -> None:
+        """Удаляет объект немедленно.
 
         Args:
-            file_id (str): Идентификатор файла.
+            object_name (str): Имя удаляемого объекта.
         """
+        ...
+
+    async def cleanup_expired(self) -> None:
+        """Удаляет все объекты, чей TTL истёк."""
         ...
 
     def is_healthy(self) -> bool:
         """Проверяет доступность хранилища.
 
         Returns:
-            bool: True, если хранилище доступно.
+            bool: True, если хранилище работает.
         """
         ...

@@ -1,7 +1,7 @@
 """DI-адаптер BGE Large.
 
 Подключает модель BGE Large (англоязычная) из Sentence Transformers через DI.
-Использует настройки из ENV (settings.ai.bge_large_model).
+Использует настройки из конфига.
 """
 
 from __future__ import annotations
