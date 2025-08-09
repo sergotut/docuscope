@@ -127,7 +127,7 @@ class PaddleOCR(OCRPort):
         for item in blocks:
             try:
                 text = item[1][0]  # item = [bbox, (text, conf)]
-            except Exception:  # noqa: BLE001
+            except Exception as exc:  # noqa: BLE001
                 logger.warning(
                     "Error in parse line by Paddle OCR",
                     error=str(exc)
