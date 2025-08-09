@@ -8,6 +8,7 @@ from .embedding import (
 )
 from .tokenizer import TiktokenTokenizer
 from .vector import QdrantVectorStore
+from .storage import MinioStorage
 
 __all__ = [
     "SentenceTransformersEmbedding",
@@ -16,4 +17,5 @@ __all__ = [
     "E5MistralEmbedding",
     "TiktokenTokenizer",
     "QdrantVectorStore",
+    "MinioStorage",
 ]
