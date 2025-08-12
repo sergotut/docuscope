@@ -1,22 +1,30 @@
-"""Порт токенайзера."""
+"""Порт токенайзера.
+
+Возвращает доменную модель TokenCount и типизированный health-report.
+"""
 
 from __future__ import annotations
 
-from typing import Any, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
+
+from app.domain.model.diagnostics import TokenizerHealthReport
+from app.domain.model.shared import TokenCount
+
+__all__ = ["TokenizerPort"]
 
 
 @runtime_checkable
 class TokenizerPort(Protocol):
     """Абстрактный порт токенайзера."""
 
-    def count_tokens(self, text: str) -> int:
+    def count_tokens(self, text: str) -> TokenCount:
         """Возвращает количество токенов в строке.
 
         Args:
             text (str): Входной текст.
 
         Returns:
-            int: Количество токенов.
+            TokenCount: Количество токенов.
         """
         ...
 
@@ -28,16 +36,10 @@ class TokenizerPort(Protocol):
         """
         ...
 
-    def health(self) -> dict[str, Any]:
+    def health(self) -> TokenizerHealthReport:
         """Расширенный health-report.
 
-        Возвращает словарь с метаинформацией, например:
-        - model: str
-        - vocab_size: int
-        - encoding: str
-        - version: str
-
         Returns:
-            dict[str, Any]: Состояние токенайзера.
+            TokenizerHealthReport: Метаинформация о состоянии токенайзера.
         """
         ...
