@@ -17,7 +17,12 @@ __all__ = ["EmbeddingPort"]
 class EmbeddingPort(Protocol):
     """Абстрактный асинхронный порт эмбеддера."""
 
-    async def embed(self, texts: list[str], *, space: str = "semantic") -> EmbeddingBatch:
+    async def embed(
+        self,
+        texts: list[str],
+        *,
+        space: str = "semantic"
+    ) -> EmbeddingBatch:
         """Вычисляет эмбеддинги для набора строк.
 
         Args:
