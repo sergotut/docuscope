@@ -35,3 +35,9 @@ class SberGigaChatEmbeddingSettings(SettingsBase):
         ge=1,
         description="Размер батча эмбеддера Sber GigaChat."
     )
+
+    max_tokens: int = Field(
+        2048,
+        env="EMBED_GIGACHAT_MAX_TOKENS",
+        description="Максимальное количество токенов эмбеддера Sber GigaChat."
+    )

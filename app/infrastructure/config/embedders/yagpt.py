@@ -41,3 +41,9 @@ class YaGPTEmbeddingSettings(SettingsBase):
         ge=1,
         description="Размер батча эмбеддера YaGPT."
     )
+
+    max_tokens: int = Field(
+        1024,
+        env="EMBED_YAGPT_MAX_TOKENS",
+        description="Максимальное количество токенов эмбеддера YaGPT."
+    )

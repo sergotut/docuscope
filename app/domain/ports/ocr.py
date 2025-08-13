@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from app.domain.models.media import OcrResult
-from app.domain.models.shared import Blob
+from app.domain.model.media import OcrResult
+from app.domain.model.shared import Blob
 
 __all__ = ["OCRPort"]
 

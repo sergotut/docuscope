@@ -10,18 +10,17 @@ from typing import Protocol, runtime_checkable
 from app.domain.model.diagnostics import EmbedderHealthReport
 from app.domain.model.retrieval import EmbeddingBatch
 
-__all__ = ["EmbeddingPort"]
+__all__ = ["EmbedderPort"]
 
 
 @runtime_checkable
-class EmbeddingPort(Protocol):
+class EmbedderPort(Protocol):
     """Абстрактный асинхронный порт эмбеддера."""
 
     async def embed(
         self,
         texts: list[str],
         *,
-        space: str = "semantic"
     ) -> EmbeddingBatch:
         """Вычисляет эмбеддинги для набора строк.
 

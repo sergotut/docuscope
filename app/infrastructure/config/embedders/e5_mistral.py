@@ -16,8 +16,8 @@ class E5MistralEmbeddingSettings(SettingsBase):
         description="Базовый URL до llama.cpp."
     )
 
-    port: str = Field(
-        "8080",
+    port: int = Field(
+        8080,
         env="EMBED_E5M_PORT",
         description="Базовый порт llama.cpp."
     )
@@ -39,4 +39,10 @@ class E5MistralEmbeddingSettings(SettingsBase):
         768,
         env="EMBED_E5M_DIM",
         description="Размерность эмбеддера E5 Mistral."
+    )
+
+    max_tokens: int = Field(
+        512,
+        env="EMBED_E5M_MAX_TOKENS",
+        description="Максимальное количество токенов эмбеддера E5 Mistra."
     )

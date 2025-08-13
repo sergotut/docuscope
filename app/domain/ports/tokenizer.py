@@ -29,7 +29,7 @@ class TokenizerPort(Protocol):
         ...
 
     def is_healthy(self) -> bool:
-        """Короткий bool-check, основанный на методе health.
+        """Короткий health-check, основанный на методе health.
 
         Returns:
             bool: True, если токенайзер доступен.
