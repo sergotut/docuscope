@@ -122,7 +122,7 @@ class SentenceTransformersEmbedder(EmbedderPort):
             return EmbeddingBatch(vectors=())
 
         self._reload_if_changed()
-        logger.debug("ST embed request", count=len(texts), space=space)
+        logger.debug("ST embed request", count=len(texts))
 
         loop = asyncio.get_running_loop()
         arr: Any = await loop.run_in_executor(
