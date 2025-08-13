@@ -46,7 +46,7 @@ pre-commit = "^3.7"
 
 [tool.black]
 line-length = 88
-target-version = ["py311"]
+target-version = ["py312"]
 preview = true 
 
 [tool.ruff]
@@ -89,8 +89,11 @@ convention = "google"
 "tests/**/*.py" = ["S101"]         # разрешаем assert во всех тестах
 
 [tool.mypy]
-packages = ["app"]
-python_version = "3.11"
+files = ["app"]
+mypy_path = "."
+explicit_package_bases = true
+namespace_packages = true
+python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
 show_error_codes = true
