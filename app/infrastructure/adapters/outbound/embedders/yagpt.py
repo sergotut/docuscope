@@ -74,7 +74,7 @@ class YAGPTEmbedder(EmbedderPort):
             max_tokens=self._max_tokens,
         )
 
-    async def embed(self, texts: list[str], *,) -> EmbeddingBatch:
+    async def embed(self, *, texts: list[str],) -> EmbeddingBatch:
         """Вычисляет эмбеддинги для набора строк.
 
         Args:

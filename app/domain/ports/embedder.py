@@ -19,8 +19,8 @@ class EmbedderPort(Protocol):
 
     async def embed(
         self,
-        texts: list[str],
         *,
+        texts: list[str],
     ) -> EmbeddingBatch:
         """Вычисляет эмбеддинги для набора строк.
 
