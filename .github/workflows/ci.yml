@@ -51,7 +51,10 @@ jobs:
         run: ruff .
 
       - name: Mypy
-        run: mypy --strict app
+        run: mypy --config-file pyproject.toml
+        env:
+          PYTHONPATH: ""
+          MYPYPATH: ""
         working-directory: ${{ github.workspace }}
 
       - name: Tests
