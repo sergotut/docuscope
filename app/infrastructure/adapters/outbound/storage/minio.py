@@ -3,6 +3,6 @@
 Служит для обратной совместимости.
 """
 
-from .minio import MinioStorage
+from .minio_client import MinioStorage
 
 __all__ = ["MinioStorage"]
