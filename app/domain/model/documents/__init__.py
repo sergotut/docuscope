@@ -1,11 +1,18 @@
 """Пакет documents: публичные реэкспорты доменных моделей."""
 
-from .document import Document, DocumentId
+from .document import (
+    DocumentId,
+    DocumentBase,
+    Document,
+    DocumentMeta
+)
 from .chunk import Chunk, ChunkId
 
 __all__ = [
-    "Document",
     "DocumentId",
+    "DocumentBase",
+    "Document",
+    "DocumentMeta",
     "Chunk",
     "ChunkId"
 ]

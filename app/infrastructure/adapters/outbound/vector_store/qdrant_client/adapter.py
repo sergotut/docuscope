@@ -4,9 +4,7 @@
 - upsert точек (dense и/или sparse);
 - поиск dense и sparse;
 - гибридный поиск с локальным RRF-слиянием;
-- drop коллекции и health-report;
-- очистку по TTL коллекций (по времени их создания).
-
+- drop коллекции и health-report.
 Коллекция создаётся «на лету» и получает служебную мета-точку с временем
 создания.
 """
@@ -14,15 +12,15 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Final, Sequence
+from typing import Sequence
 
 import structlog
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.http import models as qm
 
 from app.domain.exceptions import VectorStoreError
+from app.domain.model.collections import CollectionName
 from app.domain.model.diagnostics import VectorStoreHealthReport
-from app.domain.model.documents import DocumentId
 from app.domain.model.retrieval import (
     EmbeddingVector,
     QueryFilter,
@@ -65,7 +63,6 @@ class QdrantVectorStore(VectorStorePort):
         port: int = 6333,
         api_key: str | None = None,
         timeout: int | None = None,
-        ttl_concurrency: int = 8,
         default_distance: str = "cosine",
     ) -> None:
         """Создаёт клиент Qdrant.
@@ -76,7 +73,6 @@ class QdrantVectorStore(VectorStorePort):
             api_key (str | None): Ключ для Qdrant Cloud.
             timeout (int | None): Таймаут запросов, сек.
             default_distance (str): cosine | dot | euclid.
-            ttl_concurrency (int): Ограничение параллелизма при TTL-очистке.
         """
         self._client = AsyncQdrantClient(
             host=host,
@@ -85,7 +81,6 @@ class QdrantVectorStore(VectorStorePort):
             timeout=timeout,
         )
         self._distance = to_distance(default_distance)
-        self._ttl_concurrency = ttl_concurrency
 
         base_url = f"{host}:{port}" if host else None
         logger.info(
@@ -96,13 +91,13 @@ class QdrantVectorStore(VectorStorePort):
 
     async def upsert_points(
         self,
-        doc_id: DocumentId,
+        collection: CollectionName,
         points: Sequence[UpsertPoint],
     ) -> None:
-        """Добавляет или обновляет точки документа.
+        """Добавляет или обновляет точки в коллекции.
 
         Args:
-            doc_id (DocumentId): Идентификатор коллекции.
+            collection (CollectionName): Имя коллекции.
             points (Sequence[UpsertPoint]): Точки с dense/sparse и payload.
 
         Raises:
@@ -110,28 +105,37 @@ class QdrantVectorStore(VectorStorePort):
         """
         if not points:
             return
-
         try:
+            cname = as_collection_name(str(collection))
             dense_dim = next(
-                (p.vector.dim for p in points if p.vector is not None), None
+                (p.vector.dim for p in points if p.vector is not None),
+                None,
             )
             has_sparse = any(p.sparse is not None for p in points)
 
-            await self._ensure_collection(doc_id, dense_dim, has_sparse)
+            await self._ensure_collection(collection, dense_dim, has_sparse)
 
             q_points = [to_point_struct(p, add_created_ts=True) for p in points]
             await self._client.upsert(
-                collection_name=as_collection_name(str(doc_id)),
+                collection_name=cname,
                 points=q_points,
                 wait=True,
             )
+
+            logger.info(
+                "qdrant upsert ok",
+                collection=cname,
+                points=len(points),
+                dense_dim=dense_dim,
+                has_sparse=has_sparse,
+            )
         except Exception as exc:  # noqa: BLE001
-            logger.exception("Qdrant upsert failed", doc_id=str(doc_id))
+            logger.exception("Qdrant upsert failed", collection=str(collection))
             raise VectorStoreError(str(exc)) from exc
 
     async def vector_search(
         self,
-        doc_id: DocumentId,
+        collection: CollectionName,
         query_vector: EmbeddingVector,
         top_k: int,
         *,
@@ -140,7 +144,7 @@ class QdrantVectorStore(VectorStorePort):
         """Поиск по dense-вектору.
 
         Args:
-            doc_id (DocumentId): Идентификатор коллекции.
+            collection (CollectionName): Имя коллекции.
             query_vector (EmbeddingVector): Вектор запроса.
             top_k (int): Количество результатов.
             filter (QueryFilter | None): Фильтр по payload.
@@ -149,9 +153,10 @@ class QdrantVectorStore(VectorStorePort):
             list[SearchHit]: Найденные совпадения.
         """
         try:
+            cname = as_collection_name(str(collection))
             q_filter = to_filter(filter) if filter else None
             res = await self._client.search(
-                collection_name=as_collection_name(str(doc_id)),
+                collection_name=cname,
                 query_vector={DENSE_VECTOR_NAME: list(query_vector.values)},
                 with_payload=True,
                 limit=top_k,
@@ -159,12 +164,12 @@ class QdrantVectorStore(VectorStorePort):
             )
             return [to_hit(pt) for pt in res]
         except Exception as exc:  # noqa: BLE001
-            logger.exception("Qdrant vector_search failed", doc_id=str(doc_id))
+            logger.exception("Qdrant vector_search failed", collection=str(collection))
             raise VectorStoreError(str(exc)) from exc
 
     async def sparse_search(
         self,
-        doc_id: DocumentId,
+        collection: CollectionName,
         query_sparse: SparseVector,
         top_k: int,
         *,
@@ -173,7 +178,7 @@ class QdrantVectorStore(VectorStorePort):
         """Поиск по sparse-вектору.
 
         Args:
-            doc_id (DocumentId): Идентификатор коллекции.
+            collection (CollectionName): Имя коллекции.
             query_sparse (SparseVector): Разрежённый вектор запроса.
             top_k (int): Количество результатов.
             filter (QueryFilter | None): Фильтр по payload.
@@ -182,9 +187,10 @@ class QdrantVectorStore(VectorStorePort):
             list[SearchHit]: Найденные совпадения.
         """
         try:
+            cname = as_collection_name(str(collection))
             q_filter = to_filter(filter) if filter else None
             res = await self._client.search(
-                collection_name=as_collection_name(str(doc_id)),
+                collection_name=cname,
                 query_vector={
                     SPARSE_VECTOR_NAME: qm.SparseVector(
                         indices=list(query_sparse.indices),
@@ -197,12 +203,15 @@ class QdrantVectorStore(VectorStorePort):
             )
             return [to_hit(pt) for pt in res]
         except Exception as exc:  # noqa: BLE001
-            logger.exception("Qdrant sparse_search failed", doc_id=str(doc_id))
+            logger.exception(
+                "Qdrant sparse_search failed",
+                collection=str(collection)
+            )
             raise VectorStoreError(str(exc)) from exc
 
     async def hybrid_search_rrf(
         self,
-        doc_id: DocumentId,
+        collection: CollectionName,
         *,
         query_vector: EmbeddingVector | None,
         query_sparse: SparseVector | None,
@@ -216,20 +225,29 @@ class QdrantVectorStore(VectorStorePort):
         Итоговый счёт равен сумме 1 / (rrf_k + rank) по веткам.
 
         Args:
-            doc_id (DocumentId): Идентификатор коллекции.
+            collection (CollectionName): Имя коллекции.
             query_vector (EmbeddingVector | None): Dense-вектор запроса.
             query_sparse (SparseVector | None): Sparse-вектор запроса.
             top_k (int): Сколько результатов вернуть после слияния.
             per_branch_k (int): Кандидатов из каждой ветки.
-            rrf_k (int): Константа RRF, сглаживающая ранги.
+            rrf_k (int): Константа RRF.
             filter (QueryFilter | None): Фильтр по payload.
 
         Returns:
             list[SearchHit]: Результаты после RRF-слияния.
         """
-        dense_task = (
+        if query_vector is None and query_sparse is None:
+            return []
+
+        if top_k <= 0:
+            return []
+
+        if per_branch_k <= 0:
+            per_branch_k = top_k
+
+        dense_coro = (
             self.vector_search(
-                doc_id,
+                collection,
                 query_vector=query_vector,  # type: ignore[arg-type]
                 top_k=per_branch_k,
                 filter=filter,
@@ -237,9 +255,10 @@ class QdrantVectorStore(VectorStorePort):
             if query_vector is not None
             else ready_hits([])
         )
-        sparse_task = (
+
+        sparse_coro = (
             self.sparse_search(
-                doc_id,
+                collection,
                 query_sparse=query_sparse,  # type: ignore[arg-type]
                 top_k=per_branch_k,
                 filter=filter,
@@ -248,90 +267,24 @@ class QdrantVectorStore(VectorStorePort):
             else ready_hits([])
         )
 
-        dense_hits, sparse_hits = await dense_task, await sparse_task
+        dense_hits, sparse_hits = await asyncio.gather(dense_coro, sparse_coro)
         return rrf_merge(dense_hits, sparse_hits, rrf_k=rrf_k, top_k=top_k)
 
-    async def drop(self, doc_id: DocumentId) -> None:
-        """Удаляет коллекцию документа.
+    async def drop_collection(self, name: CollectionName) -> None:
+        """Удаляет коллекцию Qdrant по имени.
+
+        Операция идемпотентна: если коллекции нет, ошибок не возникает.
 
         Args:
-            doc_id (DocumentId): Идентификатор коллекции.
+            name (CollectionName): Имя коллекции.
         """
+        cname = str(name)
         try:
-            name = as_collection_name(str(doc_id))
-            if await self._client.collection_exists(name):
-                await self._client.delete_collection(name)
+            if await self._client.collection_exists(cname):
+                await self._client.delete_collection(cname)
+            logger.info("qdrant drop_collection done", collection=cname)
         except Exception as exc:  # noqa: BLE001
-            logger.exception("Qdrant drop failed", doc_id=str(doc_id))
-            raise VectorStoreError(str(exc)) from exc
-
-    async def cleanup_expired(self, ttl_hours: int) -> None:
-        """Удаляет коллекции, если они старше TTL по времени создания.
-
-        Время создания берётся из служебной мета-точки __collection_meta__.
-        Очистка выполняется параллельно с ограничением по семафору.
-
-        Args:
-            ttl_hours (int): Порог в часах.
-        """
-        try:
-            cols = await self._client.get_collections()
-            if not cols.collections or ttl_hours <= 0:
-                return
-
-            from datetime import UTC, datetime
-
-            now_ts = int(datetime.now(tz=UTC).timestamp())
-            threshold = ttl_hours * 3600
-
-            sem = asyncio.Semaphore(self._ttl_concurrency)
-
-            async def _maybe_drop(name: str) -> None:
-                async with sem:
-                    try:
-                        meta = await self._client.retrieve(
-                            collection_name=name,
-                            ids=[META_POINT_ID],
-                            with_payload=True,
-                            with_vectors=False,
-                        )
-                        if not meta:
-                            logger.debug(
-                                "Qdrant: skip ttl cleanup: no meta point",
-                                collection=name,
-                            )
-                            return
-
-                        payload = getattr(meta[0], "payload", {}) or {}
-                        created = payload.get(PAYLOAD_COLLECTION_CREATED_AT_TS)
-
-                        if not isinstance(created, (int, float)):
-                            logger.debug(
-                                "Qdrant: skip ttl cleanup: invalid meta payload",
-                                collection=name,
-                                payload=payload,
-                            )
-                            return
-
-                        if (now_ts - int(created)) >= threshold:
-                            await self._client.delete_collection(name)
-                            logger.info(
-                                "Qdrant collection dropped (ttl by creation time)",
-                                collection=name,
-                            )
-                    except Exception as col_exc:  # noqa: BLE001
-                        logger.warning(
-                            "Qdrant: ttl check failed for collection",
-                            collection=name,
-                            error=str(col_exc),
-                        )
-
-            await asyncio.gather(
-                *(_maybe_drop(col.name) for col in cols.collections),
-                return_exceptions=True,
-            )
-        except Exception as exc:  # noqa: BLE001
-            logger.exception("Qdrant cleanup_expired failed", error=str(exc))
+            logger.exception("Qdrant drop_collection failed", collection=cname)
             raise VectorStoreError(str(exc)) from exc
 
     async def is_healthy(self) -> bool:
@@ -375,18 +328,24 @@ class QdrantVectorStore(VectorStorePort):
 
     async def _ensure_collection(
         self,
-        doc_id: DocumentId,
+        collection: CollectionName,
         dense_dim: int | None,
         need_sparse: bool,
     ) -> None:
         """Создаёт коллекцию при отсутствии и ставит мета-точку.
 
         Args:
-            doc_id (DocumentId): Имя коллекции.
+            collection (CollectionName): Имя коллекции.
             dense_dim (int | None): Размерность dense-вектора (если есть).
             need_sparse (bool): Требуется ли sparse-хранилище.
         """
-        name = as_collection_name(str(doc_id))
+        if dense_dim is None and not need_sparse:
+            raise VectorStoreError(
+                "cannot create collection without vectors:"
+                "dense and sparse are both missing"
+            )
+        name = as_collection_name(str(collection))
+
         if await self._client.collection_exists(name):
             return
 
@@ -409,7 +368,6 @@ class QdrantVectorStore(VectorStorePort):
             sparse_vectors_config=sparse_cfg or None,
         )
 
-        # Ставим служебную мета-точку с временем создания коллекции.
         from datetime import UTC, datetime
 
         created_ts = int(datetime.now(tz=UTC).timestamp())

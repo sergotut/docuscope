@@ -13,6 +13,7 @@ from app.domain.model.shared import (
     StoredObject,
     UploadBatch
 )
+from app.domain.model.collections import CollectionName
 
 __all__ = ["StoragePort"]
 
@@ -30,6 +31,28 @@ class StoragePort(Protocol):
         """Загружает объекты в хранилище.
 
         Args:
+            blobs (list[Blob]): Двоичные данные объектов.
+            ttl_minutes (int | None): Время жизни объектов в минутах. Если
+                None, объекты бессрочные.
+
+        Returns:
+            UploadBatch: Результат пакетной загрузки с именами и сроками жизни.
+        """
+        ...
+
+    async def upload_to_collection(
+        self,
+        collection: CollectionName,
+        blobs: list[Blob],
+        *,
+        ttl_minutes: int | None = None,
+    ) -> UploadBatch:
+        """Загружает объекты в «папку» коллекции.
+
+        Ключи в сторе получают префикс <collection>/....
+
+        Args:
+            collection (CollectionName): Имя коллекции для префикса.
             blobs (list[Blob]): Двоичные данные объектов.
             ttl_minutes (int | None): Время жизни объектов в минутах. Если
                 None, объекты бессрочные.
@@ -66,6 +89,14 @@ class StoragePort(Protocol):
 
         Args:
             object_name (ObjectName): Имя удаляемого объекта.
+        """
+        ...
+
+    async def delete_collection(self, collection: CollectionName) -> None:
+        """Удаляет все объекты коллекции (по префиксу).
+
+        Args:
+            collection (CollectionName): Имя коллекции (префикс).
         """
         ...
 
