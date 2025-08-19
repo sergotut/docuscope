@@ -6,8 +6,6 @@
 
 from __future__ import annotations
 
-from typing import Tuple
-
 import asyncpg
 
 from .protocols import PgConnectionLike
@@ -76,9 +74,12 @@ class AsyncPGPool:
 
         Returns:
             PgConnectionLike: Соединение драйвера.
+
+        Raises:
+            RuntimeError: Если пул не инициализирован.
         """
         if self._pool is None:
-            raise RuntimeError("AsyncPG: Pool is not connected")
+            raise RuntimeError("AsyncPG: pool is not connected")
         return await self._pool.acquire()
 
     async def release(self, conn: PgConnectionLike) -> None:
@@ -86,23 +87,27 @@ class AsyncPGPool:
 
         Args:
             conn (PgConnectionLike): Ранее выданное соединение.
+
+        Raises:
+            RuntimeError: Если пул не инициализирован.
         """
-        assert self._pool is not None
-        await self._pool.release(conn)  # type: ignore[arg-type]
+        pool = self._pool
+        if pool is None:
+            raise RuntimeError("AsyncPG: pool is not connected")
+        await pool.release(conn)  # type: ignore[arg-type]
 
     @property
-    def stats(self) -> Tuple[int, int, int]:
+    def stats(self) -> tuple[int, int, int]:
         """Возвращает (min_size, max_size, in_use).
 
         Returns:
             tuple[int, int, int]: Минимум, максимум и занятые соединения.
         """
         pool = self._pool
-
         if pool is None:
             return (self._min, self._max, 0)
         try:
             in_use = pool.get_size() - pool.get_idle_size()
-        except Exception:
+        except Exception:  # noqa: BLE001
             in_use = 0
         return (self._min, self._max, int(in_use))

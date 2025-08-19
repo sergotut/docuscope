@@ -1,4 +1,4 @@
-"""Пакет cache: публичные реэкспорты"""
+"""Пакет cache: публичные реэкспорты."""
 
 from .redis import RedisCache
 

@@ -64,6 +64,7 @@ class RedisEngine(CacheEnginePort):
         try:
             return bool(await self.client().ping())
         except Exception:  # noqa: BLE001
+            logger.warning("redis is_healthy failed", error=str(exc))
             return False
 
     async def health(self) -> CacheHealthReport:
@@ -106,7 +107,7 @@ class RedisEngine(CacheEnginePort):
             keyspace_keys = int(db0.get("keys", 0) or 0)
             keyspace_expires = int(db0.get("expires", 0) or 0)
         except Exception:  # noqa: BLE001
-            pass
+            logger.warning("redis health collection failed", error=str(exc))
 
         return {
             "engine": "redis.asyncio",

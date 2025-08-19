@@ -35,7 +35,8 @@ def mask_url(
 
     Правила:
     - В userinfo пароль заменяется на placeholder, имя пользователя сохраняется.
-    - В query маскируются значения ключей из SENSITIVE_QUERY_KEYS и extra_sensitive_keys.
+    - В query маскируются значения ключей из SENSITIVE_QUERY_KEYS и
+        extra_sensitive_keys.
     - Если строка не похожа на URL (нет '://') или парсинг не удался —
         возвращается placeholder.
     - Поддерживаются IPv6-хосты (в квадратных скобках) и схемы redis/rediss.

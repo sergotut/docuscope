@@ -7,7 +7,9 @@ from __future__ import annotations
 
 import time
 from contextlib import asynccontextmanager
-from typing import AsyncContextManager, AsyncIterator
+from typing import AsyncContextManager, AsyncIterator, cast
+
+import structlog
 
 from app.domain.model.diagnostics import RelationalDBHealthReport
 from app.domain.ports.relational_store import RelConnection, RelationalEnginePort
@@ -17,6 +19,8 @@ from app.infrastructure.adapters.outbound.relational_store.postgres_client impor
 )
 
 __all__ = ["PostgresEngine"]
+
+logger = structlog.get_logger(__name__)
 
 
 class PostgresEngine(RelationalEnginePort):
@@ -43,6 +47,12 @@ class PostgresEngine(RelationalEnginePort):
             dsn=dsn,
             min_size=min_size,
             max_size=max_size,
+            timeout=timeout,
+        )
+        logger.info(
+            "postgres engine init",
+            min_pool=min_size,
+            max_pool=max_size,
             timeout=timeout,
         )
 
@@ -90,6 +100,7 @@ class PostgresEngine(RelationalEnginePort):
                 await c.fetchval("select 1")
             return True
         except Exception:  # noqa: BLE001
+            logger.warning("postgres is_healthy failed", error=str(exc))
             return False
 
     async def health(self) -> RelationalDBHealthReport:
@@ -117,7 +128,7 @@ class PostgresEngine(RelationalEnginePort):
                 await c.fetchval("select 1")
             latency_ms = (time.perf_counter() - t0) * 1000.0
         except Exception:  # noqa: BLE001
-            pass
+            logger.warning("postgres latency check failed", error=str(exc))
 
         try:
             async with self.acquire() as c:
@@ -168,7 +179,7 @@ class PostgresEngine(RelationalEnginePort):
                 )
                 uptime_seconds = int(up or 0)
         except Exception:  # noqa: BLE001
-            pass
+            logger.warning("postgres health metrics failed", error=str(exc))
 
         min_s, max_s, in_use = self._pool.stats
         return {

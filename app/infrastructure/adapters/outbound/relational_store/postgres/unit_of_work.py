@@ -9,11 +9,11 @@ from __future__ import annotations
 from typing import AsyncContextManager
 
 from app.domain.ports.relational_store import (
+    CollectionRepositoryPort,
+    DocumentMetaRepositoryPort,
     RelConnection,
     RelationalEnginePort,
     UnitOfWorkPort,
-    CollectionRepositoryPort,
-    DocumentMetaRepositoryPort,
 )
 from .repositories import (
     PostgresCollectionRepository,
@@ -69,7 +69,8 @@ class PostgresUnitOfWork(UnitOfWorkPort):
         tb: object | None,
     ) -> None:
         """Завершает транзакцию и отдаёт соединение в пул."""
-        assert self._tx_cm is not None and self._acq_cm is not None
+        if self._tx_cm is None or self._acq_cm is None:
+            raise RuntimeError("UoW.__aexit__ вызван без активного контекста")
 
         try:
             await self._tx_cm.__aexit__(exc_type, exc, tb)
@@ -88,8 +89,12 @@ class PostgresUnitOfWork(UnitOfWorkPort):
 
         Returns:
             CollectionRepositoryPort: Репозиторий коллекций.
+
+        Raises:
+            RuntimeError: Если UoW ещё не активирован через async with.
         """
-        assert self._collections is not None
+        if self._collections is None:
+            raise RuntimeError("UoW не инициализирован: collections недоступен")
         return self._collections
 
     @property
@@ -98,6 +103,10 @@ class PostgresUnitOfWork(UnitOfWorkPort):
 
         Returns:
             DocumentMetaRepositoryPort: Репозиторий документов.
+
+        Raises:
+            RuntimeError: Если UoW ещё не активирован через async with.
         """
-        assert self._documents is not None
+        if self._documents is None:
+            raise RuntimeError("UoW не инициализирован: documents недоступен")
         return self._documents
