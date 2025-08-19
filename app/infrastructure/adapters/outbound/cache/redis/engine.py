@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import time
 
+import structlog
+
 from app.domain.model.diagnostics import CacheHealthReport
 from app.domain.ports.cache import CacheEnginePort
 from app.infrastructure.adapters.outbound.cache.redis_client import (
@@ -17,6 +19,8 @@ from app.infrastructure.adapters.outbound.cache.redis_client import (
 )
 
 __all__ = ["RedisEngine"]
+
+logger = structlog.get_logger(__name__)
 
 
 class RedisEngine(CacheEnginePort):
@@ -63,7 +67,7 @@ class RedisEngine(CacheEnginePort):
         """
         try:
             return bool(await self.client().ping())
-        except Exception:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
             logger.warning("redis is_healthy failed", error=str(exc))
             return False
 
@@ -106,7 +110,7 @@ class RedisEngine(CacheEnginePort):
             db0 = info.get("db0") or {}
             keyspace_keys = int(db0.get("keys", 0) or 0)
             keyspace_expires = int(db0.get("expires", 0) or 0)
-        except Exception:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
             logger.warning("redis health collection failed", error=str(exc))
 
         return {

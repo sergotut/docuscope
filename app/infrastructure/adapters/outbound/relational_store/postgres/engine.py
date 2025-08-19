@@ -99,7 +99,7 @@ class PostgresEngine(RelationalEnginePort):
             async with self.acquire() as c:
                 await c.fetchval("select 1")
             return True
-        except Exception:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
             logger.warning("postgres is_healthy failed", error=str(exc))
             return False
 
@@ -127,7 +127,7 @@ class PostgresEngine(RelationalEnginePort):
             async with self.acquire() as c:
                 await c.fetchval("select 1")
             latency_ms = (time.perf_counter() - t0) * 1000.0
-        except Exception:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
             logger.warning("postgres latency check failed", error=str(exc))
 
         try:
@@ -178,7 +178,7 @@ class PostgresEngine(RelationalEnginePort):
                     """
                 )
                 uptime_seconds = int(up or 0)
-        except Exception:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
             logger.warning("postgres health metrics failed", error=str(exc))
 
         min_s, max_s, in_use = self._pool.stats
