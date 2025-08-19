@@ -38,7 +38,7 @@ razdel     = "^0.5"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2"
 pytest-asyncio = "^0.23"
-ruff = "^0.4"
+ruff = "^0.12"
 black = "^24.4"
 mypy = "^1.10"
 docformatter = "^1.7"
