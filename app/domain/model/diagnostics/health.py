@@ -7,6 +7,8 @@ __all__ = [
     "EmbedderHealthReport",
     "LLMHealthReport",
     "VectorStoreHealthReport",
+    "RelationalDBHealthReport",
+    "CacheHealthReport",
 ]
 
 
@@ -78,3 +80,82 @@ class VectorStoreHealthReport(TypedDict, total=False):
     distance: str
     collections: int
     status: str
+
+class RelationalDBHealthReport(TypedDict, total=False):
+    """Отчёт о состоянии реляционного хранилища.
+
+    Все поля необязательны для сохранения обратной совместимости.
+
+    Attributes:
+        engine (str): Название СУБД.
+        version (str): Версия сервера БД.
+        dsn (str): DSN или краткая строка подключения.
+        database (str): Имя базы данных.
+        status (str): Текущий статус работы.
+        pool_min (int): Минимальный размер пула подключений.
+        pool_max (int): Максимальный размер пула подключений.
+        pool_in_use (int): Текущие занятые подключения.
+        latency_ms (float): Оценка сетевой/SQL-задержки в миллисекундах.
+        role (str): Роль экземпляра (primary или replica).
+        readonly (bool): Признак режима только для чтения.
+        max_connections (int): Лимит подключений сервера.
+        num_backends (int): Активные подключения к текущей БД.
+        xact_commit (int): Счётчик коммитов транзакций.
+        xact_rollback (int): Счётчик откатов транзакций.
+        buffers_cache_hit_ratio (float): Доля попаданий в кеш 0..1.
+        uptime_seconds (int): Время работы сервера в секундах.
+    """
+
+    engine: str
+    version: str
+    dsn: str
+    database: str
+    status: str
+    pool_min: int
+    pool_max: int
+    pool_in_use: int
+    latency_ms: float
+    role: str
+    readonly: bool
+    max_connections: int
+    num_backends: int
+    xact_commit: int
+    xact_rollback: int
+    buffers_cache_hit_ratio: float
+    uptime_seconds: int
+
+
+class CacheHealthReport(TypedDict, total=False):
+    """Отчёт о состоянии кэширующего движка.
+
+    Attributes:
+        engine (str): Название движка (например, redis).
+        version (str): Версия сервера.
+        dsn (str): DSN или краткая строка подключения.
+        role (str): Роль экземпляра (master/replica).
+        status (str): Текущий статус работы.
+        latency_ms (float): Оценка сетевой задержки в миллисекундах.
+        db (int): Индекс выбранной базы (если применимо).
+        uptime_seconds (int): Время работы сервера в секундах.
+        used_memory_bytes (int): Используемая память в байтах.
+        connected_clients (int): Число подключённых клиентов.
+        total_commands_processed (int): Обработано команд всего.
+        keyspace_keys (int): Количество ключей.
+        keyspace_expires (int): Количество ключей с TTL.
+        hit_ratio (float): Доля попаданий в кэш 0..1.
+    """
+
+    engine: str
+    version: str
+    dsn: str
+    role: str
+    status: str
+    latency_ms: float
+    db: int
+    uptime_seconds: int
+    used_memory_bytes: int
+    connected_clients: int
+    total_commands_processed: int
+    keyspace_keys: int
+    keyspace_expires: int
+    hit_ratio: float

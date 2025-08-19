@@ -31,7 +31,7 @@ class FieldName:
         object.__setattr__(
             self,
             "value",
-            _validate_name(
+            validate_name(
                 self.value,
                 allowed_re=_ALLOWED_NAME_RE,
                 max_len=_MAX_LEN,

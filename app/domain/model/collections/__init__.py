@@ -1,6 +1,10 @@
 """Пакет collections: публичные реэкспорты доменных моделей коллекций."""
 
-from .names import validate_name
+from .collection import (
+    CollectionName,
+    CollectionMeta,
+    CollectionStatus,
+)
 
 __all__ = [
     "CollectionName",

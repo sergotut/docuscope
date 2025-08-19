@@ -218,11 +218,11 @@ class MinioStorage(StoragePort):
 
         Удаляются все объекты, чьи имена начинаются с префикса
         <collection>/.
-    
+
         Args:
             collection (CollectionName): Имя коллекции, используемое как
                 префикс ключей в бакете.
-    
+
         Notes:
             - Предполагается схема именования объектов вида
               <collection>/<object_name>.
@@ -389,7 +389,7 @@ class MinioStorage(StoragePort):
     @retry(**_RETRY)
     def _remove_objects_batch_sync(self, batch: list[object]) -> list[object]:
         """Удаляет батч объектов через remove_objects с ретраями.
-    
+
         Returns:
             list[object]: Список ошибок удаления (как возвращает MinIO SDK).
         """
@@ -401,10 +401,10 @@ class MinioStorage(StoragePort):
 
     def _delete_collection_sync(self, collection: CollectionName) -> int:
         """Синхронно удаляет объекты коллекции батчами.
-    
+
         Args:
             collection (CollectionName): Имя коллекции.
-    
+
         Returns:
             int: Количество успешно удалённых объектов.
         """
