@@ -8,7 +8,8 @@ from typing import Final
 import structlog
 
 from app.domain.model.retrieval import SearchHit
-from app.domain.model.vector_store import CollectionName, FieldName
+from app.domain.model.vector_store import FieldName
+from app.domain.model.collections import CollectionName
 
 __all__ = [
     "DENSE_VECTOR_NAME",

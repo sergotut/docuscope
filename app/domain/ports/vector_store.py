@@ -5,7 +5,7 @@
 - чисто векторный поиск (dense);
 - чисто разрежённый поиск (sparse);
 - гибридный поиск с RRF (слияние списков);
-- очистку по TTL, удаление коллекции, health‑check.
+- удаление коллекции, health‑check.
 """
 
 from __future__ import annotations
@@ -13,8 +13,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Protocol, runtime_checkable
 
+from app.domain.model.collections import CollectionName
 from app.domain.model.diagnostics import VectorStoreHealthReport
-from app.domain.model.documents import DocumentId
 from app.domain.model.retrieval import (
     EmbeddingVector,
     QueryFilter,
@@ -36,20 +36,20 @@ class VectorStorePort(Protocol):
 
     async def upsert_points(
         self,
-        doc_id: DocumentId,
+        collection: CollectionName,
         points: Sequence[UpsertPoint],
     ) -> None:
         """Добавляет или обновляет точки документа.
 
         Args:
-            doc_id (DocumentId): Идентификатор документа/коллекции.
+            collection (CollectionName): Имя коллекции.
             points (Sequence[UpsertPoint]): Точки с dense/sparse и payload.
         """
         ...
 
     async def vector_search(
         self,
-        doc_id: DocumentId,
+        collection: CollectionName,
         query_vector: EmbeddingVector,
         top_k: int,
         *,
@@ -58,7 +58,7 @@ class VectorStorePort(Protocol):
         """Поиск по dense-вектору.
 
         Args:
-            doc_id (DocumentId): Идентификатор документа/коллекции.
+            collection (CollectionName): Имя коллекции.
             query_vector (EmbeddingVector): Вектор запроса.
             top_k (int): Количество результатов.
             filter (QueryFilter | None): Фильтр по payload.
@@ -70,7 +70,7 @@ class VectorStorePort(Protocol):
 
     async def sparse_search(
         self,
-        doc_id: DocumentId,
+        collection: CollectionName,
         query_sparse: SparseVector,
         top_k: int,
         *,
@@ -79,7 +79,7 @@ class VectorStorePort(Protocol):
         """Поиск по sparse-вектору.
 
         Args:
-            doc_id (DocumentId): Идентификатор документа/коллекции.
+            collection (CollectionName): Имя коллекции.
             query_sparse (SparseVector): Разрежённый вектор запроса.
             top_k (int): Количество результатов.
             filter (QueryFilter | None): Фильтр по payload.
@@ -91,7 +91,7 @@ class VectorStorePort(Protocol):
 
     async def hybrid_search_rrf(
         self,
-        doc_id: DocumentId,
+        collection: CollectionName,
         *,
         query_vector: EmbeddingVector | None,
         query_sparse: SparseVector | None,
@@ -105,7 +105,7 @@ class VectorStorePort(Protocol):
         Итоговый счёт = сумма 1 / (k + rank) по веткам.
 
         Args:
-            doc_id (DocumentId): Идентификатор документа/коллекции.
+            collection (CollectionName): Имя коллекции.
             query_vector (EmbeddingVector | None): Dense-вектор запроса.
             query_sparse (SparseVector | None): Sparse-вектор запроса.
             top_k (int): Сколько результатов вернуть после слияния.
@@ -118,19 +118,11 @@ class VectorStorePort(Protocol):
         """
         ...
 
-    async def drop(self, doc_id: DocumentId) -> None:
-        """Удаляет коллекцию документа.
+    async def drop_collection(self, name: CollectionName) -> None:
+        """Удаляет коллекцию по имени (idempotent).
 
         Args:
-            doc_id (DocumentId): Идентификатор документа/коллекции.
-        """
-        ...
-
-    async def cleanup_expired(self, ttl_hours: int) -> None:
-        """Удаляет устаревшие коллекции по TTL.
-
-        Args:
-            ttl_hours (int): Возраст коллекций (в часах), старше которого удалить.
+            name (CollectionName): Имя коллекции.
         """
         ...
 

@@ -5,6 +5,8 @@ from .health import (
     LLMHealthReport,
     TokenizerHealthReport,
     VectorStoreHealthReport,
+    RelationalDBHealthReport,
+    CacheHealthReport,
 )
 
 __all__ = [
@@ -12,4 +14,6 @@ __all__ = [
     "EmbedderHealthReport",
     "LLMHealthReport",
     "VectorStoreHealthReport",
+    "RelationalDBHealthReport",
+    "CacheHealthReport",
 ]

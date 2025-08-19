@@ -10,6 +10,8 @@ from .tokenizer import TiktokenTokenizer
 from .vector import QdrantVectorStore
 from .storage import MinioStorage
 from .ocr import PaddleOCR
+from . import cache as cache
+from . import postgres as postgres
 
 __all__ = [
     "SentenceTransformersEmbedding",
@@ -20,4 +22,6 @@ __all__ = [
     "QdrantVectorStore",
     "MinioStorage",
     "PaddleOCR",
+    "cache",
+    "postgres",
 ]

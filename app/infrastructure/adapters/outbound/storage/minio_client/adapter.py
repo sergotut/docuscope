@@ -7,12 +7,12 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Iterator
+from collections.abc import Iterator, Iterable
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from io import BytesIO
-from typing import Callable, Final, TypeVar
+from typing import Callable, Final, TypeVar, cast
 
 import structlog
 from minio import Minio
@@ -32,6 +32,7 @@ from app.domain.model.shared import (
     UploadBatch,
     make_object_name,
 )
+from app.domain.model.collections import CollectionName
 from app.domain.ports import StoragePort
 from .models import HeadObject, ObjectMetadata, head_from_stat, mapping_from_meta
 from .protocols import MinioLike
@@ -47,6 +48,9 @@ _RETRY: Final = {
 }
 
 T = TypeVar("T")
+
+_BULK_DELETE_BATCH: Final[int] = 1000  # безопасный батч для S3 DeleteObjects
+_UPLOAD_CONCURRENCY: Final[int] = 8  # лимит одновременных upload-тасков
 
 
 @dataclass(slots=True)
@@ -103,14 +107,62 @@ class MinioStorage(StoragePort):
         """
         logger.debug("upload start", count=len(blobs), ttl=ttl_minutes)
 
-        tasks = [
-            self._run(self._put_one, blob, ttl_minutes) for blob in blobs
-        ]
-
-        objs = await asyncio.gather(*tasks)
+        sem = asyncio.Semaphore(_UPLOAD_CONCURRENCY)
+        
+        async def _task(b: Blob) -> StoredObject:
+            async with sem:
+                return await self._run(self._put_one, b, ttl_minutes)
+        
+        objs = await asyncio.gather(*(_task(b) for b in blobs))
         result = UploadBatch(objects=tuple(objs))
-
+        
         logger.info("upload done", objects=result.names)
+
+        return result
+
+    async def upload_to_collection(
+        self,
+        collection: CollectionName,
+        blobs: list[Blob],
+        *,
+        ttl_minutes: int | None = None,
+    ) -> UploadBatch:
+        """Загружает объекты в хранилище с префиксом <collection>/ в названии.
+
+        Args:
+            collection (CollectionName): Имя коллекции для префикса.
+            blobs (list[Blob]): Двоичные данные объектов.
+            ttl_minutes (int | None): Время жизни объектов в минутах.
+
+        Returns:
+            UploadBatch: Имена и метаданные сохранённых объектов.
+        """
+        logger.debug(
+            "upload_to_collection start",
+            collection=str(collection),
+            count=len(blobs),
+            ttl=ttl_minutes,
+        )
+        
+        sem = asyncio.Semaphore(_UPLOAD_CONCURRENCY)
+        
+        async def _task(b: Blob) -> StoredObject:
+            async with sem:
+                return await self._run(
+                    self._put_one,
+                    b,
+                    ttl_minutes,
+                    collection=collection
+                )
+        
+        objs = await asyncio.gather(*(_task(b) for b in blobs))
+        result = UploadBatch(objects=tuple(objs))
+        
+        logger.info(
+            "upload_to_collection done",
+            collection=str(collection),
+            objects=result.names,
+        )
 
         return result
 
@@ -161,6 +213,33 @@ class MinioStorage(StoragePort):
 
         await self._run(self._remove_sync, object_name)
 
+    async def delete_collection(self, collection: CollectionName) -> None:
+        """Удаляет все объекты коллекции из бакета.
+
+        Удаляются все объекты, чьи имена начинаются с префикса
+        <collection>/.
+
+        Args:
+            collection (CollectionName): Имя коллекции, используемое как
+                префикс ключей в бакете.
+
+        Notes:
+            - Предполагается схема именования объектов вида
+              <collection>/<object_name>.
+            - Батчи по 1000 объектов соответствуют лимиту S3 DeleteObjects.
+            - При ошибках удаления по отдельным объектам пишется warning,
+              операция продолжается для остальных.
+        """
+        logger.info("delete_collection start", collection=str(collection))
+
+        deleted = await self._run(self._delete_collection_sync, collection)
+
+        logger.info(
+            "delete_collection done",
+            collection=str(collection),
+            deleted=deleted,
+        )
+
     async def cleanup_expired(self) -> None:
         """Удаляет объекты, чей TTL истёк."""
         logger.info("cleanup_expired start")
@@ -194,37 +273,47 @@ class MinioStorage(StoragePort):
                 logger.info("bucket created", bucket=self.bucket)
 
     @retry(**_RETRY)
-    def _put_one(self, blob: Blob, ttl_minutes: int | None) -> StoredObject:
+    def _put_one(
+        self,
+        blob: Blob,
+        ttl_minutes: int | None,
+        collection: CollectionName | None = None
+    ) -> StoredObject:
         """Загружает один Blob и возвращает StoredObject.
 
         Args:
             blob (Blob): Данные и метаинформация.
             ttl_minutes (int | None): TTL в минутах.
+            collection (CollectionName | None): Имя коллекции для префикса.
+                По умолчанию None.
 
         Returns:
             StoredObject: Имя, expires_at и оригинальное имя.
         """
-        object_name = make_object_name(original_name=blob.filename)
+        now = datetime.now(UTC)
+
+        inner: ObjectName = make_object_name(original_name=blob.filename, now=now)
+        key: ObjectName = (
+            ObjectName(f"{str(collection)}/{str(inner)}") if collection else inner
+        )
+
         data = blob.data
         stream = BytesIO(data)
         size = len(data)
         content_type = blob.content_type or "application/octet-stream"
-        expires_at = (
-            datetime.now(UTC) + timedelta(minutes=ttl_minutes)
-            if ttl_minutes
-            else None
-        )
+        expires_at = (now + timedelta(minutes=ttl_minutes)) if ttl_minutes else None
+
         meta_dict = mapping_from_meta(
             ObjectMetadata(
                 expires_at=expires_at,
                 original_name=blob.filename,
-                raw={},  # можно прокинуть доп. ключи, если появятся
+                raw={},
             )
         )
 
         self._minio.put_object(
             self.bucket,
-            str(object_name),
+            str(key),
             stream,
             length=size,
             content_type=content_type,
@@ -233,13 +322,13 @@ class MinioStorage(StoragePort):
 
         logger.debug(
             "object uploaded",
-            object=str(object_name),
+            object=str(key),
             size=size,
             ttl_minutes=ttl_minutes,
         )
 
         return StoredObject(
-            name=object_name,
+            name=key,
             expires_at=expires_at,
             original_name=blob.filename,
         )
@@ -296,6 +385,79 @@ class MinioStorage(StoragePort):
             self._minio.remove_object(self.bucket, str(object_name))
 
         logger.debug("object removed", object=str(object_name))
+
+    @retry(**_RETRY)
+    def _remove_objects_batch_sync(self, batch: list[object]) -> list[object]:
+        """Удаляет батч объектов через remove_objects с ретраями.
+
+        Returns:
+            list[object]: Список ошибок удаления (как возвращает MinIO SDK).
+        """
+        rem = cast(
+            "Callable[[str, Iterable[object]], Iterable[object]]",
+            getattr(self._minio, "remove_objects"),
+        )
+        return list(rem(self.bucket, batch))
+
+    def _delete_collection_sync(self, collection: CollectionName) -> int:
+        """Синхронно удаляет объекты коллекции батчами.
+
+        Args:
+            collection (CollectionName): Имя коллекции.
+
+        Returns:
+            int: Количество успешно удалённых объектов.
+        """
+        prefix = f"{str(collection)}/"
+    
+        # Попытка использовать MinIO.remove_objects(...) (если доступно).
+        rem = cast(
+            "Callable[[str, Iterable[object]], Iterable[object]] | None",
+            getattr(self._minio, "remove_objects", None),
+        )
+    
+        if rem is not None:
+            from minio.deleteobjects import DeleteObject  # type: ignore
+    
+            def _batches() -> Iterable[list[object]]:
+                batch: list[object] = []
+                for info in self._minio.list_objects(self.bucket, recursive=True):
+                    name = info.object_name
+                    if name.startswith(prefix):
+                        batch.append(DeleteObject(name))
+                        if len(batch) >= _BULK_DELETE_BATCH:
+                            yield batch
+                            batch = []
+                if batch:
+                    yield batch
+    
+            total_deleted = 0
+            for batch in _batches():
+                errors = self._remove_objects_batch_sync(batch)
+                # количество успешно удалённых = все минус ошибки
+                total_deleted += len(batch) - len(errors)
+                for err in errors:
+                    obj_name = getattr(err, "object_name", None)
+                    code = getattr(err, "code", None)
+                    msg = getattr(err, "message", str(err))
+                    logger.warning(
+                        "minio bulk delete error",
+                        object=obj_name,
+                        code=code,
+                        message=msg,
+                    )
+            return total_deleted
+    
+        # Fallback: поштучное удаление (надёжно, но медленнее)
+        deleted = 0
+        for info in self._minio.list_objects(self.bucket, recursive=True):
+            name = info.object_name
+            if not name.startswith(prefix):
+                continue
+            with self._suppress_s3():
+                self._minio.remove_object(self.bucket, name)
+                deleted += 1
+        return deleted
 
     @retry(**_RETRY)
     def _cleanup_expired_sync(self) -> None:

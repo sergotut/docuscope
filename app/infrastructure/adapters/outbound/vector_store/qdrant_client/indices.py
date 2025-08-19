@@ -12,7 +12,8 @@ from typing import Any, cast
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.http import models as qm
 
-from app.domain.model.vector_store import CollectionName, FieldName
+from app.domain.model.vector_store import FieldName
+from app.domain.model.collections import CollectionName
 from .models import (
     QdrantKeywordIndexSpec,
     QdrantTextIndexConfig,

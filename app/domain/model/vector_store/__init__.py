@@ -8,7 +8,7 @@ from .filters import (
     QueryFilter
 )
 from .models import SearchHit, UpsertPoint
-from .names import CollectionName, FieldName
+from .names import FieldName
 
 __all__ = [
     "SearchHit",
@@ -18,6 +18,5 @@ __all__ = [
     "OrFilter",
     "NotFilter",
     "QueryFilter",
-    "CollectionName",
     "FieldName"
 ]
