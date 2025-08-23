@@ -70,7 +70,7 @@ class MimeExtConflictRule:
 
         ext_type = from_extension(ext)
         if ext_type is DocumentType.UNKNOWN:
-            # Неизвестное расширение — решается отдельным правилом (UnknownExtensionRule).
+            # Неизвестное расширение — решается отдельным правилом.
             return None
 
         return REASON_MIME_EXT_CONFLICT if ext_type is not result.type else None

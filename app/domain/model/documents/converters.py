@@ -117,7 +117,7 @@ def from_mimetype(mimetype: str) -> DocumentType:
 
     m = mimetype.strip().lower().split(";", 1)[0]
 
-    return _MIMETYPE_TO_TYPE.get(mimetype.lower(), DocumentType.UNKNOWN)
+    return _MIMETYPE_TO_TYPE.get(m, DocumentType.UNKNOWN)
 
 
 def mime_of(doc_type: DocumentType) -> str | None:
