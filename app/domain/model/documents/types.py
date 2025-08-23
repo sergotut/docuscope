@@ -123,11 +123,11 @@ def family_of(type_: DocumentType) -> DocumentFamily:
     """Возвращает семейство для строгого типа.
 
     Args:
-        type_: Строгий тип документа.
+        type_ (DocumentType): Строгий тип документа.
 
     Returns:
-        Соответствующее семейство документа. Если тип не распознан, возвращается
-        DocumentFamily.UNKNOWN.
+        DocumentFamily: Соответствующее семейство документа. Если тип не
+        распознан, возвращается DocumentFamily.UNKNOWN.
     """
     return DOCUMENT_FAMILY_BY_TYPE.get(type_, DocumentFamily.UNKNOWN)
 
@@ -136,10 +136,10 @@ def is_allowed_type(type_: DocumentType) -> bool:
     """Проверяет допуск строгого типа согласно политике.
 
     Args:
-        type_: Строгий тип документа.
+        type_ (DocumentType): Строгий тип документа.
 
     Returns:
-        True, если тип разрешён политикой; иначе False.
+        bool: True, если тип разрешён политикой, иначе False.
     """
     return type_ in ALLOWED_DOCUMENT_TYPES
 
@@ -150,10 +150,11 @@ def permission_of(type_: DocumentType) -> Permission:
     Является тонкой обёрткой над is_allowed_type.
 
     Args:
-        type_: Строгий тип документа.
+        type_ (DocumentType): Строгий тип документа.
 
     Returns:
-        Permission.ALLOWED для разрешённых типов, иначе Permission.FORBIDDEN.
+        Permission: Permission.ALLOWED для разрешённых типов, иначе
+        Permission.FORBIDDEN.
     """
     return (
         Permission.ALLOWED

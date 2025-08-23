@@ -6,7 +6,7 @@ import re
 
 from app.application.documents.detection.codes import (
     WarningCode,
-    WARN_INVALID_MIME
+    WARN_INVALID_MIME,
 )
 
 __all__ = ["canonical_mime_or_none"]
@@ -15,7 +15,7 @@ _MIME_RE = re.compile(r"^[a-z0-9.+-]+/[a-z0-9.+-]+$")
 
 
 def canonical_mime_or_none(
-    mime: str | None
+    mime: str | None,
 ) -> tuple[str | None, tuple[WarningCode, ...]]:
     """Возвращает каноничный MIME без параметров или None и предупреждения.
 
@@ -25,10 +25,11 @@ def canonical_mime_or_none(
     - проверка формата 'тип/подтип' допустимыми символами.
 
     Args:
-        mime: MIME-тип от клиента.
+        mime (str | None): MIME-тип от клиента.
 
     Returns:
-        Пара (mime, warnings), где mime — каноничный MIME или None.
+        tuple[str | None, tuple[WarningCode, ...]]: Пара (mime, warnings), где
+        mime — каноничный MIME или None.
     """
     if not mime:
         return None, ()

@@ -5,7 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable
 
-from app.application.documents.detection.codes import ReasonCode, WarningCode
+from app.application.documents.detection.codes import (
+    ReasonCode,
+    WarningCode,
+    REASON_FORBIDDEN_BY_DOMAIN,
+)
 from app.application.documents.detection.options import DocumentDetectionOptions
 from app.application.documents.detection.rules import (
     ConfidenceRule,
@@ -16,7 +20,7 @@ from app.application.documents.detection.rules import (
 )
 from app.application.documents.normalization import (
     NormalizedInput,
-    normalize_input
+    normalize_input,
 )
 from app.domain.model.documents import FileProbe, TypeDetectionResult
 from app.domain.ports.documents import DocumentTypeDetectorPort
@@ -29,11 +33,12 @@ class DetectionDecision:
     """Итог прикладного решения.
 
     Attributes:
-        result: Доменный результат детекции.
-        accepted: Принят ли документ приложением.
-        reasons: Причины отклонения (если есть).
-        warnings: Предупреждения из нормализации и детектора, объединённые.
-        normalized: Результат нормализации входа (ext/mime).
+        result (TypeDetectionResult): Доменный результат детекции.
+        accepted (bool): Принят ли документ приложением.
+        reasons (tuple[ReasonCode, ...]): Причины отклонения (если есть).
+        warnings (tuple[WarningCode, ...]): Объединённые предупреждения
+            из нормализации и детектора.
+        normalized (NormalizedInput): Результат нормализации входа (ext/mime).
     """
 
     result: TypeDetectionResult
@@ -61,9 +66,13 @@ class DocumentDetectionService:
         """Инициализирует сервис.
 
         Args:
-            detector: Реализация доменного порта детектора типов.
-            options: Опции прикладного уровня (строгость, пороги и т. п.).
-            rules: Явный набор правил. Если не задан, собирается по options.
+            detector (DocumentTypeDetectorPort): Реализация доменного порта
+                детектора типов.
+            options (DocumentDetectionOptions | None): Опции прикладного уровня
+                (строгость, пороги и т. п.). Если None, используются значения
+                по умолчанию.
+            rules (Iterable[DecisionRule] | None): Явный набор правил. Если не
+                задан, собирается по options.
         """
         self._detector = detector
         self._opt = options or DocumentDetectionOptions()
@@ -76,11 +85,12 @@ class DocumentDetectionService:
         """Детектирует тип и принимает решение. Самостоятельно нормализует вход.
 
         Args:
-            probe: Проба файла с исходными данными (имя, размер, head, заявленный MIME).
+            probe (FileProbe): Проба файла с исходными данными (имя, размер,
+                head, заявленный MIME).
 
         Returns:
-            DetectionDecision с результатом детекции, списком причин/предупреждений
-            и флагом принятия.
+            DetectionDecision: Результат детекции, список причин/предупреждений
+            и флаг принятия.
         """
         norm = normalize_input(
             original_filename=probe.original_filename,
@@ -92,17 +102,18 @@ class DocumentDetectionService:
         self,
         *,
         probe: FileProbe,
-        normalized: NormalizedInput
+        normalized: NormalizedInput,
     ) -> DetectionDecision:
         """Детектирует тип и принимает решение, используя уже нормализованный вход.
 
         Args:
-            probe: Проба файла с исходными данными (имя, размер, head, заявленный MIME).
-            normalized: Результаты нормализации имени и MIME.
+            probe (FileProbe): Проба файла с исходными данными (имя, размер,
+                head, заявленный MIME).
+            normalized (NormalizedInput): Результаты нормализации имени и MIME.
 
         Returns:
-            DetectionDecision с результатом детекции, списком причин/предупреждений
-            и флагом принятия.
+            DetectionDecision: Результат детекции, список причин/предупреждений
+            и флаг принятия.
         """
         result = self._detector.detect(probe)
         warnings = _merge_unique(normalized.warnings, result.warnings)
@@ -127,10 +138,10 @@ class DocumentDetectionService:
         """Собирает дефолтный набор правил на основе опций.
 
         Args:
-            opt: Опции прикладного уровня.
+            opt (DocumentDetectionOptions): Опции прикладного уровня.
 
         Returns:
-            Кортеж правил, применяемых по умолчанию.
+            tuple[DecisionRule, ...]: Кортеж правил, применяемых по умолчанию.
         """
         rules: list[DecisionRule] = []
 
@@ -151,11 +162,12 @@ def _merge_unique(
     """Объединяет предупреждения без дубликатов, сохраняя порядок появления.
 
     Args:
-        a: Предупреждения из нормализации.
-        b: Предупреждения из детектора.
+        a (tuple[WarningCode, ...]): Предупреждения из нормализации.
+        b (tuple[WarningCode, ...]): Предупреждения из детектора.
 
     Returns:
-        Кортеж предупреждений без повторов, в порядке первого появления.
+        tuple[WarningCode, ...]: Предупреждения без повторов,
+        в порядке первого появления.
     """
     seen: set[WarningCode] = set()
     out: list[WarningCode] = []
@@ -178,13 +190,15 @@ def _collect_reasons(
     """Вычисляет причины отклонения, последовательно применяя правила.
 
     Args:
-        rules: Набор правил для оценки.
-        result: Доменный результат детекции.
-        normalized: Результаты нормализации (ext/mime).
-        warnings: Совмещённые предупреждения нормализации и детектора.
+        rules (Iterable[DecisionRule]): Набор правил для оценки.
+        result (TypeDetectionResult): Доменный результат детекции.
+        normalized (NormalizedInput): Результаты нормализации (ext/mime).
+        warnings (tuple[WarningCode, ...]): Совмещённые предупреждения
+            нормализации и детектора.
 
     Returns:
-        Кортеж кодов причин отклонения. Пустой кортеж означает, что отказов нет.
+        tuple[ReasonCode, ...]: Кортеж кодов причин отклонения. Пустой кортеж
+        означает, что отказов нет.
     """
     out: list[ReasonCode] = []
 
@@ -208,13 +222,13 @@ def _compute_acceptance(
     """Определяет решение о приёме документа исходя из списка причин.
 
     Args:
-        strict: Строгий режим. Если True — отклонять при любой причине.
-        reasons: Причины отказа, собранные правилами.
+        strict (bool): Строгий режим. Если True — отклонять при любой причине.
+        reasons (tuple[ReasonCode, ...]): Причины отказа, собранные правилами.
 
     Returns:
-        True, если документ принят; False — если отклонён.
+        bool: True, если документ принят; False — если отклонён.
     """
     if strict:
         return not reasons
     # В «мягком» режиме блокируем только доменный запрет.
-    return "forbidden_by_domain" not in reasons
+    return REASON_FORBIDDEN_BY_DOMAIN not in reasons

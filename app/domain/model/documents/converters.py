@@ -34,14 +34,16 @@ _EXT_TO_TYPE: Final[dict[str, DocumentType]] = {
 _MIMETYPE_TO_TYPE: Final[dict[str, DocumentType]] = {
     # Word
     "application/msword": DocumentType.WORD_DOC,
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": (
-        DocumentType.WORD_DOCX
-    ),
+    (
+        "application/"
+        "vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ): DocumentType.WORD_DOCX,
     # Excel
     "application/vnd.ms-excel": DocumentType.EXCEL_XLS,
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": (
-        DocumentType.EXCEL_XLSX
-    ),
+    (
+        "application/"
+        "vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ): DocumentType.EXCEL_XLSX,
     # PDF
     "application/pdf": DocumentType.PDF,
     # Images
@@ -53,6 +55,30 @@ _MIMETYPE_TO_TYPE: Final[dict[str, DocumentType]] = {
     "image/webp": DocumentType.IMAGE_WEBP,
 }
 
+_TYPE_TO_MIMETYPE: Final[dict[DocumentType, str]] = {
+    # Word
+    DocumentType.WORD_DOC: "application/msword",
+    DocumentType.WORD_DOCX: (
+        "application/"
+        "vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ),
+    # Excel
+    DocumentType.EXCEL_XLS: "application/vnd.ms-excel",
+    DocumentType.EXCEL_XLSX: (
+        "application/"
+        "vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ),
+    # PDF
+    DocumentType.PDF: "application/pdf",
+    # Images
+    DocumentType.IMAGE_JPEG: "image/jpeg",
+    DocumentType.IMAGE_PNG: "image/png",
+    DocumentType.IMAGE_TIFF: "image/tiff",
+    DocumentType.IMAGE_BMP: "image/bmp",
+    DocumentType.IMAGE_GIF: "image/gif",
+    DocumentType.IMAGE_WEBP: "image/webp",
+}
+
 
 def from_extension(extension: str) -> DocumentType:
     """Определяет DocumentType по расширению файла.
@@ -61,14 +87,16 @@ def from_extension(extension: str) -> DocumentType:
     символов не важен. Неизвестные расширения возвращают DocumentType.UNKNOWN.
 
     Args:
-        extension: Расширение файла с точкой или без.
+        extension (str): Расширение файла с точкой или без.
 
     Returns:
-        Соответствующий DocumentType или DocumentType.UNKNOWN.
+        DocumentType: Соответствующий тип или DocumentType.UNKNOWN.
     """
     if not extension:
         return DocumentType.UNKNOWN
+
     ext = extension.lower().lstrip(".")
+
     return _EXT_TO_TYPE.get(ext, DocumentType.UNKNOWN)
 
 
@@ -79,11 +107,26 @@ def from_mimetype(mimetype: str) -> DocumentType:
     DocumentType.UNKNOWN.
 
     Args:
-        mimetype: MIME-тип, например application/pdf.
+        mimetype (str): MIME-тип, например application/pdf.
 
     Returns:
-        Соответствующий DocumentType или DocumentType.UNKNOWN.
+        DocumentType: Соответствующий тип или DocumentType.UNKNOWN.
     """
     if not mimetype:
         return DocumentType.UNKNOWN
+
+    m = mimetype.strip().lower().split(";", 1)[0]
+
     return _MIMETYPE_TO_TYPE.get(mimetype.lower(), DocumentType.UNKNOWN)
+
+
+def mime_of(doc_type: DocumentType) -> str | None:
+    """Возвращает каноничный MIME для заданного DocumentType.
+
+    Args:
+        doc_type (DocumentType): Строгий тип документа.
+
+    Returns:
+        str | None: Каноничный MIME-тип или None, если соответствие не задано.
+    """
+    return _TYPE_TO_MIMETYPE.get(doc_type)

@@ -5,13 +5,10 @@ from __future__ import annotations
 from app.application.documents.detection.codes import (
     ReasonCode,
     WarningCode,
-    REASON_LOW_CONFIDENCE
+    REASON_LOW_CONFIDENCE,
 )
-from app.application.documents.detection.rules.base import DecisionRule
-from app.application.documents import (
-    NormalizedInput,
-    TypeDetectionResult
-)
+from app.application.documents.normalization import NormalizedInput
+from app.domain.model.documents.type_detection import TypeDetectionResult
 
 __all__ = ["ConfidenceRule"]
 
@@ -23,7 +20,8 @@ class ConfidenceRule:
         """Создаёт правило с порогом уверенности.
 
         Args:
-            min_confidence: Минимально допустимая уверенность в диапазоне 0.0..1.0.
+            min_confidence (float): Минимально допустимая уверенность
+                в диапазоне 0.0..1.0.
 
         Raises:
             ValueError: Если значение порога вне диапазона 0.0..1.0.
@@ -42,12 +40,15 @@ class ConfidenceRule:
         """Сравнивает уверенность с порогом.
 
         Args:
-            result: Доменный результат детекции типа.
-            normalized: Нормализованные входные данные (ext/mime).
-            warnings: Предупреждения нормализации и/или детектора.
+            result (TypeDetectionResult): Доменный результат детекции типа.
+            normalized (NormalizedInput): Нормализованные входные данные
+                (ext/mime).
+            warnings (tuple[WarningCode, ...]): Предупреждения нормализации
+                и/или детектора.
 
         Returns:
-            Причину отклонения REASON_LOW_CONFIDENCE при result.confidence
-            ниже порога; иначе None.
+            ReasonCode | None: Причина отклонения REASON_LOW_CONFIDENCE при
+            result.confidence ниже порога; иначе None.
         """
+        _ = normalized, warnings  # параметры не используются, сигнатура — по протоколу
         return REASON_LOW_CONFIDENCE if result.confidence < self._min else None

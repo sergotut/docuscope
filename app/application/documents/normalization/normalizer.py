@@ -4,17 +4,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.application.documents.detection import WarningCode
-from app.application.documents.normalization import (
+from app.application.documents.detection.codes import WarningCode
+from app.application.documents.normalization.filename import (
     canonical_ext_or_none,
-    canonical_mime_or_none
+)
+from app.application.documents.normalization.mime import (
+    canonical_mime_or_none,
 )
 from app.domain.model.documents.type_detection import FileProbe
 
 __all__ = [
     "NormalizedInput",
     "normalize_input",
-    "build_probe"
+    "build_probe",
 ]
 
 
@@ -23,9 +25,9 @@ class NormalizedInput:
     """Результат нормализации входа.
 
     Attributes:
-        ext: Каноничное расширение без точки или None.
-        mime: Каноничный MIME без параметров или None.
-        warnings: Предупреждения нормализации.
+        ext (str | None): Каноничное расширение без точки или None.
+        mime (str | None): Каноничный MIME без параметров или None.
+        warnings (tuple[WarningCode, ...]): Предупреждения нормализации.
     """
 
     ext: str | None
@@ -36,20 +38,20 @@ class NormalizedInput:
 def normalize_input(
     *,
     original_filename: str,
-    declared_mime: str | None
+    declared_mime: str | None,
 ) -> NormalizedInput:
     """Нормализует расширение и MIME.
 
     Args:
-        original_filename: Имя файла как пришло от клиента.
-        declared_mime: MIME, заявленный клиентом.
+        original_filename (str): Имя файла как пришло от клиента.
+        declared_mime (str | None): MIME, заявленный клиентом.
 
     Returns:
-        NormalizedInput с каноничными значениями и предупреждениями.
+        NormalizedInput: Каноничные значения и предупреждения нормализации.
     """
     ext, w1 = canonical_ext_or_none(original_filename)
     mime, w2 = canonical_mime_or_none(declared_mime)
-    return NormalizedInput(ext=ext, mime=mime, warnings=w1+w2)
+    return NormalizedInput(ext=ext, mime=mime, warnings=w1 + w2)
 
 
 def build_probe(
@@ -64,17 +66,17 @@ def build_probe(
     Нормализованный ext используется на уровне application, в FileProbe не кладётся.
 
     Args:
-        original_filename: Имя файла от клиента.
-        size_bytes: Размер файла в байтах.
-        head: Первые N байт файла.
-        declared_mime: MIME от клиента.
+        original_filename (str): Имя файла от клиента.
+        size_bytes (int): Размер файла в байтах.
+        head (bytes): Первые N байт файла.
+        declared_mime (str | None): MIME от клиента.
 
     Returns:
-        FileProbe для передачи в порт детектора.
+        FileProbe: Объект проб файла для передачи в порт детектора.
     """
     norm = normalize_input(
         original_filename=original_filename,
-        declared_mime=declared_mime
+        declared_mime=declared_mime,
     )
 
     return FileProbe(

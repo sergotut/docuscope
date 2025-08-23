@@ -25,10 +25,11 @@ def canonical_ext_or_none(name: str) -> tuple[str | None, tuple[WarningCode, ...
     - точек, пробелов и разделителей путей быть не должно в самом расширении.
 
     Args:
-        name: Исходное имя файла.
+        name (str): Исходное имя файла.
 
     Returns:
-        Пара (ext, warnings), где ext — расширение без точки или None.
+        tuple[str | None, tuple[WarningCode, ...]]: Пара (ext, warnings), где
+        ext — расширение без точки или None.
     """
     warnings: list[WarningCode] = []
 

@@ -25,10 +25,10 @@ class FileProbe:
     """Минимальные сведения о файле для детектора типа.
 
     Attributes:
-        original_filename: Имя файла от пользователя.
-        size_bytes: Размер в байтах (>= 0).
-        head: Первые N байт для сигнатурного анализа.
-        declared_mime: MIME, заявленный клиентом.
+        original_filename (str): Имя файла от пользователя.
+        size_bytes (int): Размер в байтах (>= 0).
+        head (bytes): Первые N байт для сигнатурного анализа.
+        declared_mime (str | None): MIME, заявленный клиентом.
     """
 
     original_filename: str
@@ -37,7 +37,12 @@ class FileProbe:
     declared_mime: str | None = None
 
     def __post_init__(self) -> None:
-        """Проводит быструю валидацию аргументов и нормализацию буфера."""
+        """Проводит быструю валидацию аргументов и нормализацию буфера.
+
+        Raises:
+            DomainValidationError: Если имя пустое, размер отрицательный
+                или head не является bytes-подобным объектом.
+        """
         if not self.original_filename.strip():
             raise DomainValidationError("original_filename не может быть пустым")
 
@@ -56,13 +61,14 @@ class TypeDetectionResult:
     """Результат детекции строгого типа документа.
 
     Attributes:
-        type: Строгий тип.
-        family: Семейство (производное от типа).
-        ext: Нормализованное расширение без точки.
-        mime: Нормализованный MIME.
-        permission: Решение о допуске.
-        confidence: Уверенность в диапазоне 0.0..1.0.
-        warnings: Предупреждения, например конфликт MIME и сигнатуры.
+        type (DocumentType): Строгий тип.
+        family (DocumentFamily): Семейство (производное от типа).
+        ext (str | None): Нормализованное расширение без точки.
+        mime (str | None): Нормализованный MIME.
+        permission (Permission): Решение о допуске.
+        confidence (float): Уверенность в диапазоне 0.0..1.0.
+        warnings (tuple[str, ...]): Предупреждения, например конфликт MIME
+            и сигнатуры.
     """
 
     type: DocumentType
@@ -78,7 +84,7 @@ class TypeDetectionResult:
         """Возвращает признак, что документ разрешён политикой.
 
         Returns:
-            True, если документ разрешён; иначе False.
+            bool: True, если документ разрешён, иначе False.
         """
         return self.permission is Permission.ALLOWED
 
@@ -97,18 +103,18 @@ class TypeDetectionResult:
         Внутри выполняется лёгкая проверка каноничности.
 
         Args:
-            type_: Строгий тип документа.
-            ext: Нормализованное расширение без точки или None.
-            mime: Нормализованный MIME или None.
-            confidence: Уверенность в диапазоне 0.0..1.0.
-            warnings: Сопутствующие предупреждения.
+            type_ (DocumentType): Строгий тип документа.
+            ext (str | None): Нормализованное расширение без точки или None.
+            mime (str | None): Нормализованный MIME или None.
+            confidence (float): Уверенность в диапазоне 0.0..1.0.
+            warnings (tuple[str, ...]): Сопутствующие предупреждения.
 
         Returns:
-            Экземпляр TypeDetectionResult.
+            TypeDetectionResult: Экземпляр результата детекции.
 
         Raises:
-            DomainValidationError: Если нарушен диапазон confidence или
-                ext/mime не каноничны.
+            DomainValidationError: Если нарушен диапазон confidence или ext/mime
+                не каноничны.
         """
         if not (0.0 <= confidence <= 1.0):
             raise DomainValidationError("confidence должен быть в диапазоне 0.0..1.0")

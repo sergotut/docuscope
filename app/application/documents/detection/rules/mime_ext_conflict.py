@@ -15,12 +15,11 @@ from app.application.documents.detection.codes import (
     WarningCode,
     REASON_MIME_EXT_CONFLICT,
 )
-from app.application.documents.detection.rules.base import DecisionRule
 from app.application.documents.normalization import NormalizedInput
 from app.domain.model.documents import (
     DocumentType,
+    TypeDetectionResult,
     from_extension,
-    TypeDetectionResult
 )
 
 __all__ = ["MimeExtConflictRule"]
@@ -33,7 +32,7 @@ class MimeExtConflictRule:
         """Создаёт правило.
 
         Args:
-            enabled: Включает или отключает проверку правила.
+            enabled (bool): Включает или отключает проверку правила.
         """
         self._enabled = enabled
 
@@ -50,14 +49,18 @@ class MimeExtConflictRule:
         Неизвестное или отсутствующее расширение не считается конфликтом.
 
         Args:
-            result: Доменный результат детекции типа.
-            normalized: Нормализованные входные данные (ext/mime).
-            warnings: Предупреждения нормализации и/или детектора.
+            result (TypeDetectionResult): Доменный результат детекции типа.
+            normalized (NormalizedInput): Нормализованные входные данные
+                (каноничное расширение и MIME).
+            warnings (tuple[WarningCode, ...]): Предупреждения нормализации
+                и/или детектора.
 
         Returns:
-            Причину отклонения REASON_MIME_EXT_CONFLICT при несовпадении типа
-            из расширения и фактического типа иначе None.
+            ReasonCode | None: REASON_MIME_EXT_CONFLICT при несовпадении типа,
+            определённого по расширению, и фактического типа; иначе None.
         """
+        _ = warnings  # параметр не используется; сигнатура — по протоколу
+
         if not self._enabled:
             return None
 
@@ -67,8 +70,7 @@ class MimeExtConflictRule:
 
         ext_type = from_extension(ext)
         if ext_type is DocumentType.UNKNOWN:
-            # Неизвестное расширение — решается отдельным правилом
-            #   UnknownExtensionRule.
+            # Неизвестное расширение — решается отдельным правилом (UnknownExtensionRule).
             return None
 
         return REASON_MIME_EXT_CONFLICT if ext_type is not result.type else None

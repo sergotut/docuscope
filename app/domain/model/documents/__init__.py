@@ -1,23 +1,25 @@
 """Пакет documents: публичные реэкспорты доменных моделей."""
 
+from __future__ import annotations
+
 from .document import (
-    DocumentId,
-    DocumentBase,
     Document,
-    DocumentMeta
+    DocumentBase,
+    DocumentId,
+    DocumentMeta,
 )
 from .chunk import Chunk, ChunkId
+from .converters import from_extension, from_mimetype, mime_of
 from .types import (
+    ALLOWED_DOCUMENT_TYPES,
+    DOCUMENT_FAMILY_BY_TYPE,
     DocumentFamily,
     DocumentType,
     Permission,
-    DOCUMENT_FAMILY_BY_TYPE,
-    ALLOWED_DOCUMENT_TYPES,
     family_of,
     is_allowed_type,
     permission_of,
 )
-from .converters import from_extension, from_mimetype
 from .type_detection import FileProbe, TypeDetectionResult
 
 __all__ = [
@@ -37,6 +39,7 @@ __all__ = [
     "permission_of",
     "from_extension",
     "from_mimetype",
+    "mime_of",
     "FileProbe",
     "TypeDetectionResult",
 ]

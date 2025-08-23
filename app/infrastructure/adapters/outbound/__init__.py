@@ -11,6 +11,7 @@ from .vector import QdrantVectorStore
 from .storage import MinioStorage
 from .ocr import PaddleOCR
 from . import cache as cache
+from . import documents as documents
 from . import postgres as postgres
 
 __all__ = [
@@ -23,5 +24,6 @@ __all__ = [
     "MinioStorage",
     "PaddleOCR",
     "cache",
+    "documents",
     "postgres",
 ]

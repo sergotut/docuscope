@@ -45,9 +45,9 @@ def is_mime_ext_conflict(w: WarningCode) -> bool:
     """Возвращает признак конфликта MIME и расширения.
 
     Args:
-        w: Код предупреждения.
+        w (WarningCode): Код предупреждения.
 
     Returns:
-        True, если это конфликт MIME/расширения; иначе False.
+        bool: True, если это конфликт MIME/расширения, иначе False.
     """
     return w == WARN_MIME_EXT_CONFLICT or w.startswith(f"{WARN_MIME_EXT_CONFLICT}:")

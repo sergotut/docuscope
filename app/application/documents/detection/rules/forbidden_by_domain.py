@@ -7,7 +7,6 @@ from app.application.documents.detection.codes import (
     WarningCode,
     REASON_FORBIDDEN_BY_DOMAIN,
 )
-from app.application.documents.detection.rules.base import DecisionRule
 from app.application.documents.normalization import NormalizedInput
 from app.domain.model.documents import Permission, TypeDetectionResult
 
@@ -27,14 +26,17 @@ class ForbiddenByDomainRule:
         """Проверяет запрет доменной политикой.
 
         Args:
-            result: Доменный результат детекции типа.
-            normalized: Нормализованные входные данные (ext/mime).
-            warnings: Предупреждения нормализации и/или детектора.
+            result (TypeDetectionResult): Доменный результат детекции типа.
+            normalized (NormalizedInput): Нормализованные входные данные
+                (каноничное расширение и MIME).
+            warnings (tuple[WarningCode, ...]): Предупреждения нормализации
+                и/или детектора.
 
         Returns:
-            Причину отклонения REASON_FORBIDDEN_BY_DOMAIN, если документ
-            запрещён доменной политикой; иначе None.
+            ReasonCode | None: Причина отклонения REASON_FORBIDDEN_BY_DOMAIN,
+            если документ запрещён доменной политикой; иначе None.
         """
+        _ = normalized, warnings  # параметры не используются, сигнатура — по протоколу
         return (
             REASON_FORBIDDEN_BY_DOMAIN
             if result.permission is Permission.FORBIDDEN
