@@ -49,7 +49,7 @@ def normalize_input(
     """
     ext, w1 = canonical_ext_or_none(original_filename)
     mime, w2 = canonical_mime_or_none(declared_mime)
-    return NormalizedInput(ext=ext, mime=mime, warnings=tuple((*w1, *w2)))
+    return NormalizedInput(ext=ext, mime=mime, warnings=w1+w2)
 
 
 def build_probe(

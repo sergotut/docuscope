@@ -20,6 +20,14 @@ class ConfidenceRule:
     """Отклоняет, если уверенность ниже заданного порога."""
 
     def __init__(self, *, min_confidence: float) -> None:
+        """Создаёт правило с порогом уверенности.
+
+        Args:
+            min_confidence: Минимально допустимая уверенность в диапазоне 0.0..1.0.
+
+        Raises:
+            ValueError: Если значение порога вне диапазона 0.0..1.0.
+        """
         if not (0.0 <= min_confidence <= 1.0):
             raise ValueError("min_confidence должен быть в диапазоне 0.0..1.0")
         self._min = min_confidence

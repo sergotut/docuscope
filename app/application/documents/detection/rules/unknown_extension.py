@@ -17,6 +17,11 @@ class UnknownExtensionRule:
     """Отклоняет, если нормализация не смогла определить расширение."""
 
     def __init__(self, *, enabled: bool = False) -> None:
+        """Создаёт правило.
+
+        Args:
+            enabled: Включает или отключает проверку правила.
+        """
         self._enabled = enabled
 
     def evaluate(

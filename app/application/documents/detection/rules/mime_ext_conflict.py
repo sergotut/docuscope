@@ -30,9 +30,14 @@ class MimeExtConflictRule:
     """Отклоняет при несоответствии расширения и детектированного типа."""
 
     def __init__(self, *, enabled: bool = True) -> None:
+        """Создаёт правило.
+
+        Args:
+            enabled: Включает или отключает проверку правила.
+        """
         self._enabled = enabled
 
-    def evaluate(  # type: ignore[override]
+    def evaluate(
         self,
         *,
         result: TypeDetectionResult,
