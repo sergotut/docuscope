@@ -8,7 +8,8 @@ from app.application.documents.detection.codes import (
     REASON_FORBIDDEN_BY_DOMAIN,
 )
 from app.application.documents.normalization import NormalizedInput
-from app.domain.model.documents import Permission, TypeDetectionResult
+from app.domain.model.documents.types import Permission
+from app.domain.model.documents.type_detection import TypeDetectionResult
 
 __all__ = ["ForbiddenByDomainRule"]
 

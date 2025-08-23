@@ -6,8 +6,8 @@
 
 from __future__ import annotations
 
-import structlog
 from typing import Callable, Final, NamedTuple
+import structlog
 
 try:  # опционально усиливаем детекцию, если зависимость доступна
     import magic  # type: ignore
@@ -34,103 +34,108 @@ WEBP_TAG: Final = b"WEBP"
 ZIP_MAGIC: Final = b"PK\x03\x04"
 OLE_MAGIC: Final = b"\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"
 
-# Лимит байт для поиска внутренних маркеров (меняется через sniff_magic).
-_SCAN_LIMIT: int = 16384
-
 
 class _MagicRule(NamedTuple):
     """Правило сопоставления по сигнатуре.
 
     Attributes:
-        check (Callable[[bytes], bool]): Предикат для проверки буфера.
+        check (Callable[[bytes, int], bool]): Предикат (buf, limit) -> bool.
         dtype (DocumentType | None): Определённый тип документа или None.
         mime (str | None): MIME-тип или None.
         note (str | None): Дополнительная заметка к результату.
     """
 
-    check: Callable[[bytes], bool]
+    check: Callable[[bytes, int], bool]
     dtype: DocumentType | None
     mime: str | None
     note: str | None = None
 
 
-def _is_pdf(h: bytes) -> bool:  # noqa: D401 - простая проверка
+def _is_pdf(h: bytes, _limit: int) -> bool:  # noqa: D401
     return h.startswith(PDF_MAGIC)
 
 
-def _is_jpeg(h: bytes) -> bool:  # noqa: D401
+def _is_jpeg(h: bytes, _limit: int) -> bool:  # noqa: D401
     return h.startswith(JPEG_MAGIC)
 
 
-def _is_png(h: bytes) -> bool:  # noqa: D401
+def _is_png(h: bytes, _limit: int) -> bool:  # noqa: D401
     return h.startswith(PNG_MAGIC)
 
 
-def _is_gif(h: bytes) -> bool:  # noqa: D401
+def _is_gif(h: bytes, _limit: int) -> bool:  # noqa: D401
     return h.startswith(GIF_MAGICS)
 
 
-def _is_bmp(h: bytes) -> bool:  # noqa: D401
+def _is_bmp(h: bytes, _limit: int) -> bool:  # noqa: D401
     return h.startswith(BMP_MAGIC)
 
 
-def _is_tiff(h: bytes) -> bool:  # noqa: D401
+def _is_tiff(h: bytes, _limit: int) -> bool:  # noqa: D401
     return h.startswith(TIFF_MAGICS)
 
 
-def _is_webp(h: bytes) -> bool:
+def _is_webp(h: bytes, _limit: int) -> bool:
     """Проверяет шаблон RIFF....WEBP (offset 8..11).
 
     Args:
         h (bytes): Буфер первых байт файла.
+        _limit (int): Лимит для внутренних поисков (не используется).
 
     Returns:
-        bool: True, если буфер соответствует формату WebP, иначе False.
+        bool: True, если буфер соответствует формату WebP.
     """
     return h.startswith(RIFF_MAGIC) and h[8:12] == WEBP_TAG
 
 
-def _is_docx(h: bytes) -> bool:
+def _is_docx(h: bytes, limit: int) -> bool:
     """Определяет DOCX по ZIP и маркерам директорий в первых байтах.
 
     Args:
         h (bytes): Буфер первых байт файла.
+        limit (int): Лимит для поиска внутренних маркеров.
 
     Returns:
-        bool: True, если в буфере обнаружены признаки DOCX, иначе False.
+        bool: Признак наличия признаков DOCX.
     """
     return h.startswith(ZIP_MAGIC) and find_any(
-        h, (b"word/", b"word/document.xml"), limit=_SCAN_LIMIT
+        h,
+        (b"word/", b"word/document.xml"),
+        limit=limit,
     )
 
 
-def _is_xlsx(h: bytes) -> bool:
+def _is_xlsx(h: bytes, limit: int) -> bool:
     """Определяет XLSX по ZIP и маркерам директорий в первых байтах.
 
     Args:
         h (bytes): Буфер первых байт файла.
+        limit (int): Лимит для поиска внутренних маркеров.
 
     Returns:
-        bool: True, если в буфере обнаружены признаки XLSX; иначе False.
+        bool: Признак наличия признаков XLSX.
     """
     return h.startswith(ZIP_MAGIC) and find_any(
-        h, (b"xl/", b"xl/workbook.xml"), limit=_SCAN_LIMIT
+        h,
+        (b"xl/", b"xl/workbook.xml"),
+        limit=limit,
     )
 
 
-def _is_zip_unknown_ooxml(h: bytes) -> bool:
+def _is_zip_unknown_ooxml(h: bytes, _limit: int) -> bool:
     """Определяет ZIP без явных маркеров OOXML в первых байтах.
 
     Args:
         h (bytes): Буфер первых байт файла.
+        _limit (int): Лимит для внутренних поисков (не используется).
 
     Returns:
-        bool: True, если начало файла соответствует ZIP, иначе False.
+        bool: True, если начало файла соответствует ZIP.
     """
     return h.startswith(ZIP_MAGIC)
 
 
-def _is_ole(h: bytes) -> bool:  # noqa: D401
+def _is_ole(h: bytes, _limit: int) -> bool:  # noqa: D401
     return h.startswith(OLE_MAGIC)
 
 
@@ -179,47 +184,11 @@ def sniff_magic(
     Args:
         head (bytes): Первые N байт файла.
         use_libmagic (bool): Разрешать ли fallback к python-magic (если установлен).
-        scan_limit (int | None): Лимит байт для поиска внутренних маркеров.
+        scan_limit (int | None): Лимит байт для внутренних поисков по контейнеру
+            (например, word/…, xl/…). Если None, используется 16384.
 
     Returns:
         tuple[DocumentType | None, str | None, tuple[str, ...]]: Кортеж
-            (тип документа или None, MIME или None, заметки).
+        (тип документа или None, MIME или None, заметки).
     """
-    global _SCAN_LIMIT  # noqa: PLW0603
-    prev_limit = _SCAN_LIMIT
-    if scan_limit is not None:
-        _SCAN_LIMIT = scan_limit  # find_any дополнительно ограничит до 16384
-
-    try:
-        notes: list[str] = []
-        for rule in _MAGIC_RULES:
-            if rule.check(head):
-                if rule.note:
-                    notes.append(rule.note)
-                return (rule.dtype, rule.mime, tuple(notes))
-    finally:
-        _SCAN_LIMIT = prev_limit
-
-    # Опционально: libmagic как подсказчик (если включено и доступно)
-    if use_libmagic and magic is not None:  # pragma: no cover
-        try:
-            m = magic.Magic(mime=True)  # type: ignore[attr-defined]
-            mime = m.from_buffer(head)  # type: ignore[assignment]
-            return (None, str(mime), tuple(notes))
-        except Exception:  # noqa: BLE001
-            # Игнорируем сбои внешней либы, фиксируем стек для диагностики.
-            logger.exception("libmagic_failed_in_sniff_magic")
-
-    return (None, None, tuple(notes))
-
-
-def has_ole_signature(head: bytes) -> bool:
-    """Проверяет начало буфера на сигнатуру OLE (legacy Office).
-
-    Args:
-        head (bytes): Первые N байт файла.
-
-    Returns:
-        bool: True, если буфер начинается с сигнатуры OLE, иначе False.
-    """
-    return head.startswith(OLE_MAGIC)
+    limit = 16384 if scan_limit is None else max(0, int(scan_limit))

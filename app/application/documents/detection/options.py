@@ -24,6 +24,7 @@ class DocumentDetectionOptions:
     strict: bool = False
     min_confidence: float = 0.55
     reject_on_mime_extension_conflict: bool = True
+    reject_on_mime_type_conflict: bool = True
     reject_on_unknown_extension: bool = False
     reject_disallowed_by_domain: bool = True
 

@@ -6,6 +6,7 @@ from .codes import (
     REASON_FORBIDDEN_BY_DOMAIN,
     REASON_LOW_CONFIDENCE,
     REASON_MIME_EXT_CONFLICT,
+    REASON_MIME_TYPE_CONFLICT
     REASON_UNKNOWN_EXTENSION,
     WARN_INVALID_MIME,
     WARN_MIME_EXT_CONFLICT,
@@ -21,6 +22,7 @@ from .rules import (
     DecisionRule,
     ForbiddenByDomainRule,
     MimeExtConflictRule,
+    MimeTypeConflictRule
     UnknownExtensionRule,
 )
 from .service import DetectionDecision, DocumentDetectionService
@@ -34,6 +36,7 @@ __all__ = [
     "REASON_FORBIDDEN_BY_DOMAIN",
     "REASON_LOW_CONFIDENCE",
     "REASON_MIME_EXT_CONFLICT",
+    "REASON_MIME_TYPE_CONFLICT",
     "REASON_UNKNOWN_EXTENSION",
     "WARN_UNKNOWN_EXTENSION",
     "WARN_INVALID_MIME",
@@ -44,5 +47,6 @@ __all__ = [
     "ForbiddenByDomainRule",
     "ConfidenceRule",
     "MimeExtConflictRule",
+    "MimeTypeConflictRule",
     "UnknownExtensionRule",
 ]
