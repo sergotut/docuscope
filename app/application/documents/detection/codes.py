@@ -15,6 +15,7 @@ __all__ = [
     "WARN_INVALID_MIME",
     "WARN_UNSAFE_EXTENSION_CHARS",
     "WARN_MIME_EXT_CONFLICT",
+    "REASON_MIME_TYPE_CONFLICT",
     "is_mime_ext_conflict",
 ]
 
@@ -29,6 +30,7 @@ ReasonCode: TypeAlias = Literal[
 REASON_FORBIDDEN_BY_DOMAIN: ReasonCode = "forbidden_by_domain"
 REASON_LOW_CONFIDENCE: ReasonCode = "low_confidence"
 REASON_MIME_EXT_CONFLICT: ReasonCode = "mime_extension_conflict"
+REASON_MIME_TYPE_CONFLICT: ReasonCode = "mime_type_conflict"
 REASON_UNKNOWN_EXTENSION: ReasonCode = "unknown_extension"
 
 # Предупреждения: строковые коды (часть может иметь детализацию через суффикс).

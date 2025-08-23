@@ -48,24 +48,28 @@ class MagicDetectorTuning:
         Returns:
             MagicDetectorTuning: Копия с обрезанными в [0.0..1.0] значениями.
         """
-        def clamp01(x: float) -> float:
-            return min(max(x, 0.0), 1.0)
+        def _clamp01(x: float) -> float:
+            if x < 0.0:
+                return 0.0
+            if x > 1.0:
+                return 1.0
+            return x
 
         return MagicDetectorTuning(
-            mime_conflict_penalty=clamp01(self.mime_conflict_penalty),
-            ooxml_confidence_cap=clamp01(self.ooxml_confidence_cap),
-            ole_confidence_cap=clamp01(self.ole_confidence_cap),
-            base_signature_confidence=clamp01(self.base_signature_confidence),
-            base_zip_container_confidence=clamp01(
+            mime_conflict_penalty=_clamp01(self.mime_conflict_penalty),
+            ooxml_confidence_cap=_clamp01(self.ooxml_confidence_cap),
+            ole_confidence_cap=_clamp01(self.ole_confidence_cap),
+            base_signature_confidence=_clamp01(self.base_signature_confidence),
+            base_zip_container_confidence=_clamp01(
                 self.base_zip_container_confidence
             ),
-            base_ole_container_confidence=clamp01(
+            base_ole_container_confidence=_clamp01(
                 self.base_ole_container_confidence
             ),
-            base_extension_only_confidence=clamp01(
+            base_extension_only_confidence=_clamp01(
                 self.base_extension_only_confidence
             ),
-            base_insufficient_evidence_confidence=clamp01(
+            base_insufficient_evidence_confidence=_clamp01(
                 self.base_insufficient_evidence_confidence
             ),
         )

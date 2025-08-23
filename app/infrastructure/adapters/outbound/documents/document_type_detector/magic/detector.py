@@ -72,7 +72,7 @@ class MagicDocumentTypeDetector(DocumentTypeDetectorPort):
             )
             size = 0
 
-        self.preferred_head_size = size
+        self._preferred_head_size = size
         self._use_libmagic = bool(use_libmagic)
         self._tuning = (tuning or MagicDetectorTuning()).clamp()
         self._on_metrics = on_metrics
@@ -101,6 +101,7 @@ class MagicDocumentTypeDetector(DocumentTypeDetectorPort):
         magic_type, magic_mime, magic_notes = sniff_magic(
             probe.head,
             use_libmagic=self._use_libmagic,
+            scan_limit=self._preferred_head_size,
         )
         if magic_notes:
             notes.extend(magic_notes)
@@ -131,6 +132,7 @@ class MagicDocumentTypeDetector(DocumentTypeDetectorPort):
         ) and not find_any(
             probe.head,
             (b"word/", b"xl/"),
+            limit=self._preferred_head_size,
         ):
             notes.append("ooxml_by_extension_or_mime")
             confidence = min(confidence, self._tuning.ooxml_confidence_cap)
@@ -153,7 +155,14 @@ class MagicDocumentTypeDetector(DocumentTypeDetectorPort):
             warnings=tuple(notes),
         )
 
-    # ---------- внутреннее ----------
+    @property
+    def preferred_head_size(self) -> int:
+        """Рекомендуемая длина probe.head в байтах (read-only).
+        
+        Returns:
+            int: Рекомендуемая длина probe.head в байтах.
+        """
+        return self._preferred_head_size
 
     def _choose_type(
         self,

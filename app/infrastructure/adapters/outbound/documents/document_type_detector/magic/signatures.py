@@ -34,16 +34,20 @@ WEBP_TAG: Final = b"WEBP"
 ZIP_MAGIC: Final = b"PK\x03\x04"
 OLE_MAGIC: Final = b"\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"
 
+# Лимит байт для поиска внутренних маркеров (меняется через sniff_magic).
+_SCAN_LIMIT: int = 16384
+
 
 class _MagicRule(NamedTuple):
     """Правило сопоставления по сигнатуре.
 
     Attributes:
-        check (Callable[[bytes], bool]): Функция-предикат для проверки буфера.
+        check (Callable[[bytes], bool]): Предикат для проверки буфера.
         dtype (DocumentType | None): Определённый тип документа или None.
         mime (str | None): MIME-тип или None.
         note (str | None): Дополнительная заметка к результату.
     """
+
     check: Callable[[bytes], bool]
     dtype: DocumentType | None
     mime: str | None
@@ -96,7 +100,7 @@ def _is_docx(h: bytes) -> bool:
         bool: True, если в буфере обнаружены признаки DOCX, иначе False.
     """
     return h.startswith(ZIP_MAGIC) and find_any(
-        h, (b"word/", b"word/document.xml")
+        h, (b"word/", b"word/document.xml"), limit=_SCAN_LIMIT
     )
 
 
@@ -110,7 +114,7 @@ def _is_xlsx(h: bytes) -> bool:
         bool: True, если в буфере обнаружены признаки XLSX; иначе False.
     """
     return h.startswith(ZIP_MAGIC) and find_any(
-        h, (b"xl/", b"xl/workbook.xml")
+        h, (b"xl/", b"xl/workbook.xml"), limit=_SCAN_LIMIT
     )
 
 
@@ -168,23 +172,33 @@ def sniff_magic(
     head: bytes,
     *,
     use_libmagic: bool = True,
+    scan_limit: int | None = None,
 ) -> tuple[DocumentType | None, str | None, tuple[str, ...]]:
     """Проверяет буфер на известные сигнатуры форматов.
 
     Args:
         head (bytes): Первые N байт файла.
         use_libmagic (bool): Разрешать ли fallback к python-magic (если установлен).
+        scan_limit (int | None): Лимит байт для поиска внутренних маркеров.
 
     Returns:
         tuple[DocumentType | None, str | None, tuple[str, ...]]: Кортеж
             (тип документа или None, MIME или None, заметки).
     """
-    notes: list[str] = []
-    for rule in _MAGIC_RULES:
-        if rule.check(head):
-            if rule.note:
-                notes.append(rule.note)
-            return (rule.dtype, rule.mime, tuple(notes))
+    global _SCAN_LIMIT  # noqa: PLW0603
+    prev_limit = _SCAN_LIMIT
+    if scan_limit is not None:
+        _SCAN_LIMIT = scan_limit  # find_any дополнительно ограничит до 16384
+
+    try:
+        notes: list[str] = []
+        for rule in _MAGIC_RULES:
+            if rule.check(head):
+                if rule.note:
+                    notes.append(rule.note)
+                return (rule.dtype, rule.mime, tuple(notes))
+    finally:
+        _SCAN_LIMIT = prev_limit
 
     # Опционально: libmagic как подсказчик (если включено и доступно)
     if use_libmagic and magic is not None:  # pragma: no cover
@@ -194,7 +208,7 @@ def sniff_magic(
             return (None, str(mime), tuple(notes))
         except Exception:  # noqa: BLE001
             # Игнорируем сбои внешней либы, фиксируем стек для диагностики.
-            logger.exception("libmagic failed in sniff_magic")
+            logger.exception("libmagic_failed_in_sniff_magic")
 
     return (None, None, tuple(notes))
 

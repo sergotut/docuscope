@@ -74,14 +74,33 @@ def build_probe(
     Returns:
         FileProbe: Объект проб файла для передачи в порт детектора.
     """
+    name = (original_filename or "").strip()
+
     norm = normalize_input(
-        original_filename=original_filename,
+        original_filename=name,
         declared_mime=declared_mime,
     )
 
+    if isinstance(head, bytes):
+        head_bytes = head
+    elif isinstance(head, (bytearray, memoryview)):
+        head_bytes = bytes(head)
+    else:
+        try:
+            head_bytes = bytes(head) # на случай совместимых буферов
+        except Exception as exc: # noqa: BLE001
+            raise TypeError("head должен быть bytes‑подобным") from exc
+
+    try:
+        size = int(size_bytes)
+    except Exception: # noqa: BLE001
+        size = 0
+    if size < 0:
+        size = 0
+
     return FileProbe(
-        original_filename=original_filename,
-        size_bytes=size_bytes,
-        head=head,
+        original_filename=name,
+        size_bytes=size,
+        head=head_bytes,
         declared_mime=norm.mime,
     )

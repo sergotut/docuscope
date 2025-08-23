@@ -16,6 +16,7 @@ from app.application.documents.detection.rules import (
     DecisionRule,
     ForbiddenByDomainRule,
     MimeExtConflictRule,
+    MimeTypeConflictRule,
     UnknownExtensionRule,
 )
 from app.application.documents.normalization import (
@@ -150,6 +151,7 @@ class DocumentDetectionService:
 
         rules.append(ConfidenceRule(min_confidence=opt.min_confidence))
         rules.append(MimeExtConflictRule(enabled=opt.reject_on_mime_extension_conflict))
+        rules.append(MimeTypeConflictRule(enabled=opt.reject_on_mime_type_conflict))
         rules.append(UnknownExtensionRule(enabled=opt.reject_on_unknown_extension))
 
         return tuple(rules)
