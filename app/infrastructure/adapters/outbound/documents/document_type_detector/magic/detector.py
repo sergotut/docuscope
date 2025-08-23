@@ -158,7 +158,7 @@ class MagicDocumentTypeDetector(DocumentTypeDetectorPort):
     @property
     def preferred_head_size(self) -> int:
         """Рекомендуемая длина probe.head в байтах (read-only).
-        
+
         Returns:
             int: Рекомендуемая длина probe.head в байтах.
         """
