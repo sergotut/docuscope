@@ -9,6 +9,7 @@ __all__ = [
     "VectorStoreHealthReport",
     "RelationalDBHealthReport",
     "CacheHealthReport",
+    "DocumentConverterHealthReport",
 ]
 
 
@@ -80,6 +81,7 @@ class VectorStoreHealthReport(TypedDict, total=False):
     distance: str
     collections: int
     status: str
+
 
 class RelationalDBHealthReport(TypedDict, total=False):
     """Отчёт о состоянии реляционного хранилища.
@@ -159,3 +161,39 @@ class CacheHealthReport(TypedDict, total=False):
     keyspace_keys: int
     keyspace_expires: int
     hit_ratio: float
+
+
+class DocumentConverterHealthReport(TypedDict, total=False):
+    """Расширенный отчёт конвертера документов.
+
+    Attributes:
+        engine (str): Название движка конвертации (например, libreoffice, pandoc).
+        version (str): Версия конвертера или API.
+        status (str): Текущий статус работы конвертера.
+        supported_formats (list[str]): Список поддерживаемых форматов конвертации.
+        concurrent_conversions (int): Количество одновременных конвертаций.
+        max_concurrent_conversions (int): Максимальное количество параллельных операций.
+        total_conversions (int): Общее количество выполненных конвертаций.
+        successful_conversions (int): Количество успешных конвертаций.
+        failed_conversions (int): Количество неудачных конвертаций.
+        average_conversion_time_ms (float): Среднее время конвертации в миллисекундах.
+        queue_size (int): Размер очереди ожидающих конвертации документов.
+        temp_dir_size_bytes (int): Размер временной директории в байтах.
+        uptime_seconds (int): Время работы сервиса в секундах.
+        last_conversion_timestamp (int): Время последней конвертации (Unix timestamp).
+    """
+
+    engine: str
+    version: str
+    status: str
+    supported_formats: list[str]
+    concurrent_conversions: int
+    max_concurrent_conversions: int
+    total_conversions: int
+    successful_conversions: int
+    failed_conversions: int
+    average_conversion_time_ms: float
+    queue_size: int
+    temp_dir_size_bytes: int
+    uptime_seconds: int
+    last_conversion_timestamp: int

@@ -23,7 +23,7 @@ class UnitOfWorkPort(Protocol):
             ...  # операции через uow.collections / uow.documents
     """
 
-    async def __aenter__(self) -> "UnitOfWorkPort":  # pragma: no cover
+    async def __aenter__(self) -> UnitOfWorkPort:  # pragma: no cover
         """Открывает транзакцию и возвращает контекст UoW.
 
         Returns:

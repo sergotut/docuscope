@@ -86,7 +86,11 @@ class E5MistralEmbedder(EmbedderPort):
             timeout=self.timeout,
         )
 
-    async def embed(self, *, texts: list[str],) -> EmbeddingBatch:
+    async def embed(
+        self,
+        *,
+        texts: list[str],
+    ) -> EmbeddingBatch:
         """Вычисляет эмбеддинги для набора строк.
 
         Args:

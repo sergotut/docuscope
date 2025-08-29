@@ -5,20 +5,19 @@
 - Конвертируется MIME в строгий DocumentType (доменный конвертер).
 - Если MIME не канонизирован или даёт UNKNOWN — правило не срабатывает.
 - Если полученный по MIME тип не равен фактическому result.type —
-  считаем это конфликтом и возвращаем причину.
+    считаем это конфликтом и возвращаем причину.
 """
 
 from __future__ import annotations
 
-from app.application.documents.detection.codes import (
-    ReasonCode,
-    WarningCode,
+from app.application.documents.detection.reasons import (
     REASON_MIME_TYPE_CONFLICT,
+    ReasonCode,
 )
 from app.application.documents.normalization import NormalizedInput
 from app.domain.model.documents.converters import from_mimetype
-from app.domain.model.documents.types import DocumentType
 from app.domain.model.documents.type_detection import TypeDetectionResult
+from app.domain.model.documents.types import DocumentType
 
 __all__ = ["MimeTypeConflictRule"]
 
@@ -39,7 +38,6 @@ class MimeTypeConflictRule:
         *,
         result: TypeDetectionResult,
         normalized: NormalizedInput,
-        warnings: tuple[WarningCode, ...],
     ) -> ReasonCode | None:
         """Возвращает REASON_MIME_TYPE_CONFLICT при расхождении MIME↔type.
 
@@ -47,14 +45,11 @@ class MimeTypeConflictRule:
             result (TypeDetectionResult): Доменный результат детекции типа.
             normalized (NormalizedInput): Нормализованные входные данные
                 (каноничный MIME).
-            warnings (tuple[WarningCode, ...]): Предупреждения нормализации
-                и/или детектора.
 
         Returns:
             ReasonCode | None: Причина отклонения при конфликте MIME/типа
-            либо None, если конфликта нет.
+                либо None, если конфликта нет.
         """
-        _ = warnings  # параметр не используется; сигнатура — по протоколу
         if not self._enabled:
             return None
 

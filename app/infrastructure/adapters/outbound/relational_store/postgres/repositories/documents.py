@@ -5,10 +5,7 @@ from __future__ import annotations
 from app.domain.model.collections import CollectionName
 from app.domain.model.documents import DocumentMeta
 from app.domain.model.shared import ObjectName
-from app.domain.ports.relational_store import (
-    RelConnection,
-    DocumentMetaRepositoryPort
-)
+from app.domain.ports.relational_store import DocumentMetaRepositoryPort, RelConnection
 
 __all__ = ["PostgresDocumentMetaRepository"]
 

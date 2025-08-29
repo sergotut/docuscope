@@ -2,8 +2,7 @@
 
 from .adapter import RedisPool
 from .protocols import RedisClientLike
-from .utils import mask_url, SENSITIVE_QUERY_KEYS
-
+from .utils import SENSITIVE_QUERY_KEYS, mask_url
 
 __all__ = [
     "RedisPool",

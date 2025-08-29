@@ -4,10 +4,7 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from app.domain.model.documents.type_detection import (
-    FileProbe,
-    TypeDetectionResult
-)
+from app.domain.model.documents.type_detection import FileProbe, TypeDetectionResult
 
 __all__ = ["DocumentTypeDetectorPort"]
 

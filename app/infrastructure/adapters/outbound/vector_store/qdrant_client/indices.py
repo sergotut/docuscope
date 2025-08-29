@@ -12,13 +12,10 @@ from typing import Any, cast
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.http import models as qm
 
-from app.domain.model.vector_store import FieldName
 from app.domain.model.collections import CollectionName
-from .models import (
-    QdrantKeywordIndexSpec,
-    QdrantTextIndexConfig,
-    QdrantTextIndexSpec
-)
+from app.domain.model.vector_store import FieldName
+
+from .models import QdrantKeywordIndexSpec, QdrantTextIndexConfig, QdrantTextIndexSpec
 from .utils import as_collection_name, as_field_name
 
 __all__ = [

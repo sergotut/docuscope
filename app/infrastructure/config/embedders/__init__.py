@@ -2,13 +2,13 @@
 
 from ..base import SettingsBase
 from .base import EmbeddingBaseSettings
-from .yagpt import YaGPTEmbeddingSettings
-from .gigachat import SberGigaChatEmbeddingSettings
-from .sentence_transformers import STEmbeddingSettings
-from .sbert_large_ru import SBERTLargeRuEmbeddingSettings
 from .bge_large import BGELargeEmbeddingSettings
 from .bge_large_ru import BGELargeRuEmbeddingSettings
 from .e5_mistral import E5MistralEmbeddingSettings
+from .gigachat import SberGigaChatEmbeddingSettings
+from .sbert_large_ru import SBERTLargeRuEmbeddingSettings
+from .sentence_transformers import STEmbeddingSettings
+from .yagpt import YaGPTEmbeddingSettings
 
 
 class EmbeddingsSettings(SettingsBase):

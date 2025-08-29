@@ -22,7 +22,6 @@ class BGELargeEmbeddingAdapter(SentenceTransformersEmbedding):
 
     def __init__(self) -> None:
         """Создаёт экземпляр с настройками."""
-
         config = settings.embed.bge_large
 
         super().__init__(
@@ -32,7 +31,7 @@ class BGELargeEmbeddingAdapter(SentenceTransformersEmbedding):
             space=settings.embed.base.space,
             dtype=config.dtype,
             quantized=config.quantized,
-            max_tokens=config.max_tokens
+            max_tokens=config.max_tokens,
         )
 
         logger.info(

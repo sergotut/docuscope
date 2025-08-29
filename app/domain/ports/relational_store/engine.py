@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import AsyncContextManager, Protocol, runtime_checkable
 
 from app.domain.model.diagnostics import RelationalDBHealthReport
+
 from .connection import RelConnection
 
 __all__ = ["RelationalEnginePort"]

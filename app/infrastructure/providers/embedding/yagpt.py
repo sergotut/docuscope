@@ -18,7 +18,6 @@ class YAGPTEmbeddingAdapter(YAGPTEmbedding):
 
     def __init__(self) -> None:
         """Создаёт экземпляр с настройками."""
-
         config = settings.embed.yagpt
 
         super().__init__(

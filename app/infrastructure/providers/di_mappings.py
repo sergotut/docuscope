@@ -1,20 +1,24 @@
 """Маппинг ключей настроек на DI-обёртки для DI-контейнера."""
 
+from .documents.di_mappings import (
+    DOCUMENT_CONVERTERS,
+    DOCUMENT_TYPE_DETECTORS,
+)
 from .embedding import (
-    YAGPTEmbeddingAdapter,
-    SberGigaChatEmbeddingAdapter,
-    SBERTLargeRuEmbeddingAdapter,
-    E5MistralEmbeddingAdapter,
     BGELargeEmbeddingAdapter,
     BGELargeRuEmbeddingAdapter,
-    SentenceTransformersEmbeddingAdapter,
+    E5MistralEmbeddingAdapter,
     NullEmbedder,
+    SberGigaChatEmbeddingAdapter,
+    SBERTLargeRuEmbeddingAdapter,
+    SentenceTransformersEmbeddingAdapter,
+    YAGPTEmbeddingAdapter,
+)
+from .ocr import (
+    PaddleEnOCRAdapter,
+    PaddleRuOCRAdapter,
 )
 from .storage import MinioStorageAdapter
-from .ocr import (
-    PaddleRuOCRAdapter,
-    PaddleEnOCRAdapter,
-)
 
 EMBEDDERS = {
     "yagpt": YAGPTEmbeddingAdapter,
@@ -35,3 +39,7 @@ OCR = {
     "paddle_ru": PaddleRuOCRAdapter,
     "paddle_en": PaddleEnOCRAdapter,
 }
+
+# Новые маппинги для документов
+DOCUMENT_TYPE_DETECTORS = DOCUMENT_TYPE_DETECTORS
+DOCUMENT_CONVERTERS = DOCUMENT_CONVERTERS

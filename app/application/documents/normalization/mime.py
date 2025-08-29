@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import re
 
-from app.application.documents.detection.codes import (
-    WarningCode,
-    WARN_INVALID_MIME,
-)
+from app.domain.model.documents import WARN_INVALID_MIME
+from app.domain.shared.codes import WarningCode
 
 __all__ = ["canonical_mime_or_none"]
 
@@ -29,7 +27,7 @@ def canonical_mime_or_none(
 
     Returns:
         tuple[str | None, tuple[WarningCode, ...]]: Пара (mime, warnings), где
-        mime — каноничный MIME или None.
+            mime — каноничный MIME или None.
     """
     if not mime:
         return None, ()

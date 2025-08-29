@@ -1,12 +1,13 @@
 """Пакет diagnostics: модели health-чеков и техинфы сервисов."""
 
 from .health import (
+    CacheHealthReport,
+    DocumentConverterHealthReport,
     EmbedderHealthReport,
     LLMHealthReport,
+    RelationalDBHealthReport,
     TokenizerHealthReport,
     VectorStoreHealthReport,
-    RelationalDBHealthReport,
-    CacheHealthReport,
 )
 
 __all__ = [
@@ -16,4 +17,5 @@ __all__ = [
     "VectorStoreHealthReport",
     "RelationalDBHealthReport",
     "CacheHealthReport",
+    "DocumentConverterHealthReport",
 ]

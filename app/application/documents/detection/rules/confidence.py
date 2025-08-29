@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from app.application.documents.detection.codes import (
-    ReasonCode,
-    WarningCode,
+from app.application.documents.detection.reasons import (
     REASON_LOW_CONFIDENCE,
+    ReasonCode,
 )
 from app.application.documents.normalization import NormalizedInput
 from app.domain.model.documents.type_detection import TypeDetectionResult
@@ -35,7 +34,6 @@ class ConfidenceRule:
         *,
         result: TypeDetectionResult,
         normalized: NormalizedInput,
-        warnings: tuple[WarningCode, ...],
     ) -> ReasonCode | None:
         """Сравнивает уверенность с порогом.
 
@@ -43,12 +41,10 @@ class ConfidenceRule:
             result (TypeDetectionResult): Доменный результат детекции типа.
             normalized (NormalizedInput): Нормализованные входные данные
                 (ext/mime).
-            warnings (tuple[WarningCode, ...]): Предупреждения нормализации
-                и/или детектора.
 
         Returns:
             ReasonCode | None: Причина отклонения REASON_LOW_CONFIDENCE при
-            result.confidence ниже порога; иначе None.
+                result.confidence ниже порога, иначе None.
         """
-        _ = normalized, warnings  # параметры не используются, сигнатура — по протоколу
+        _ = normalized  # параметр не используется
         return REASON_LOW_CONFIDENCE if result.confidence < self._min else None

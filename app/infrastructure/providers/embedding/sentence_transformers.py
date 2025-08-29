@@ -19,7 +19,6 @@ class SentenceTransformersEmbeddingAdapter(SentenceTransformersEmbedding):
 
     def __init__(self) -> None:
         """Создаёт адаптер ST-модели, указанной в конфиге."""
-
         config = settings.embed.st
 
         super().__init__(
@@ -29,7 +28,7 @@ class SentenceTransformersEmbeddingAdapter(SentenceTransformersEmbedding):
             space=settings.embed.base.space,
             dtype=config.dtype,
             quantized=config.quantized,
-            max_tokens=config.max_tokens
+            max_tokens=config.max_tokens,
         )
 
         logger.info(

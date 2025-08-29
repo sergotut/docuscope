@@ -8,4 +8,3 @@ class DBSettings(SettingsBase):
     """Настройки базы данных."""
 
     postgres: PostgresSettings = PostgresSettings()
-    

@@ -2,18 +2,17 @@
 
 Экспортируем:
 - NormalizedInput, normalize_input, build_probe — нормализация входных данных;
-- из .detection: сервис/опции/правила и коды причин/предупреждений.
+- из .detection: сервис/опции/правила и коды причин (application-слой).
 """
 
 from __future__ import annotations
 
-from .normalization import (
-    NormalizedInput,
-    build_probe,
-    normalize_input
-)
-
+from .conversion import DocumentConversionService
 from .detection import (
+    REASON_FORBIDDEN_BY_DOMAIN,
+    REASON_LOW_CONFIDENCE,
+    REASON_MIME_EXT_CONFLICT,
+    REASON_UNKNOWN_EXTENSION,
     ConfidenceRule,
     DecisionRule,
     DetectionDecision,
@@ -22,18 +21,9 @@ from .detection import (
     ForbiddenByDomainRule,
     MimeExtConflictRule,
     ReasonCode,
-    REASON_FORBIDDEN_BY_DOMAIN,
-    REASON_LOW_CONFIDENCE,
-    REASON_MIME_EXT_CONFLICT,
-    REASON_UNKNOWN_EXTENSION,
     UnknownExtensionRule,
-    WarningCode,
-    WARN_INVALID_MIME,
-    WARN_MIME_EXT_CONFLICT,
-    WARN_UNSAFE_EXTENSION_CHARS,
-    WARN_UNKNOWN_EXTENSION,
-    is_mime_ext_conflict,
 )
+from .normalization import NormalizedInput, build_probe, normalize_input
 
 __all__ = [
     # Нормализация
@@ -44,22 +34,18 @@ __all__ = [
     "DocumentDetectionService",
     "DetectionDecision",
     "DocumentDetectionOptions",
-    # Коды и утилиты
+    # Коды причин (application-слой)
     "ReasonCode",
-    "WarningCode",
     "REASON_FORBIDDEN_BY_DOMAIN",
     "REASON_LOW_CONFIDENCE",
     "REASON_MIME_EXT_CONFLICT",
     "REASON_UNKNOWN_EXTENSION",
-    "WARN_UNKNOWN_EXTENSION",
-    "WARN_INVALID_MIME",
-    "WARN_UNSAFE_EXTENSION_CHARS",
-    "WARN_MIME_EXT_CONFLICT",
-    "is_mime_ext_conflict",
     # Правила
     "DecisionRule",
     "ForbiddenByDomainRule",
     "ConfidenceRule",
     "MimeExtConflictRule",
     "UnknownExtensionRule",
+    # Конвертация документов
+    "DocumentConversionService",
 ]

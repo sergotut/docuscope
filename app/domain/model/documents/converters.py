@@ -35,14 +35,12 @@ _MIMETYPE_TO_TYPE: Final[dict[str, DocumentType]] = {
     # Word
     "application/msword": DocumentType.WORD_DOC,
     (
-        "application/"
-        "vnd.openxmlformats-officedocument.wordprocessingml.document"
+        "application/" "vnd.openxmlformats-officedocument.wordprocessingml.document"
     ): DocumentType.WORD_DOCX,
     # Excel
     "application/vnd.ms-excel": DocumentType.EXCEL_XLS,
     (
-        "application/"
-        "vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        "application/" "vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ): DocumentType.EXCEL_XLSX,
     # PDF
     "application/pdf": DocumentType.PDF,
@@ -59,14 +57,12 @@ _TYPE_TO_MIMETYPE: Final[dict[DocumentType, str]] = {
     # Word
     DocumentType.WORD_DOC: "application/msword",
     DocumentType.WORD_DOCX: (
-        "application/"
-        "vnd.openxmlformats-officedocument.wordprocessingml.document"
+        "application/" "vnd.openxmlformats-officedocument.wordprocessingml.document"
     ),
     # Excel
     DocumentType.EXCEL_XLS: "application/vnd.ms-excel",
     DocumentType.EXCEL_XLSX: (
-        "application/"
-        "vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        "application/" "vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ),
     # PDF
     DocumentType.PDF: "application/pdf",

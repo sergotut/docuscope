@@ -18,7 +18,6 @@ class SberGigaChatEmbeddingAdapter(SberGigaChatEmbedding):
 
     def __init__(self) -> None:
         """Создаёт экземпляр с настройками."""
-
         config = settings.embed.gigachat
 
         super().__init__(
@@ -27,7 +26,7 @@ class SberGigaChatEmbeddingAdapter(SberGigaChatEmbedding):
             endpoint=config.endpoint,
             timeout=settings.embed.base.timeout,
             batch_size=config.batch_size,
-            space=settings.embed.base.space
+            space=settings.embed.base.space,
         )
 
         logger.info(

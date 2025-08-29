@@ -42,12 +42,13 @@ class MagicDetectorTuning:
     base_extension_only_confidence: float = 0.75
     base_insufficient_evidence_confidence: float = 0.3
 
-    def clamp(self) -> "MagicDetectorTuning":
+    def clamp(self) -> MagicDetectorTuning:
         """Возвращает копию с ограничением значений в диапазоне [0.0..1.0].
 
         Returns:
             MagicDetectorTuning: Копия с обрезанными в [0.0..1.0] значениями.
         """
+
         def _clamp01(x: float) -> float:
             if x < 0.0:
                 return 0.0
@@ -60,12 +61,8 @@ class MagicDetectorTuning:
             ooxml_confidence_cap=_clamp01(self.ooxml_confidence_cap),
             ole_confidence_cap=_clamp01(self.ole_confidence_cap),
             base_signature_confidence=_clamp01(self.base_signature_confidence),
-            base_zip_container_confidence=_clamp01(
-                self.base_zip_container_confidence
-            ),
-            base_ole_container_confidence=_clamp01(
-                self.base_ole_container_confidence
-            ),
+            base_zip_container_confidence=_clamp01(self.base_zip_container_confidence),
+            base_ole_container_confidence=_clamp01(self.base_ole_container_confidence),
             base_extension_only_confidence=_clamp01(
                 self.base_extension_only_confidence
             ),

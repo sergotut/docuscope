@@ -127,7 +127,7 @@ def family_of(type_: DocumentType) -> DocumentFamily:
 
     Returns:
         DocumentFamily: Соответствующее семейство документа. Если тип не
-        распознан, возвращается DocumentFamily.UNKNOWN.
+            распознан, возвращается DocumentFamily.UNKNOWN.
     """
     return DOCUMENT_FAMILY_BY_TYPE.get(type_, DocumentFamily.UNKNOWN)
 
@@ -154,10 +154,8 @@ def permission_of(type_: DocumentType) -> Permission:
 
     Returns:
         Permission: Permission.ALLOWED для разрешённых типов, иначе
-        Permission.FORBIDDEN.
+            Permission.FORBIDDEN.
     """
     return (
-        Permission.ALLOWED
-        if type_ in ALLOWED_DOCUMENT_TYPES
-        else Permission.FORBIDDEN
+        Permission.ALLOWED if type_ in ALLOWED_DOCUMENT_TYPES else Permission.FORBIDDEN
     )

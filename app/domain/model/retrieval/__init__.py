@@ -1,19 +1,20 @@
 """Пакет retrieval: публичные реэкспорты моделей эмбеддингов и поиска."""
 
-from .embedding import EmbeddingVector, EmbeddingBatch
-from .search import ScoredChunk, Query
-from .sparse import SparseVector
 from app.domain.model.vector_store import (
     AndFilter,
+    CollectionName,
     FieldCondition,
+    FieldName,
     NotFilter,
     OrFilter,
     QueryFilter,
     SearchHit,
     UpsertPoint,
-    CollectionName,
-    FieldName,
 )
+
+from .embedding import EmbeddingBatch, EmbeddingVector
+from .search import Query, ScoredChunk
+from .sparse import SparseVector
 
 __all__ = [
     "SparseVector",
@@ -29,5 +30,5 @@ __all__ = [
     "NotFilter",
     "QueryFilter",
     "CollectionName",
-    "FieldName"
+    "FieldName",
 ]

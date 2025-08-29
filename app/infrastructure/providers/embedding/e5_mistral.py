@@ -18,7 +18,6 @@ class E5MistralEmbeddingAdapter(E5MistralEmbedding):
 
     def __init__(self) -> None:
         """Создаёт экземпляр с настройками."""
-
         config = settings.embed.e5_mistral
 
         super().__init__(
@@ -27,7 +26,7 @@ class E5MistralEmbeddingAdapter(E5MistralEmbedding):
             model_name=config.model_name,
             batch_size=config.batch_size,
             space=settings.embed.base.space,
-            dim=config.dim
+            dim=config.dim,
         )
 
         logger.info(

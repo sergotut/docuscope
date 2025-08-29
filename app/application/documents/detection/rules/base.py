@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from app.application.documents.detection.codes import ReasonCode, WarningCode
+from app.application.documents.detection.reasons import ReasonCode
 from app.application.documents.normalization import NormalizedInput
 from app.domain.model.documents.type_detection import TypeDetectionResult
 
@@ -28,7 +28,6 @@ class DecisionRule(Protocol):
         *,
         result: TypeDetectionResult,
         normalized: NormalizedInput,
-        warnings: tuple[WarningCode, ...],
     ) -> ReasonCode | None:
         """Оценивает документ и возвращает причину отклонения либо None.
 
@@ -37,11 +36,9 @@ class DecisionRule(Protocol):
                 документа.
             normalized (NormalizedInput): Нормализованные входные данные
                 (каноничное расширение и MIME).
-            warnings (tuple[WarningCode, ...]): Объединённые предупреждения
-                нормализации и/или детектора.
 
         Returns:
             ReasonCode | None: Код причины отклонения, если правило считает
-            документ неподходящим, иначе None, если правило пройдено.
+                документ неподходящим, иначе None, если правило пройдено.
         """
         ...

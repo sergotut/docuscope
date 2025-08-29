@@ -9,7 +9,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Awaitable, Callable, Mapping
+from collections.abc import Awaitable, Mapping
+from typing import Any, Callable
 
 from redis.asyncio import Redis
 from redis.exceptions import ConnectionError as RedisConnError
@@ -174,7 +175,7 @@ class RedisPool:
         self._client: Redis | None = None
         self._wrapped: _ClientWrapper | None = None
 
-    async def __aenter__(self) -> "RedisPool":
+    async def __aenter__(self) -> RedisPool:
         """Открывает соединение при входе в контекст."""
         await self.connect()
         return self

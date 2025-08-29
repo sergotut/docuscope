@@ -1,20 +1,71 @@
 version: 2
+
 updates:
+  # Python (Poetry/pyproject.toml)
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Moscow"
+    versioning-strategy: increase-if-necessary
+    open-pull-requests-limit: 10
     allow:
       - dependency-type: "direct"
-    open-pull-requests-limit: 10
+    groups:
+      patch-and-minor:
+        applies-to: version-updates
+        update-types: ["patch", "minor"]
+      security:
+        applies-to: security-updates
+      test-libs:
+        patterns: ["pytest*", "hypothesis*"]
+      lint-and-type:
+        patterns: ["ruff*", "black*", "mypy*", "pydantic*"]
+    ignore:
+      - dependency-name: "torch"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "scipy"
+        update-types: ["version-update:semver-major"]
+    rebase-strategy: "auto"
+    labels: ["deps", "python"]
+    assignees: ["${{ github.repository_owner }}"]
 
+  # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:10"
+      timezone: "Europe/Moscow"
     open-pull-requests-limit: 5
+    groups:
+      gh-actions-minor:
+        applies-to: version-updates
+        update-types: ["patch", "minor"]
+      gh-actions-major:
+        applies-to: version-updates
+        update-types: ["major"]
+    labels: ["deps", "github-actions"]
+    rebase-strategy: "auto"
 
+  # Docker (Dockerfile)
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:20"
+      timezone: "Europe/Moscow"
+    open-pull-requests-limit: 5
+    groups:
+      base-image-patches:
+        applies-to: version-updates
+        update-types: ["patch", "minor"]
+      base-image-majors:
+        applies-to: version-updates
+        update-types: ["major"]
+    labels: ["deps", "docker"]
+    rebase-strategy: "auto"

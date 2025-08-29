@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.application.documents.detection.codes import WarningCode
 from app.application.documents.normalization.filename import (
     canonical_ext_or_none,
 )
@@ -12,6 +11,7 @@ from app.application.documents.normalization.mime import (
     canonical_mime_or_none,
 )
 from app.domain.model.documents.type_detection import FileProbe
+from app.domain.shared.codes import WarningCode
 
 __all__ = [
     "NormalizedInput",
@@ -87,13 +87,13 @@ def build_probe(
         head_bytes = bytes(head)
     else:
         try:
-            head_bytes = bytes(head) # на случай совместимых буферов
-        except Exception as exc: # noqa: BLE001
+            head_bytes = bytes(head)  # на случай совместимых буферов
+        except Exception as exc:  # noqa: BLE001
             raise TypeError("head должен быть bytes‑подобным") from exc
 
     try:
         size = int(size_bytes)
-    except Exception: # noqa: BLE001
+    except Exception:  # noqa: BLE001
         size = 0
     if size < 0:
         size = 0

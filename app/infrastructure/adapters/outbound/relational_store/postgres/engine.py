@@ -6,13 +6,14 @@
 from __future__ import annotations
 
 import time
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import AsyncContextManager, AsyncIterator, cast
+from typing import AsyncContextManager, cast
 
 import structlog
 
 from app.domain.model.diagnostics import RelationalDBHealthReport
-from app.domain.ports.relational_store import RelConnection, RelationalEnginePort
+from app.domain.ports.relational_store import RelationalEnginePort, RelConnection
 from app.infrastructure.adapters.outbound.relational_store.postgres_client import (  # noqa: E501
     AsyncPGPool,
     mask_dsn,
@@ -133,9 +134,7 @@ class PostgresEngine(RelationalEnginePort):
         try:
             async with self.acquire() as c:
                 version = str(
-                    await c.fetchval(
-                        "select current_setting('server_version', true)"
-                    )
+                    await c.fetchval("select current_setting('server_version', true)")
                 )
                 database = str(await c.fetchval("select current_database()"))
 
@@ -148,9 +147,7 @@ class PostgresEngine(RelationalEnginePort):
                 readonly = str(ro_setting).lower() in {"on", "true", "1"}
 
                 max_conn = int(
-                    await c.fetchval(
-                        "select current_setting('max_connections')::int"
-                    )
+                    await c.fetchval("select current_setting('max_connections')::int")
                     or 0
                 )
 

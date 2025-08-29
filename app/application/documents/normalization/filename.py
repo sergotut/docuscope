@@ -6,11 +6,11 @@
 
 from __future__ import annotations
 
-from app.application.documents.detection.codes import (
-    WarningCode,
-    WARN_UNSAFE_EXTENSION_CHARS,
+from app.domain.model.documents import (
     WARN_UNKNOWN_EXTENSION,
+    WARN_UNSAFE_EXTENSION_CHARS,
 )
+from app.domain.shared.codes import WarningCode
 
 __all__ = ["canonical_ext_or_none"]
 
@@ -29,7 +29,7 @@ def canonical_ext_or_none(name: str) -> tuple[str | None, tuple[WarningCode, ...
 
     Returns:
         tuple[str | None, tuple[WarningCode, ...]]: Пара (ext, warnings), где
-        ext — расширение без точки или None.
+            ext — расширение без точки или None.
     """
     warnings: list[WarningCode] = []
 

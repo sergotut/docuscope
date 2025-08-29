@@ -10,8 +10,9 @@ and_, or_, not_.
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Any, Iterable, Literal, Sequence, Union
+from typing import Any, Literal, Union
 
 __all__ = [
     "FieldCondition",
@@ -61,7 +62,7 @@ class AndFilter:
         filters (tuple[QueryFilter, ...]): Набор дочерних фильтров.
     """
 
-    filters: tuple["QueryFilter", ...]
+    filters: tuple[QueryFilter, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -72,7 +73,7 @@ class OrFilter:
         filters (tuple[QueryFilter, ...]): Набор дочерних фильтров.
     """
 
-    filters: tuple["QueryFilter", ...]
+    filters: tuple[QueryFilter, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -83,7 +84,7 @@ class NotFilter:
         filter (QueryFilter): Дочерний фильтр.
     """
 
-    filter: "QueryFilter"
+    filter: QueryFilter
 
 
 QueryFilter = Union[FieldCondition, AndFilter, OrFilter, NotFilter]

@@ -32,11 +32,8 @@ class FieldName:
             self,
             "value",
             validate_name(
-                self.value,
-                allowed_re=_ALLOWED_NAME_RE,
-                max_len=_MAX_LEN,
-                kind="Field"
-            )
+                self.value, allowed_re=_ALLOWED_NAME_RE, max_len=_MAX_LEN, kind="Field"
+            ),
         )
 
     def __str__(self) -> str:

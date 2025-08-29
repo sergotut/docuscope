@@ -10,10 +10,9 @@
 
 from __future__ import annotations
 
-from app.application.documents.detection.codes import (
-    ReasonCode,
-    WarningCode,
+from app.application.documents.detection.reasons import (
     REASON_MIME_EXT_CONFLICT,
+    ReasonCode,
 )
 from app.application.documents.normalization import NormalizedInput
 from app.domain.model.documents import (
@@ -41,7 +40,6 @@ class MimeExtConflictRule:
         *,
         result: TypeDetectionResult,
         normalized: NormalizedInput,
-        warnings: tuple[WarningCode, ...],
     ) -> ReasonCode | None:
         """Проверяет соответствие расширения детектированному типу.
 
@@ -52,15 +50,11 @@ class MimeExtConflictRule:
             result (TypeDetectionResult): Доменный результат детекции типа.
             normalized (NormalizedInput): Нормализованные входные данные
                 (каноничное расширение и MIME).
-            warnings (tuple[WarningCode, ...]): Предупреждения нормализации
-                и/или детектора.
 
         Returns:
             ReasonCode | None: REASON_MIME_EXT_CONFLICT при несовпадении типа,
-            определённого по расширению, и фактического типа; иначе None.
+                определённого по расширению, и фактического типа, иначе None.
         """
-        _ = warnings  # параметр не используется; сигнатура — по протоколу
-
         if not self._enabled:
             return None
 

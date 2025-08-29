@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from app.application.documents.detection.codes import (
-    ReasonCode,
-    WarningCode,
+from app.application.documents.detection.reasons import (
     REASON_UNKNOWN_EXTENSION,
+    ReasonCode,
 )
 from app.application.documents.normalization import NormalizedInput
 from app.domain.model.documents.type_detection import TypeDetectionResult
@@ -29,7 +28,6 @@ class UnknownExtensionRule:
         *,
         result: TypeDetectionResult,
         normalized: NormalizedInput,
-        warnings: tuple[WarningCode, ...],
     ) -> ReasonCode | None:
         """Проверяет факт отсутствия или некорректности расширения.
 
@@ -37,14 +35,12 @@ class UnknownExtensionRule:
             result (TypeDetectionResult): Доменный результат детекции типа.
             normalized (NormalizedInput): Нормализованные входные данные
                 (каноничное расширение и MIME).
-            warnings (tuple[WarningCode, ...]): Предупреждения нормализации
-                и/или детектора.
 
         Returns:
             ReasonCode | None: REASON_UNKNOWN_EXTENSION, если расширение
-            отсутствует или не было канонизировано; иначе None.
+                отсутствует или не было канонизировано, иначе None.
         """
-        _ = result, warnings  # параметры не используются; сигнатура — по протоколу
+        _ = result  # параметр не используется
         if not self._enabled:
             return None
         return REASON_UNKNOWN_EXTENSION if normalized.ext is None else None

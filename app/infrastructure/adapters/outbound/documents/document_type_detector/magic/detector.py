@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Callable
+
 import structlog
 
 from app.domain.model.documents.converters import (
@@ -17,8 +18,9 @@ from app.domain.model.documents.types import DocumentType
 from app.domain.ports.documents.document_type_detector import (
     DocumentTypeDetectorPort,
 )
-from ..types import DecisionBasis
+
 from ..tuning import MagicDetectorTuning
+from ..types import DecisionBasis
 from .signatures import has_ole_signature, sniff_magic
 from .utils import find_any, norm_ext
 
@@ -86,7 +88,7 @@ class MagicDocumentTypeDetector(DocumentTypeDetectorPort):
 
         Returns:
             TypeDetectionResult: Итоговый тип/семейство, MIME, уверенность и
-            предупреждения.
+                предупреждения.
         """
         name = probe.original_filename
         ext = norm_ext(name)
@@ -141,9 +143,7 @@ class MagicDocumentTypeDetector(DocumentTypeDetectorPort):
         if final_type in (
             DocumentType.WORD_DOC,
             DocumentType.EXCEL_XLS,
-        ) and not has_ole_signature(
-            probe.head
-        ):
+        ) and not has_ole_signature(probe.head):
             notes.append("ole_by_extension_or_mime")
             confidence = min(confidence, self._tuning.ole_confidence_cap)
 
@@ -184,7 +184,7 @@ class MagicDocumentTypeDetector(DocumentTypeDetectorPort):
 
         Returns:
             tuple[DocumentType, str | None, list[str], float, DecisionBasis]:
-            Итоговый тип, итоговый MIME, заметки, confidence и основание.
+                Итоговый тип, итоговый MIME, заметки, confidence и основание.
         """
         t = self._tuning
 

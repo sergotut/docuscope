@@ -7,13 +7,8 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from app.domain.model.shared import (
-    Blob,
-    ObjectName,
-    StoredObject,
-    UploadBatch
-)
 from app.domain.model.collections import CollectionName
+from app.domain.model.shared import Blob, ObjectName, StoredObject, UploadBatch
 
 __all__ = ["StoragePort"]
 

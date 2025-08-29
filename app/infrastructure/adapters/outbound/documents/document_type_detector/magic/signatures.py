@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 from typing import Callable, Final, NamedTuple
+
 import structlog
 
 try:  # опционально усиливаем детекцию, если зависимость доступна
@@ -24,15 +25,15 @@ logger = structlog.get_logger(__name__)
 
 # Константы сигнатур (используем bytes.startswith)
 PDF_MAGIC: Final = b"%PDF-"
-JPEG_MAGIC: Final = b"\xFF\xD8\xFF"
-PNG_MAGIC: Final = b"\x89PNG\r\n\x1A\n"
+JPEG_MAGIC: Final = b"\xff\xd8\xff"
+PNG_MAGIC: Final = b"\x89PNG\r\n\x1a\n"
 GIF_MAGICS: Final = (b"GIF87a", b"GIF89a")
 BMP_MAGIC: Final = b"BM"
 TIFF_MAGICS: Final = (b"II*\x00", b"MM\x00*")
 RIFF_MAGIC: Final = b"RIFF"
 WEBP_TAG: Final = b"WEBP"
 ZIP_MAGIC: Final = b"PK\x03\x04"
-OLE_MAGIC: Final = b"\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"
+OLE_MAGIC: Final = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
 
 
 class _MagicRule(NamedTuple):
@@ -150,18 +151,12 @@ _MAGIC_RULES: Final[tuple[_MagicRule, ...]] = (
     _MagicRule(
         _is_docx,
         DocumentType.WORD_DOCX,
-        (
-            "application/"
-            "vnd.openxmlformats-officedocument.wordprocessingml.document"
-        ),
+        ("application/" "vnd.openxmlformats-officedocument.wordprocessingml.document"),
     ),
     _MagicRule(
         _is_xlsx,
         DocumentType.EXCEL_XLSX,
-        (
-            "application/"
-            "vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        ),
+        ("application/" "vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
     ),
     _MagicRule(
         _is_zip_unknown_ooxml,
@@ -191,4 +186,52 @@ def sniff_magic(
         tuple[DocumentType | None, str | None, tuple[str, ...]]: Кортеж
         (тип документа или None, MIME или None, заметки).
     """
-    limit = 16384 if scan_limit is None else max(0, int(scan_limit))
+    if not head:
+        return None, None, ()
+
+    limit = scan_limit if scan_limit is not None else 16384
+    notes: list[str] = []
+
+    # Проверяем встроенные правила сигнатур
+    for rule in _MAGIC_RULES:
+        try:
+            if rule.check(head, limit):
+                if rule.note:
+                    notes.append(rule.note)
+                return rule.dtype, rule.mime, tuple(notes)
+        except Exception as exc:
+            logger.warning(
+                "Ошибка проверки магической сигнатуры",
+                rule_note=rule.note or "unknown",
+                error=str(exc),
+            )
+            continue
+
+    # Fallback к python-magic если доступен и разрешён
+    if use_libmagic and magic is not None:
+        try:
+            mime_detected = magic.from_buffer(head, mime=True)
+            if mime_detected and isinstance(mime_detected, str):
+                notes.append("detected_by_libmagic")
+                return None, mime_detected.lower(), tuple(notes)
+        except Exception as exc:
+            logger.debug(
+                "Ошибка libmagic fallback",
+                error=str(exc),
+            )
+            notes.append("libmagic_failed")
+
+    # Ничего не найдено
+    return None, None, tuple(notes)
+
+
+def has_ole_signature(head: bytes) -> bool:
+    """Проверяет наличие OLE (Compound Document) сигнатуры в буфере.
+    
+    Args:
+        head (bytes): Первые N байт файла.
+        
+    Returns:
+        bool: True, если найдена OLE сигнатура, иначе False.
+    """
+    return head.startswith(OLE_MAGIC) if head else False

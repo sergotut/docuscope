@@ -2,15 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable
 
-from app.application.documents.detection.codes import (
-    ReasonCode,
-    WarningCode,
-    REASON_FORBIDDEN_BY_DOMAIN,
-)
 from app.application.documents.detection.options import DocumentDetectionOptions
+from app.application.documents.detection.reasons import (
+    REASON_FORBIDDEN_BY_DOMAIN,
+    ReasonCode,
+)
 from app.application.documents.detection.rules import (
     ConfidenceRule,
     DecisionRule,
@@ -25,6 +24,7 @@ from app.application.documents.normalization import (
 )
 from app.domain.model.documents import FileProbe, TypeDetectionResult
 from app.domain.ports.documents import DocumentTypeDetectorPort
+from app.domain.shared.codes import WarningCode
 
 __all__ = ["DetectionDecision", "DocumentDetectionService"]
 
@@ -78,10 +78,9 @@ class DocumentDetectionService:
         self._detector = detector
         self._opt = options or DocumentDetectionOptions()
         self._rules = (
-            tuple(rules)
-            if rules is not None
-            else self._make_default_rules(self._opt)
+            tuple(rules) if rules is not None else self._make_default_rules(self._opt)
         )
+
     def detect(self, probe: FileProbe) -> DetectionDecision:
         """Детектирует тип и принимает решение. Самостоятельно нормализует вход.
 
@@ -114,15 +113,12 @@ class DocumentDetectionService:
 
         Returns:
             DetectionDecision: Результат детекции, список причин/предупреждений
-            и флаг принятия.
+                и флаг принятия.
         """
         result = self._detector.detect(probe)
         warnings = _merge_unique(normalized.warnings, result.warnings)
         reasons = _collect_reasons(
-            self._rules,
-            result=result,
-            normalized=normalized,
-            warnings=warnings
+            self._rules, result=result, normalized=normalized, warnings=warnings
         )
         accepted = _compute_acceptance(strict=self._opt.strict, reasons=reasons)
 
@@ -158,8 +154,7 @@ class DocumentDetectionService:
 
 
 def _merge_unique(
-    a: tuple[WarningCode, ...],
-    b: tuple[WarningCode, ...]
+    a: tuple[WarningCode, ...], b: tuple[WarningCode, ...]
 ) -> tuple[WarningCode, ...]:
     """Объединяет предупреждения без дубликатов, сохраняя порядок появления.
 
@@ -169,7 +164,7 @@ def _merge_unique(
 
     Returns:
         tuple[WarningCode, ...]: Предупреждения без повторов,
-        в порядке первого появления.
+            в порядке первого появления.
     """
     seen: set[WarningCode] = set()
     out: list[WarningCode] = []
@@ -200,7 +195,7 @@ def _collect_reasons(
 
     Returns:
         tuple[ReasonCode, ...]: Кортеж кодов причин отклонения. Пустой кортеж
-        означает, что отказов нет.
+            означает, что отказов нет.
     """
     out: list[ReasonCode] = []
 
@@ -208,7 +203,6 @@ def _collect_reasons(
         reason = rule.evaluate(
             result=result,
             normalized=normalized,
-            warnings=warnings
         )
         if reason is not None:
             out.append(reason)
@@ -216,11 +210,7 @@ def _collect_reasons(
     return tuple(out)
 
 
-def _compute_acceptance(
-    *,
-    strict: bool,
-    reasons: tuple[ReasonCode, ...]
-) -> bool:
+def _compute_acceptance(*, strict: bool, reasons: tuple[ReasonCode, ...]) -> bool:
     """Определяет решение о приёме документа исходя из списка причин.
 
     Args:

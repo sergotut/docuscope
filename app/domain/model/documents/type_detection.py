@@ -96,7 +96,7 @@ class TypeDetectionResult:
         mime: str | None,
         confidence: float,
         warnings: tuple[str, ...] = (),
-    ) -> "TypeDetectionResult":
+    ) -> TypeDetectionResult:
         """Создаёт результат, проверяя каноничность и вычисляя поля.
 
         На вход подаются уже нормализованные ext/mime от пограничного слоя.

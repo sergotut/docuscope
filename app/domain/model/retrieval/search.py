@@ -5,8 +5,8 @@
 - :class:Query — текст запроса с опциональной областью поиска по document_id.
 """
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 
 from app.domain.exceptions import DomainValidationError
 from app.domain.model.documents import Chunk, DocumentId

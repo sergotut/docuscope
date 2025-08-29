@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from app.domain.model.diagnostics import CacheHealthReport
 from app.domain.ports.cache import CachePort
+
 from .engine import RedisEngine
 
 __all__ = ["RedisCache"]

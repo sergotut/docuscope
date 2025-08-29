@@ -7,7 +7,7 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Iterator, Iterable
+from collections.abc import Iterable, Iterator
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
@@ -25,6 +25,7 @@ from tenacity import (
 )
 
 from app.domain.exceptions import StorageError
+from app.domain.model.collections import CollectionName
 from app.domain.model.shared import (
     Blob,
     ObjectName,
@@ -32,8 +33,8 @@ from app.domain.model.shared import (
     UploadBatch,
     make_object_name,
 )
-from app.domain.model.collections import CollectionName
 from app.domain.ports import StoragePort
+
 from .models import HeadObject, ObjectMetadata, head_from_stat, mapping_from_meta
 from .protocols import MinioLike
 
@@ -108,14 +109,14 @@ class MinioStorage(StoragePort):
         logger.debug("upload start", count=len(blobs), ttl=ttl_minutes)
 
         sem = asyncio.Semaphore(_UPLOAD_CONCURRENCY)
-        
+
         async def _task(b: Blob) -> StoredObject:
             async with sem:
                 return await self._run(self._put_one, b, ttl_minutes)
-        
+
         objs = await asyncio.gather(*(_task(b) for b in blobs))
         result = UploadBatch(objects=tuple(objs))
-        
+
         logger.info("upload done", objects=result.names)
 
         return result
@@ -143,21 +144,18 @@ class MinioStorage(StoragePort):
             count=len(blobs),
             ttl=ttl_minutes,
         )
-        
+
         sem = asyncio.Semaphore(_UPLOAD_CONCURRENCY)
-        
+
         async def _task(b: Blob) -> StoredObject:
             async with sem:
                 return await self._run(
-                    self._put_one,
-                    b,
-                    ttl_minutes,
-                    collection=collection
+                    self._put_one, b, ttl_minutes, collection=collection
                 )
-        
+
         objs = await asyncio.gather(*(_task(b) for b in blobs))
         result = UploadBatch(objects=tuple(objs))
-        
+
         logger.info(
             "upload_to_collection done",
             collection=str(collection),
@@ -277,7 +275,7 @@ class MinioStorage(StoragePort):
         self,
         blob: Blob,
         ttl_minutes: int | None,
-        collection: CollectionName | None = None
+        collection: CollectionName | None = None,
     ) -> StoredObject:
         """Загружает один Blob и возвращает StoredObject.
 
@@ -395,7 +393,7 @@ class MinioStorage(StoragePort):
         """
         rem = cast(
             "Callable[[str, Iterable[object]], Iterable[object]]",
-            getattr(self._minio, "remove_objects"),
+            self._minio.remove_objects,
         )
         return list(rem(self.bucket, batch))
 
@@ -409,16 +407,16 @@ class MinioStorage(StoragePort):
             int: Количество успешно удалённых объектов.
         """
         prefix = f"{str(collection)}/"
-    
+
         # Попытка использовать MinIO.remove_objects(...) (если доступно).
         rem = cast(
             "Callable[[str, Iterable[object]], Iterable[object]] | None",
             getattr(self._minio, "remove_objects", None),
         )
-    
+
         if rem is not None:
             from minio.deleteobjects import DeleteObject  # type: ignore
-    
+
             def _batches() -> Iterable[list[object]]:
                 batch: list[object] = []
                 for info in self._minio.list_objects(self.bucket, recursive=True):
@@ -430,7 +428,7 @@ class MinioStorage(StoragePort):
                             batch = []
                 if batch:
                     yield batch
-    
+
             total_deleted = 0
             for batch in _batches():
                 errors = self._remove_objects_batch_sync(batch)
@@ -447,7 +445,7 @@ class MinioStorage(StoragePort):
                         message=msg,
                     )
             return total_deleted
-    
+
         # Fallback: поштучное удаление (надёжно, но медленнее)
         deleted = 0
         for info in self._minio.list_objects(self.bucket, recursive=True):
