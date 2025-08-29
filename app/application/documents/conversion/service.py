@@ -92,5 +92,3 @@ class DocumentConversionService:
     def supported_conversions(self) -> frozenset[tuple[DocumentType, DocumentType]]:
         """Возвращает множество поддерживаемых пар конвертации (делегат порта)."""
         return self._converter.supported_conversions
-
-

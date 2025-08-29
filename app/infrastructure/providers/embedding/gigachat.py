@@ -7,13 +7,13 @@ from __future__ import annotations
 
 import structlog
 
-from app.adapters.outbound import SberGigaChatEmbedding
+from app.adapters.outbound import SberGigaChatEmbedder
 from app.infrastructure.config import settings
 
 logger = structlog.get_logger(__name__)
 
 
-class SberGigaChatEmbeddingAdapter(SberGigaChatEmbedding):
+class SberGigaChatEmbeddingAdapter(SberGigaChatEmbedder):
     """Использует REST-эндпоинт GigaChat."""
 
     def __init__(self) -> None:
@@ -26,12 +26,10 @@ class SberGigaChatEmbeddingAdapter(SberGigaChatEmbedding):
             endpoint=config.endpoint,
             timeout=settings.embed.base.timeout,
             batch_size=config.batch_size,
-            space=settings.embed.base.space,
         )
 
         logger.info(
             "SberGigaChatEmbeddingAdapter создан",
             model=config.model_name,
             batch_size=config.batch_size,
-            space=settings.embed.base.space,
         )

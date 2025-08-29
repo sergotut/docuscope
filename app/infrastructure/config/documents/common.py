@@ -107,17 +107,17 @@ class CommonDocumentSettings(SettingsBase):
     @classmethod
     def validate_temp_base_dir(cls, v: str | None) -> str | None:
         """Валидирует путь к базовой временной директории.
-        
+
         Проверяет, что указанный путь является абсолютным, если он задан.
         None значение разрешено и означает использование системной временной
         директории по умолчанию.
-        
+
         Args:
             v: Путь к временной директории или None.
-            
+
         Returns:
             str | None: Валидированный путь к временной директории или None.
-            
+
         Raises:
             ValueError: Если путь не является абсолютным.
         """
@@ -133,7 +133,7 @@ class CommonDocumentSettings(SettingsBase):
     @property
     def max_document_size_bytes(self) -> int:
         """Возвращает максимальный размер документа в байтах.
-        
+
         Конвертирует значение max_document_size_mb в байты для удобного
         использования в коде, который работает с размерами файлов в байтах.
 
@@ -145,7 +145,7 @@ class CommonDocumentSettings(SettingsBase):
     @property
     def temp_base_path(self) -> Path | None:
         """Возвращает Path объект для базовой временной директории.
-        
+
         Преобразует строковое значение temp_base_dir в объект Path для
         удобного использования в коде, который работает с файловой системой.
 

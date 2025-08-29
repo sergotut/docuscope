@@ -137,17 +137,17 @@ class LibreOfficeConverterSettings(SettingsBase):
     @classmethod
     def validate_max_processes(cls, v: int, info) -> int:
         """Валидирует корректность максимального количества процессов.
-        
+
         Проверяет, что максимальное количество процессов в пуле не меньше
         минимального
-        
+
         Args:
             v: Максимальное количество процессов для валидации.
             info: Контекст валидации с доступом к другим полям.
-            
+
         Returns:
             int: Валидированное значение max_processes.
-            
+
         Raises:
             ValueError: Если max_processes меньше min_processes.
         """

@@ -8,13 +8,13 @@ from __future__ import annotations
 
 import structlog
 
-from app.adapters.outbound import SentenceTransformersEmbedding
+from app.adapters.outbound import SentenceTransformersEmbedder
 from app.infrastructure.config import settings
 
 logger = structlog.get_logger(__name__)
 
 
-class BGELargeEmbeddingAdapter(SentenceTransformersEmbedding):
+class BGELargeEmbeddingAdapter(SentenceTransformersEmbedder):
     """Использует модель BGE Large (англ.).
 
     Можно задать batch_size. Работает через SentenceTransformersEmbedding.
@@ -28,7 +28,6 @@ class BGELargeEmbeddingAdapter(SentenceTransformersEmbedding):
             model_name=config.model_name,
             device=config.device,
             batch_size=config.batch_size,
-            space=settings.embed.base.space,
             dtype=config.dtype,
             quantized=config.quantized,
             max_tokens=config.max_tokens,
@@ -40,5 +39,4 @@ class BGELargeEmbeddingAdapter(SentenceTransformersEmbedding):
             batch_size=config.batch_size,
             device=self.device,
             quantized=config.quantized,
-            space=settings.embed.base.space,
         )

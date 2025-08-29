@@ -1,5 +1,7 @@
 """Outbound-адаптер токенизатора tiktoken."""
 
-from .tiktoken_tokenizer import TiktokenTokenizer
+from __future__ import annotations
+
+from .tiktoken.adapter import TiktokenTokenizer
 
 __all__ = ["TiktokenTokenizer"]

@@ -227,10 +227,10 @@ def sniff_magic(
 
 def has_ole_signature(head: bytes) -> bool:
     """Проверяет наличие OLE (Compound Document) сигнатуры в буфере.
-    
+
     Args:
         head (bytes): Первые N байт файла.
-        
+
     Returns:
         bool: True, если найдена OLE сигнатура, иначе False.
     """
