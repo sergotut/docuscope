@@ -103,6 +103,14 @@ class CommonDocumentSettings(SettingsBase):
         description="Порог качества для операций с документами (0.0-1.0)",
     )
 
+    max_filename_length: int = Field(
+        255,
+        env="DOCUMENTS_MAX_FILENAME_LENGTH",
+        ge=1,
+        le=4096,
+        description="Максимальная длина имени файла",
+    )
+
     @field_validator("temp_base_dir")
     @classmethod
     def validate_temp_base_dir(cls, v: str | None) -> str | None:
