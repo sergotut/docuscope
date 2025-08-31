@@ -1,5 +1,5 @@
 # ---------- Build stage: готовим виртуальное окружение с прод-зависимостями ----------
-FROM python:3.11-slim AS builder
+FROM python:3.12.6-slim AS builder
 
 ARG POETRY_VERSION=1.8.2
 ARG PIP_VERSION=24.0
@@ -45,7 +45,7 @@ RUN pip install --no-cache-dir gunicorn celery
 RUN poetry cache clear --all pypi && rm -rf /root/.cache/pip
 
 # ---------- Base image: минимальный слой только с venv ----------
-FROM python:3.11-slim
+FROM python:3.12.6-slim
 
 ARG BUILD_DATE
 ARG VCS_REF

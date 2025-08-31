@@ -11,10 +11,11 @@ from typing import AsyncContextManager
 from app.domain.ports.relational_store import (
     CollectionRepositoryPort,
     DocumentMetaRepositoryPort,
-    RelConnection,
     RelationalEnginePort,
+    RelConnection,
     UnitOfWorkPort,
 )
+
 from .repositories import (
     PostgresCollectionRepository,
     PostgresDocumentMetaRepository,
@@ -48,7 +49,7 @@ class PostgresUnitOfWork(UnitOfWorkPort):
         self._collections: PostgresCollectionRepository | None = None
         self._documents: PostgresDocumentMetaRepository | None = None
 
-    async def __aenter__(self) -> "PostgresUnitOfWork":
+    async def __aenter__(self) -> PostgresUnitOfWork:
         """Открывает соединение, начинает транзакцию и готовит репозитории."""
         if not self._engine.is_connected():
             await self._engine.connect()

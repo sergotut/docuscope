@@ -7,18 +7,17 @@ from __future__ import annotations
 
 import structlog
 
-from app.adapters.outbound import YAGPTEmbedding
+from app.adapters.outbound import YAGPTEmbedder
 from app.infrastructure.config import settings
 
 logger = structlog.get_logger(__name__)
 
 
-class YAGPTEmbeddingAdapter(YAGPTEmbedding):
+class YAGPTEmbeddingAdapter(YAGPTEmbedder):
     """Использует облачный эндпоинт Yandex GPT."""
 
     def __init__(self) -> None:
         """Создаёт экземпляр с настройками."""
-
         config = settings.embed.yagpt
 
         super().__init__(
@@ -27,7 +26,6 @@ class YAGPTEmbeddingAdapter(YAGPTEmbedding):
             endpoint=config.endpoint,
             timeout=settings.embed.base.timeout,
             batch_size=config.batch_size,
-            space=settings.embed.base.space,
         )
 
         logger.info(
@@ -35,5 +33,4 @@ class YAGPTEmbeddingAdapter(YAGPTEmbedding):
             model=config.model_name,
             endpoint=config.endpoint,
             batch_size=config.batch_size,
-            space=settings.embed.base.space,
         )

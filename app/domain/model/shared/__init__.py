@@ -15,5 +15,5 @@ __all__ = [
     "StoredObject",
     "UploadBatch",
     "make_object_name",
-    "TokenCount"
+    "TokenCount",
 ]

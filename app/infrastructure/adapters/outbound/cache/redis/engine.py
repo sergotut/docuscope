@@ -13,8 +13,8 @@ import structlog
 from app.domain.model.diagnostics import CacheHealthReport
 from app.domain.ports.cache import CacheEnginePort
 from app.infrastructure.adapters.outbound.cache.redis_client import (
-    RedisPool,
     RedisClientLike,
+    RedisPool,
     mask_url,
 )
 
@@ -100,9 +100,7 @@ class RedisEngine(CacheEnginePort):
             uptime_seconds = int(info.get("uptime_in_seconds", 0) or 0)
             used_memory_bytes = int(info.get("used_memory", 0) or 0)
             connected_clients = int(info.get("connected_clients", 0) or 0)
-            total_commands_processed = int(
-                info.get("total_commands_processed", 0) or 0
-            )
+            total_commands_processed = int(info.get("total_commands_processed", 0) or 0)
             hits = int(info.get("keyspace_hits", 0) or 0)
             misses = int(info.get("keyspace_misses", 0) or 0)
             denom = hits + misses

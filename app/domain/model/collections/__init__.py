@@ -1,8 +1,8 @@
 """Пакет collections: публичные реэкспорты доменных моделей коллекций."""
 
 from .collection import (
-    CollectionName,
     CollectionMeta,
+    CollectionName,
     CollectionStatus,
 )
 

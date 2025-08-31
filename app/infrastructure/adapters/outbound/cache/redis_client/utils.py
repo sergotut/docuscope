@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit, quote
-from typing import Iterable
+from collections.abc import Iterable
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 __all__ = ["mask_url", "SENSITIVE_QUERY_KEYS"]
 
@@ -40,6 +40,7 @@ def mask_url(
     - Если строка не похожа на URL (нет '://') или парсинг не удался —
         возвращается placeholder.
     - Поддерживаются IPv6-хосты (в квадратных скобках) и схемы redis/rediss.
+
     Args:
         url (str): Исходный URL Redis.
         placeholder (str): Чем заменять секреты.

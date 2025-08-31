@@ -7,9 +7,9 @@ from typing import Final
 
 import structlog
 
+from app.domain.model.collections import CollectionName
 from app.domain.model.retrieval import SearchHit
 from app.domain.model.vector_store import FieldName
-from app.domain.model.collections import CollectionName
 
 __all__ = [
     "DENSE_VECTOR_NAME",
@@ -56,8 +56,7 @@ def as_collection_name(value: CollectionName | str) -> str:
         return str(CollectionName(value))
     except ValueError as exc:
         logger.warning(
-            "Qdrant: invalid collection name; fallback to raw",
-            error=str(exc)
+            "Qdrant: invalid collection name; fallback to raw", error=str(exc)
         )
         return value
 
@@ -79,10 +78,7 @@ def as_field_name(value: FieldName | str) -> str:
     try:
         return str(FieldName(value))
     except ValueError as exc:
-        logger.warning(
-            "Qdrant: invalid field name; fallback to raw",
-            error=str(exc)
-        )
+        logger.warning("Qdrant: invalid field name; fallback to raw", error=str(exc))
         return value
 
 
@@ -106,7 +102,6 @@ def rrf_merge(
     Returns:
         list[SearchHit]: Список лучших результатов после слияния.
     """
-
     # Материализуем итераторы, чтобы безопасно итерироваться несколько раз.
     dense_list = list(dense)
     sparse_list = list(sparse)

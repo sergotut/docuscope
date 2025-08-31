@@ -245,7 +245,7 @@ class SentenceTransformersEmbedder(EmbedderPort):
         )
 
         self._dim = int(self._model.get_sentence_embedding_dimension())
-        
+
         # Если max_tokens явно не задан, пробуем взять из модели,
         # иначе оставляем 512.
         if self._max_tokens <= 0:

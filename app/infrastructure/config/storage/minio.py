@@ -11,9 +11,7 @@ class MinioStorageSettings(SettingsBase):
     """Базовые настройки MinIO."""
 
     endpoint: str = Field(
-        ...,
-        env="STORAGE_MINIO_ENDPOINT",
-        description="Эндпоинт MinIO."
+        ..., env="STORAGE_MINIO_ENDPOINT", description="Эндпоинт MinIO."
     )
 
     access_key: str = Field(
@@ -33,4 +31,3 @@ class MinioStorageSettings(SettingsBase):
         env="STORAGE_MINIO_BUCKET",
         description="Bucket key MinIO.",
     )
-    

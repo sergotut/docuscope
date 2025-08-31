@@ -15,19 +15,11 @@ from app.domain.model.retrieval import (
     SearchHit,
     UpsertPoint,
 )
-from .models import QdrantDistance
-from .utils import (
-    DENSE_VECTOR_NAME,
-    SPARSE_VECTOR_NAME,
-    PAYLOAD_CREATED_AT_TS
-)
 
-__all__ = [
-    "to_distance",
-    "to_point_struct",
-    "to_filter",
-    "to_hit"
-]
+from .models import QdrantDistance
+from .utils import DENSE_VECTOR_NAME, PAYLOAD_CREATED_AT_TS, SPARSE_VECTOR_NAME
+
+__all__ = ["to_distance", "to_point_struct", "to_filter", "to_hit"]
 
 ConditionLike = qm.Condition | qm.FieldCondition | qm.IsEmptyCondition
 
@@ -168,9 +160,7 @@ def _field_cond(fc: FieldCondition) -> ConditionLike:
 
         case "nin":
             return qm.Condition(
-                must_not=[
-                    qm.FieldCondition(key=key, match=qm.MatchAny(any=list(val)))
-                ]
+                must_not=[qm.FieldCondition(key=key, match=qm.MatchAny(any=list(val)))]
             )
 
         case "gt" | "gte" | "lt" | "lte":
@@ -186,11 +176,8 @@ def _field_cond(fc: FieldCondition) -> ConditionLike:
             present = bool(val)
             return (
                 qm.Condition(
-                    must_not=[
-                        qm.IsEmptyCondition(is_empty=qm.PayloadField(key=key))
-                    ]
+                    must_not=[qm.IsEmptyCondition(is_empty=qm.PayloadField(key=key))]
                 )
-
                 if present
                 else qm.IsEmptyCondition(is_empty=qm.PayloadField(key=key))
             )

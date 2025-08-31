@@ -1,12 +1,11 @@
 """Пакет relational_store: публичные реэкспорты."""
 
 from .postgres import (
-    PostgresEngine,
-    PostgresUnitOfWork,
     PostgresCollectionRepository,
     PostgresDocumentMetaRepository,
+    PostgresEngine,
+    PostgresUnitOfWork,
 )
-
 
 __all__ = [
     "PostgresEngine",

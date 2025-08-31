@@ -4,16 +4,17 @@
 интерфейс для DI и бизнес-логики.
 """
 
-from .logging import LoggingSettings
 from .db import DBSettings
+from .documents import DocumentsSettings
+from .embedding import EmbeddingsSettings
+from .logging import LoggingSettings
+from .ocr import OCRSettings
+from .storage import StorageSettings
 from .telegram import TelegramSettings
 from .tokenizer import TokenizerSettings
-from .embedding import EmbeddingsSettings
-from .storage import StorageSettings
-from .ocr import OCRSettings
 
 
-class AppSettings():
+class AppSettings:
     """Финальный класс настроек приложения."""
 
     logging: LoggingSettings = LoggingSettings()
@@ -23,5 +24,7 @@ class AppSettings():
     embed: EmbeddingsSettings = EmbeddingsSettings()
     storage: StorageSettings = StorageSettings()
     ocr: OCRSettings = OCRSettings()
+    documents: DocumentsSettings = DocumentsSettings()
+
 
 settings = AppSettings()

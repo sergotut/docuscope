@@ -28,8 +28,7 @@ logger = structlog.get_logger(__name__)
 class _PaddleEngine(Protocol):
     """Минимальный протокол движка PaddleOCR для mypy."""
 
-    def ocr(self, img_path: str, cls: bool = False) -> list[list[object]]:
-        ...
+    def ocr(self, img_path: str, cls: bool = False) -> list[list[object]]: ...
 
 
 _CONTENT_TYPE_SUFFIX: dict[str, str] = {
@@ -100,9 +99,7 @@ class PaddleOCR(OCRPort):
             )
             lines, confidences = self._parse_lines_and_confidences(raw)
             text = "\n".join(lines)
-            avg_conf = (
-                sum(confidences) / len(confidences) if confidences else None
-            )
+            avg_conf = sum(confidences) / len(confidences) if confidences else None
 
             logger.debug(
                 "OCR done",

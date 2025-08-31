@@ -6,9 +6,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Final, Mapping, cast
+from typing import Final, cast
 
 from .protocols import ObjectInfo, StatResult
 
@@ -122,7 +123,7 @@ def meta_from_mapping(mapping: Mapping[str, str]) -> ObjectMetadata:
     """
     expires = _parse_dt(mapping.get(META_EXPIRES_AT))
     original = mapping.get(META_ORIGINAL_NAME)
-    
+
     return ObjectMetadata(expires_at=expires, original_name=original, raw=mapping)
 
 

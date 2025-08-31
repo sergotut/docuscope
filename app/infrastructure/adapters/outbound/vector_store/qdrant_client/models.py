@@ -88,6 +88,4 @@ class QdrantTextIndexSpec:
     """
 
     field: FieldName
-    config: QdrantTextIndexConfig = field(
-        default_factory=QdrantTextIndexConfig
-    )
+    config: QdrantTextIndexConfig = field(default_factory=QdrantTextIndexConfig)

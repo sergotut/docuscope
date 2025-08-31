@@ -6,7 +6,8 @@
 
 from __future__ import annotations
 
-from typing import Any, AsyncContextManager, Mapping, Protocol, runtime_checkable
+from collections.abc import Mapping
+from typing import Any, AsyncContextManager, Protocol, runtime_checkable
 
 __all__ = ["RelConnection"]
 

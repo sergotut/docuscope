@@ -3,34 +3,67 @@ name: Coverage Badge
 on:
   workflow_dispatch:
 
+concurrency:
+  group: coverage-badge
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
 jobs:
   coverage-badge:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12.6"
+          cache: "pip"
 
-      - uses: snok/install-poetry@v1
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.3
 
-      - name: Configure Poetry
-        run: poetry config virtualenvs.create false
+      - name: Cache Poetry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ runner.os }}-
+
+      - name: Cache .venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-py312-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-py312-
 
       - name: Install dependencies
-        run: poetry install --no-interaction --no-ansi
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry install --no-interaction --no-ansi
 
       - name: Run tests
-        run: pytest -q --cov=app --cov-report=xml
+        run: poetry run pytest -q --cov=app --cov-report=xml
 
       - name: Generate badge
         uses: tj-actions/coverage-badge@v2
         with:
           coverage-summary-path: coverage.xml
 
+      - name: Move badge to docs/
+        run: |
+          mkdir -p docs
+          mv coverage.svg docs/coverage.svg
+
       - name: Commit badge
         uses: EndBug/add-and-commit@v9
         with:
-          add: "*.svg"
+          add: "docs/coverage.svg"
           message: "docs: update coverage badge"
+          default_author: github_actions

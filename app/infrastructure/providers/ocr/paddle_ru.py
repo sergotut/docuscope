@@ -19,7 +19,6 @@ class PaddleRuOCRAdapter(PaddleOCR):
 
     def __init__(self) -> None:
         """Создает экземпляр с настройками."""
-
         config = settings.ocr.paddle_ru
 
         super().__init__(

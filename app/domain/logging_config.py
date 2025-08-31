@@ -39,8 +39,8 @@ def init_logging(settings: "AppSettings") -> None:
     log_level = getattr(settings, "log_level", "INFO").upper()
     log_pretty = getattr(settings, "log_pretty", False)
     log_file = getattr(settings, "log_file", None)
-    service_name = getattr(settings, "service_name", "docuscope") #noqa F841
-    app_env = getattr(settings, "app_env", "prod") #noqa F841
+    service_name = getattr(settings, "service_name", "docuscope")  # noqa F841
+    app_env = getattr(settings, "app_env", "prod")  # noqa F841
 
     root_handlers = []
     # stdout handler (pretty для локала, JSON для prod)

@@ -18,32 +18,28 @@ class YaGPTEmbeddingSettings(SettingsBase):
     )
 
     endpoint: str | None = Field(
-        None,
-        env="EMBED_YAGPT_ENDPOINT",
-        description="Эндпоинт эмбеддера YaGPT."
+        None, env="EMBED_YAGPT_ENDPOINT", description="Эндпоинт эмбеддера YaGPT."
     )
 
     model_name: str | None = Field(
-        None,
-        env="EMBED_YAGPT_MODEL_NAME",
-        description="Модель эмбеддера YaGPT."
+        None, env="EMBED_YAGPT_MODEL_NAME", description="Модель эмбеддера YaGPT."
     )
 
     folder_id: str | None = Field(
         None,
         env="EMBED_YAGPT_FOLDER_ID",
-        description="Идентификатор каталога в Yandex Cloud."
+        description="Идентификатор каталога в Yandex Cloud.",
     )
 
     batch_size: int = Field(
         1,
         env="EMBED_YAGPT_BATCH_SIZE",
         ge=1,
-        description="Размер батча эмбеддера YaGPT."
+        description="Размер батча эмбеддера YaGPT.",
     )
 
     max_tokens: int = Field(
         1024,
         env="EMBED_YAGPT_MAX_TOKENS",
-        description="Максимальное количество токенов эмбеддера YaGPT."
+        description="Максимальное количество токенов эмбеддера YaGPT.",
     )

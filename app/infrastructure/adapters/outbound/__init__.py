@@ -1,27 +1,29 @@
-"""Пакет outbound-адаптеров: embedding, llm, ocr, storage, vector."""
+"""Пакет outbound-адаптеров."""
 
-from .embedding import (
-    SentenceTransformersEmbedding,
-    SberGigaChatEmbedding,
-    YAGPTEmbedding,
-    E5MistralEmbedding,
-)
-from .tokenizer import TiktokenTokenizer
-from .vector import QdrantVectorStore
-from .storage import MinioStorage
-from .ocr import PaddleOCR
+from __future__ import annotations
+
 from . import cache as cache
-from . import postgres as postgres
+from . import documents as documents
+from .embedders import (
+    E5MistralEmbedder,
+    SberGigaChatEmbedder,
+    SentenceTransformersEmbedder,
+    YAGPTEmbedder,
+)
+from .ocr import PaddleOCR
+from .storage import MinioStorage
+from .tokenizer import TiktokenTokenizer
+from .vector_store import QdrantVectorStore
 
 __all__ = [
-    "SentenceTransformersEmbedding",
-    "SberGigaChatEmbedding",
-    "YAGPTEmbedding",
-    "E5MistralEmbedding",
+    "SentenceTransformersEmbedder",
+    "SberGigaChatEmbedder",
+    "YAGPTEmbedder",
+    "E5MistralEmbedder",
     "TiktokenTokenizer",
     "QdrantVectorStore",
     "MinioStorage",
     "PaddleOCR",
     "cache",
-    "postgres",
+    "documents",
 ]

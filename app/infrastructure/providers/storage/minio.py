@@ -19,18 +19,15 @@ class MinioStorageAdapter(MinioStorage):
 
     def __init__(self) -> None:
         """Создаёт экземпляр с настройками."""
-
         config = settings.storage.minio
 
         super.__init__(
             endpoint=config.endpoint,
             access_key=config.access_key,
             secret_key=config.secret_key,
-            bucket=config.bucket
+            bucket=config.bucket,
         )
 
         logger.info(
-            "MinioStorageAdapter создан",
-            endpoint=config.endpoint,
-            bucket=config.bucket
+            "MinioStorageAdapter создан", endpoint=config.endpoint, bucket=config.bucket
         )

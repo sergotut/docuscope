@@ -1,5 +1,5 @@
 # ---------- Build stage: ставим зависимости ----------
-FROM python:3.11-slim AS builder
+FROM python:3.12.6-slim AS builder
 
 ARG POETRY_VERSION=1.8.2
 ARG PIP_VERSION=24.0
@@ -40,7 +40,7 @@ RUN pip install --no-cache-dir gunicorn celery
 RUN poetry cache clear --all pypi && rm -rf /root/.cache/pip
 
 # ---------- Runtime stage: минимальный образ ----------
-FROM python:3.11-slim
+FROM python:3.12.6-slim
 
 # Только необходимые runtime-библиотеки (OpenCV/Torch → libgl, OCR → libglib)
 # tini для корректной обработки сигналов в Docker
@@ -57,7 +57,7 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR /app
 
 # Переносим установленные пакеты и бинарники из сборочного слоя
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/lib/python3.12.6/site-packages /usr/local/lib/python3.12.6/site-packages
 COPY --from=builder /usr/local/bin/poetry     /usr/local/bin/poetry
 COPY --from=builder /usr/local/bin/gunicorn   /usr/local/bin/gunicorn
 COPY --from=builder /usr/local/bin/celery     /usr/local/bin/celery

@@ -5,10 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 
 from app.domain.model.collections import CollectionMeta, CollectionName
-from app.domain.ports.relational_store import (
-    RelConnection,
-    CollectionRepositoryPort
-)
+from app.domain.ports.relational_store import CollectionRepositoryPort, RelConnection
 
 __all__ = ["PostgresCollectionRepository"]
 

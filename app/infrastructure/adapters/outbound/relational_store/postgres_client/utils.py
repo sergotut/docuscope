@@ -43,6 +43,7 @@ _KV_RE: Final[re.Pattern[str]] = re.compile(
     """,
 )
 
+
 def _mask_url_like(dsn: str, replacement: str) -> str:
     """Маскирует секреты в URL-подобном DSN.
 
@@ -79,9 +80,7 @@ def _mask_url_like(dsn: str, replacement: str) -> str:
     # Маскируем секреты в query (?password=..., &token=..., ...).
     if parts.query:
         q = parse_qsl(parts.query, keep_blank_values=True)
-        q_masked = [
-            (k, replacement if k.lower() in _SECRET_KEYS else v) for k, v in q
-        ]
+        q_masked = [(k, replacement if k.lower() in _SECRET_KEYS else v) for k, v in q]
         query = urlencode(q_masked, doseq=True)
     else:
         query = parts.query

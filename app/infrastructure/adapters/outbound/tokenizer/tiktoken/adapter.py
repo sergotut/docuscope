@@ -11,6 +11,7 @@ import tiktoken
 from app.domain.model.diagnostics import TokenizerHealthReport
 from app.domain.model.shared import TokenCount
 from app.domain.ports import TokenizerPort
+
 from .protocols import EncoderLike
 
 __all__ = ["TiktokenTokenizer"]

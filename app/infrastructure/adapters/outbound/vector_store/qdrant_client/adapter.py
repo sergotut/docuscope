@@ -12,7 +12,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Sequence
+from collections.abc import Sequence
 
 import structlog
 from qdrant_client import AsyncQdrantClient
@@ -29,6 +29,7 @@ from app.domain.model.retrieval import (
     UpsertPoint,
 )
 from app.domain.ports.vector_store import VectorStorePort
+
 from .converters import to_distance, to_filter, to_hit, to_point_struct
 from .utils import (
     DENSE_VECTOR_NAME,
@@ -203,10 +204,7 @@ class QdrantVectorStore(VectorStorePort):
             )
             return [to_hit(pt) for pt in res]
         except Exception as exc:  # noqa: BLE001
-            logger.exception(
-                "Qdrant sparse_search failed",
-                collection=str(collection)
-            )
+            logger.exception("Qdrant sparse_search failed", collection=str(collection))
             raise VectorStoreError(str(exc)) from exc
 
     async def hybrid_search_rrf(

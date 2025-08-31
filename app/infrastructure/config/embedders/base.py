@@ -13,7 +13,7 @@ class EmbeddingBaseSettings(SettingsBase):
     space: str = Field(
         "retrieval",
         env="EMBED_SPACE",
-        description="Пространство (semantic, retrieval и др.)."
+        description="Пространство (semantic, retrieval и др.).",
     )
 
     timeout: float = Field(
