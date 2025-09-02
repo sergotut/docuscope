@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .chunk import Chunk, ChunkId
+from .chunk import Chunk, ChunkId, check_chunk_id, to_chunk_id
 from .conversion import (
     SUPPORTED_CONVERSIONS,
     ConversionRequest,
@@ -16,6 +16,10 @@ from .document import (
     DocumentBase,
     DocumentId,
     DocumentMeta,
+    check_document_id,
+    to_document_id,
+    check_original_name,
+    to_original_name,
 )
 from .type_detection import FileProbe, TypeDetectionResult
 from .types import (
@@ -39,12 +43,20 @@ from .warnings import (
 )
 
 __all__ = [
+    # Документы
     "DocumentId",
     "DocumentBase",
     "Document",
     "DocumentMeta",
+    "check_document_id",
+    "check_original_name",
+    "to_document_id",
+    "to_original_name",
+    # Фрагменты документов
     "Chunk",
     "ChunkId",
+    "to_chunk_id",
+    "check_chunk_id",
     "DocumentFamily",
     "DocumentType",
     "Permission",

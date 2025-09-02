@@ -10,6 +10,7 @@ __all__ = [
     "RelationalDBHealthReport",
     "CacheHealthReport",
     "DocumentConverterHealthReport",
+    "DocumentExtractorHealthReport",
 ]
 
 
@@ -197,3 +198,21 @@ class DocumentConverterHealthReport(TypedDict, total=False):
     temp_dir_size_bytes: int
     uptime_seconds: int
     last_conversion_timestamp: int
+
+
+class DocumentExtractorHealthReport(TypedDict, total=False):
+    """Отчёт о состоянии экстрактора документов.
+
+    Attributes:
+        engine (str): Название движка экстракции (например, docx, pdfminer, openpyxl).
+        version (str): Версия движка или библиотеки.
+        status (str): Текущий статус работы.
+        queue_size (int): Размер очереди задач экстракции.
+        uptime_seconds (int): Время работы сервиса в секундах.
+    """
+
+    engine: str
+    version: str
+    status: str
+    queue_size: int
+    uptime_seconds: int

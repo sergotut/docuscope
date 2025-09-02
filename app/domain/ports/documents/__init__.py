@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from .document_converter import DocumentConverterPort
 from .document_type_detector import DocumentTypeDetectorPort
+from .extractor import DocumentExtractorPort
 
 __all__ = [
     "DocumentConverterPort",
     "DocumentTypeDetectorPort",
+    "DocumentExtractorPort",
 ]
