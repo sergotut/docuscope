@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional, Union, Literal
+from typing import Any, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -46,24 +46,24 @@ class BaseChunkDTO(BaseModel):
         kind (ChunkKind): Тип текстового элемента.
         text (str): Текст фрагмента (не пустой).
         spans (list[RichTextSpanDTO]): Локальные спаны текста с разметкой.
-        language (Optional[str]): Язык фрагмента.
-        section (Optional[SectionPathDTO]): Иерархическая позиция в документе.
-        list_level (Optional[int]): Уровень вложенности списка.
+        language (str | None): Язык фрагмента.
+        section (SectionPathDTO | None): Иерархическая позиция в документе.
+        list_level (int | None): Уровень вложенности списка.
         list_style (ListStyle): Стиль списка.
-        table_ctx (Optional[TableContextDTO]): Контекст таблицы для строк/ячеек.
-        origin_family (Optional[Union[DocumentFamily, str]]): Семейство исходного документа.
-        origin_type (Optional[Union[DocumentType, str]]): Строгий тип исходного документа.
-        original_filename (Optional[str]): Оригинальное имя файла (если доступно).
-        storage_object (Optional[str]): Имя файла в объектном хранилище.
-        checksum_sha256 (Optional[str]): Хеш контента для идемпотентности/аудита.
-        page_number (Optional[int]): Номер страницы (если применимо).
+        table_ctx (TableContextDTO | None): Контекст таблицы для строк/ячеек.
+        origin_family (DocumentFamily | str | None): Семейство исходного документа.
+        origin_type (DocumentType | str | None): Строгий тип исходного документа.
+        original_filename (str | None): Оригинальное имя файла (если доступно).
+        storage_object (str | None): Имя файла в объектном хранилище.
+        checksum_sha256 (str | None): Хеш контента для идемпотентности/аудита.
+        page_number (int | None): Номер страницы (если применимо).
         warnings (list[WarningCode]): Коды предупреждений.
-        confidence (Optional[float]): Уверенность экстрактора [0..1].
-        provenance (Optional[ProvenanceDTO]): Происхождение (кто/чем/когда).
-        table_json (Optional[TableDTO]): Каноническая таблица.
-        table_markdown (Optional[str]): Markdown-представление таблицы.
-        table_markdown_checksum (Optional[str]): Контрольная сумма Markdown.
-        ext (Optional[dict[str, Any]]): Расширение на будущее (без ослабления схемы).
+        confidence (float | None): Уверенность экстрактора [0..1].
+        provenance (ProvenanceDTO | None): Происхождение (кто/чем/когда).
+        table_json (TableDTO | None): Каноническая таблица.
+        table_markdown (str | None): Markdown-представление таблицы.
+        table_markdown_checksum (str | None): Контрольная сумма Markdown.
+        ext (dict[str, Any] | None): Расширение на будущее (без ослабления схемы).
     """
 
     model_config = ConfigDict(
@@ -82,36 +82,36 @@ class BaseChunkDTO(BaseModel):
     kind: ChunkKind
     text: str = Field(min_length=1)
     spans: list[RichTextSpanDTO] = Field(default_factory=list)
-    language: Optional[str] = None
+    language: str | None = None
 
     # Структура документа
-    section: Optional[SectionPathDTO] = None
-    list_level: Optional[int] = Field(default=None, ge=0)
+    section: SectionPathDTO | None = None
+    list_level: int | None = Field(default=None, ge=0)
     list_style: ListStyle = ListStyle.NONE
-    table_ctx: Optional[TableContextDTO] = None
+    table_ctx: TableContextDTO | None = None
 
     # Происхождение/файловые мета
-    origin_family: Optional[Union[DocumentFamily, str]] = None
-    origin_type: Optional[Union[DocumentType, str]] = None
-    original_filename: Optional[str] = None
-    storage_object: Optional[str] = None
-    checksum_sha256: Optional[str] = None
+    origin_family: DocumentFamily | str | None = None
+    origin_type: DocumentType | str | None = None
+    original_filename: str | None = None
+    storage_object: str | None = None
+    checksum_sha256: str | None = None
 
     # Геометрия/страница (если применимо)
-    page_number: Optional[int] = Field(default=None, ge=1)
+    page_number: int | None = Field(default=None, ge=1)
 
     # Качество/диагностика
     warnings: list[WarningCode] = Field(default_factory=list)
-    confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
-    provenance: Optional[ProvenanceDTO] = None
+    confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    provenance: ProvenanceDTO | None = None
 
     # Двойственное представление для таблиц
-    table_json: Optional[TableDTO] = None
-    table_markdown: Optional[str] = None
-    table_markdown_checksum: Optional[str] = None
+    table_json: TableDTO | None = None
+    table_markdown: str | None = None
+    table_markdown_checksum: str | None = None
 
     # Расширение на будущее (без ослабления схемы)
-    ext: Optional[dict[str, Any]] = None
+    ext: dict[str, Any] | None = None
 
 
 class DocxChunkDTO(BaseChunkDTO):
@@ -119,13 +119,13 @@ class DocxChunkDTO(BaseChunkDTO):
 
     Attributes:
         source_format (Literal["docx"]): Буквально "docx".
-        docx (Optional[DocxPositionDTO]): Позиционные метаданные DOCX.
+        docx (DocxPositionDTO | None): Позиционные метаданные DOCX.
     """
 
     model_config = ConfigDict(frozen=True)
 
     source_format: Literal["docx"] = "docx"
-    docx: Optional[DocxPositionDTO] = None
+    docx: DocxPositionDTO | None = None
 
 
 class PdfTextChunkDTO(BaseChunkDTO):
@@ -133,7 +133,7 @@ class PdfTextChunkDTO(BaseChunkDTO):
 
     Attributes:
         source_format (Literal["pdf_text"]): Буквально "pdf_text".
-        pdf (Optional[PdfPositionDTO]): Позиционные метаданные PDF.
+        pdf (PdfPositionDTO | None): Позиционные метаданные PDF.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -147,7 +147,7 @@ class XlsxChunkDTO(BaseChunkDTO):
 
     Attributes:
         source_format (Literal["xlsx"]): Буквально "xlsx".
-        xlsx (Optional[XlsxCellDTO]): Позиционные/семантические метаданные XLSX.
+        xlsx (XlsxCellDTO | None): Позиционные/семантические метаданные XLSX.
     """
 
     model_config = ConfigDict(frozen=True)

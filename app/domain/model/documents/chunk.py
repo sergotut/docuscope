@@ -45,11 +45,12 @@ class Chunk:
         """
         check_chunk_id(self.id)
         check_document_id(self.doc_id)
-        
+
         if not self.text.strip():
             raise DomainValidationError("text не может быть пустым")
         if self.order < 0:
             raise DomainValidationError("order должен быть неотрицательным")
+
 
 def check_chunk_id(value: str | ChunkId) -> ChunkId:
     """Валидирует и приводит к типу ChunkId."""

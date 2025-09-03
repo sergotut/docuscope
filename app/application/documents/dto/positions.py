@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from pydantic import BaseModel, ConfigDict, Field
 
 from .common import BBoxDTO, FontStyleDTO, TableCellRefDTO
@@ -20,37 +18,37 @@ class DocxPositionDTO(BaseModel):
     """Позиционная и стилевая информация для DOCX-чанков.
 
     Attributes:
-        section_index (Optional[int]): Индекс секции документа.
-        paragraph_index (Optional[int]): Индекс абзаца.
-        run_index (Optional[int]): Индекс спана/рани.
-        style_name (Optional[str]): Имя применённого стиля.
-        heading_level (Optional[int]): Уровень заголовка (если применимо).
-        list_level (Optional[int]): Уровень вложенности списка.
+        section_index (int | None): Индекс секции документа.
+        paragraph_index (int | None): Индекс абзаца.
+        run_index (int | None): Индекс спана/рани.
+        style_name (str | None): Имя применённого стиля.
+        heading_level (int | None): Уровень заголовка (если применимо).
+        list_level (int | None): Уровень вложенности списка.
         list_style (ListStyle): Стиль списка.
-        list_num_id (Optional[int]): Идентификатор нумерации.
+        list_num_id (int | None): Идентификатор нумерации.
         in_header (bool): Признак нахождения во внешнем колонтитуле.
         in_footer (bool): Признак нахождения в нижнем колонтитуле.
-        footnote_id (Optional[int]): Идентификатор сноски.
-        endnote_id (Optional[int]): Идентификатор концевой сноски.
-        table (Optional[TableCellRefDTO]): Позиция в таблице, если элемент расположен
+        footnote_id (int | None): Идентификатор сноски.
+        endnote_id (int | None): Идентификатор концевой сноски.
+        table (TableCellRefDTO | None): Позиция в таблице, если элемент расположен
             внутри таблицы.
     """
 
     model_config = ConfigDict(frozen=True)
 
-    section_index: Optional[int] = Field(default=None, ge=0)
-    paragraph_index: Optional[int] = Field(default=None, ge=0)
-    run_index: Optional[int] = Field(default=None, ge=0)
-    style_name: Optional[str] = None
-    heading_level: Optional[int] = Field(default=None, ge=1)
-    list_level: Optional[int] = Field(default=None, ge=0)
+    section_index: int | None = Field(default=None, ge=0)
+    paragraph_index: int | None = Field(default=None, ge=0)
+    run_index: int | None = Field(default=None, ge=0)
+    style_name: str | None = None
+    heading_level: int | None = Field(default=None, ge=1)
+    list_level: int | None = Field(default=None, ge=0)
     list_style: ListStyle = ListStyle.NONE
-    list_num_id: Optional[int] = Field(default=None, ge=0)
+    list_num_id: int | None = Field(default=None, ge=0)
     in_header: bool = False
     in_footer: bool = False
-    footnote_id: Optional[int] = Field(default=None, ge=0)
-    endnote_id: Optional[int] = Field(default=None, ge=0)
-    table: Optional[TableCellRefDTO] = None
+    footnote_id: int | None = Field(default=None, ge=0)
+    endnote_id: int | None = Field(default=None, ge=0)
+    table: TableCellRefDTO | None = None
 
 
 class PdfPositionDTO(BaseModel):
@@ -58,27 +56,27 @@ class PdfPositionDTO(BaseModel):
 
     Attributes:
         page_number (int): Номер страницы (>= 1).
-        block_index (Optional[int]): Индекс блока.
-        line_index (Optional[int]): Индекс строки.
-        span_index (Optional[int]): Индекс спана/фрагмента.
-        column_index (Optional[int]): Индекс колонки.
-        reading_order (Optional[int]): Порядок чтения.
-        bbox (Optional[BBoxDTO]): Геометрия блока.
-        font (Optional[FontStyleDTO]): Шрифтовые атрибуты.
-        is_hyphenated_join (Optional[bool]): Признак склейки переноса.
+        block_index (int | None): Индекс блока.
+        line_index (int | None): Индекс строки.
+        span_index (int | None): Индекс спана/фрагмента.
+        column_index (int | None): Индекс колонки.
+        reading_order (int | None): Порядок чтения.
+        bbox (BBoxDTO | None): Геометрия блока.
+        font (FontStyleDTO | None): Шрифтовые атрибуты.
+        is_hyphenated_join (bool | None): Признак склейки переноса.
     """
 
     model_config = ConfigDict(frozen=True)
 
     page_number: int = Field(ge=1)
-    block_index: Optional[int] = Field(default=None, ge=0)
-    line_index: Optional[int] = Field(default=None, ge=0)
-    span_index: Optional[int] = Field(default=None, ge=0)
-    column_index: Optional[int] = Field(default=None, ge=0)
-    reading_order: Optional[int] = Field(default=None, ge=0)
-    bbox: Optional[BBoxDTO] = None
-    font: Optional[FontStyleDTO] = None
-    is_hyphenated_join: Optional[bool] = None
+    block_index: int | None = Field(default=None, ge=0)
+    line_index: int | None = Field(default=None, ge=0)
+    span_index: int | None = Field(default=None, ge=0)
+    column_index: int | None = Field(default=None, ge=0)
+    reading_order: int | None = Field(default=None, ge=0)
+    bbox: BBoxDTO | None = None
+    font: FontStyleDTO | None = None
+    is_hyphenated_join: bool | None = None
 
 
 class XlsxCellDTO(BaseModel):
@@ -89,19 +87,19 @@ class XlsxCellDTO(BaseModel):
         sheet_index (int): Индекс листа (с 0).
         row_index (int): Индекс строки (с 0).
         col_index (int): Индекс столбца (с 0).
-        a1_address (Optional[str]): Адрес в нотации A1.
-        is_merged (Optional[bool]): Признак объединённой ячейки.
-        merged_range (Optional[str]): Диапазон объединения.
-        formula (Optional[str]): Формула (если есть).
-        value (Optional[str]): Нормализованное значение.
-        display_value (Optional[str]): Отображаемое значение.
-        number_format (Optional[str]): Числовой формат.
-        data_type (Optional[str]): Тип данных (string/number/date/bool/formula...).
-        hyperlink (Optional[str]): Гиперссылка.
-        comment (Optional[str]): Комментарий.
-        row_header (Optional[str]): Заголовок строки.
-        col_header (Optional[str]): Заголовок столбца.
-        table (Optional[TableCellRefDTO]): Позиция в таблице.
+        a1_address (str | None): Адрес в нотации A1.
+        is_merged (bool | None): Признак объединённой ячейки.
+        merged_range (str | None): Диапазон объединения.
+        formula (str | None): Формула (если есть).
+        value (str | None): Нормализованное значение.
+        display_value (str | None): Отображаемое значение.
+        number_format (str | None): Числовой формат.
+        data_type (str | None): Тип данных (string/number/date/bool/formula...).
+        hyperlink (str | None): Гиперссылка.
+        comment (str | None): Комментарий.
+        row_header (str | None): Заголовок строки.
+        col_header (str | None): Заголовок столбца.
+        table (TableCellRefDTO | None): Позиция в таблице.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -110,16 +108,16 @@ class XlsxCellDTO(BaseModel):
     sheet_index: int = Field(ge=0)
     row_index: int = Field(ge=0)
     col_index: int = Field(ge=0)
-    a1_address: Optional[str] = None
-    is_merged: Optional[bool] = None
-    merged_range: Optional[str] = None
-    formula: Optional[str] = None
-    value: Optional[str] = None
-    display_value: Optional[str] = None
-    number_format: Optional[str] = None
-    data_type: Optional[str] = None
-    hyperlink: Optional[str] = None
-    comment: Optional[str] = None
-    row_header: Optional[str] = None
-    col_header: Optional[str] = None
-    table: Optional[TableCellRefDTO] = None
+    a1_address: str | None = None
+    is_merged: bool | None = None
+    merged_range: str | None = None
+    formula: str | None = None
+    value: str | None = None
+    display_value: str | None = None
+    number_format: str | None = None
+    data_type: str | None = None
+    hyperlink: str | None = None
+    comment: str | None = None
+    row_header: str | None = None
+    col_header: str | None = None
+    table: TableCellRefDTO | None = None

@@ -209,6 +209,8 @@ class DocumentExtractorHealthReport(TypedDict, total=False):
         status (str): Текущий статус работы.
         queue_size (int): Размер очереди задач экстракции.
         uptime_seconds (int): Время работы сервиса в секундах.
+        details (str): Человекочитаемое описание.
+        metrics (Tuple[Tuple[str, float], ...]): Ключевые метрики (имя, значение).
     """
 
     engine: str
@@ -216,3 +218,5 @@ class DocumentExtractorHealthReport(TypedDict, total=False):
     status: str
     queue_size: int
     uptime_seconds: int
+    details: str
+    metrics: tuple[tuple[str, float], ...]

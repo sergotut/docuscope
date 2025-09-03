@@ -17,9 +17,26 @@ from .document import (
     DocumentId,
     DocumentMeta,
     check_document_id,
-    to_document_id,
     check_original_name,
+    to_document_id,
     to_original_name,
+)
+from .extraction import (
+    BBox,
+    ExtractedItem,
+    ExtractedKind,
+    ExtractionOptions,
+    ExtractionProvenance,
+    ExtractorCapability,
+    FontStyle,
+    InlineSpan,
+    Link,
+    ListMarker,
+    ListStyle,
+    ScriptPosition,
+    SectionPath,
+    TableCellRef,
+    TableContext,
 )
 from .type_detection import FileProbe, TypeDetectionResult
 from .types import (
@@ -84,4 +101,20 @@ __all__ = [
     "ConversionStatus",
     "SUPPORTED_CONVERSIONS",
     "is_conversion_supported",
+    # Модели экстракции документов
+    "ExtractedKind",
+    "ListStyle",
+    "ScriptPosition",
+    "SectionPath",
+    "ListMarker",
+    "TableCellRef",
+    "TableContext",
+    "BBox",
+    "FontStyle",
+    "Link",
+    "InlineSpan",
+    "ExtractionProvenance",
+    "ExtractedItem",
+    "ExtractionOptions",
+    "ExtractorCapability",
 ]

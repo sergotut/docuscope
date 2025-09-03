@@ -7,21 +7,28 @@
 
 from __future__ import annotations
 
-from .enums import (
-    ChunkKind,
-    ListStyle,
-    ScriptPosition,
-    ColumnType,
+from .chunk import (
+    AnyChunkDTO,
+    BaseChunkDTO,
+    DocxChunkDTO,
+    PdfTextChunkDTO,
+    XlsxChunkDTO,
 )
 from .common import (
     BBoxDTO,
     FontStyleDTO,
     LinkDTO,
+    ProvenanceDTO,
     RichTextSpanDTO,
+    SectionPathDTO,
     TableCellRefDTO,
     TableContextDTO,
-    SectionPathDTO,
-    ProvenanceDTO,
+)
+from .enums import (
+    ChunkKind,
+    ColumnType,
+    ListStyle,
+    ScriptPosition,
 )
 from .positions import (
     DocxPositionDTO,
@@ -29,17 +36,10 @@ from .positions import (
     XlsxCellDTO,
 )
 from .table import (
-    TableDTO,
-    TableColumnDTO,
-    TableRowDTO,
     TableCellDTO,
-)
-from .chunk import (
-    BaseChunkDTO,
-    DocxChunkDTO,
-    PdfTextChunkDTO,
-    XlsxChunkDTO,
-    AnyChunkDTO,
+    TableColumnDTO,
+    TableDTO,
+    TableRowDTO,
 )
 
 __all__ = [
